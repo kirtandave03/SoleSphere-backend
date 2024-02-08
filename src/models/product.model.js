@@ -94,8 +94,13 @@ const productSchema = new mongoose.Schema({
         type: String
     },
 
-    createdAt : new Date.now
-    
+    createdAt: {
+        type: Date,
+        required: true,
+        default: Date.now()
+    }
+
+
     }],
 
     longDescription : 
