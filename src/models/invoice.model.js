@@ -12,22 +12,18 @@ const invoiceSchema = new mongoose.Schema({
             ref: 'User'
         },
         user_name : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
+            type : String
+          },
 
         user_address : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
+            type : String
+          },
         user_mobile : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
+            type : String
+          },
         user_email : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
+            type : String
+          }
     },
 
     products: [{
