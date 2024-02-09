@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema({
             state: {
                 type: String,
                 required: true
+            },
+            country : {
+                type :String,
+                required : true
             }
         }
     ],
@@ -73,7 +77,15 @@ const userSchema = new mongoose.Schema({
             quantity: {
                 type: Number,
                 required: true
-            }
+            },
+            price : {
+                type : String,
+                required : true
+            },
+            totalAmount : {
+                type: String,
+                required : true
+            },
         }
     ]
 }, {timestamps: true})
