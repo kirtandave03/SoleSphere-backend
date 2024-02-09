@@ -7,6 +7,12 @@ const productSchema = new mongoose.Schema({
         index: true
     },
 
+  status: {
+    type: String,
+    enum: ["active", "inactive"],
+    default: "active"
+  },
+
   shortDescription:{
         type: String,
         trim: true

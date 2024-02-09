@@ -50,6 +50,10 @@ const userSchema = new mongoose.Schema({
             country : {
                 type :String,
                 required : true
+            },
+            adType: {
+                type: String,
+                enum: ["Home", "Office", "Other"]
             }
         }
     ],
@@ -58,9 +62,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         default: false
     },
-    restrict: {
-        type: Boolean,
-        default: false
+    status: {
+        type: String,
+        enum: ["active", "inactive"],
+        default: "active"
     },
     wishlist: [
         {
@@ -70,9 +75,12 @@ const userSchema = new mongoose.Schema({
     ],
     cart: [
         {
-            product_id: {
+            product: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Product"
+            },
+            productImage: {
+                type: String
             },
             quantity: {
                 type: Number,
