@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -18,7 +19,8 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        requirerd: true
+        requirerd: true,
+        unique: true
     },
     address: [
         {
@@ -52,6 +54,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         default: false
     },
+    restrict: {
+        type: Boolean,
+        default: false
+    },
     wishlist: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -60,7 +66,7 @@ const userSchema = new mongoose.Schema({
     ],
     cart: [
         {
-            product: {
+            product_id: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Product"
             },
@@ -70,7 +76,10 @@ const userSchema = new mongoose.Schema({
             }
         }
     ]
-})
+}, {timestamps: true})
+
+const User = mongoose.model('User', userSchema);
+module.exports = User;
 
 /*
 CUSTOMER:
