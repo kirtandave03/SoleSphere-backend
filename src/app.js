@@ -1,12 +1,13 @@
 const express = require('express');
+const cors = require('cors')
+
 const app = express();
 
-//loading config from env file
-require('dotenv').config();
-const PORT = process.env.PORT || 4000;
-
-//middleware to parse json request body
 app.use(express.json());
+app.use(cors())
+app.use(express.urlencoded({limit: '16kb'})) 
+app.use(express.static('public'));
+
 
 //import routes for api
 const userRoutes = require("./routes/user");
@@ -14,16 +15,4 @@ const userRoutes = require("./routes/user");
 //mount the api routes
 app.use("/api/v1/user", userRoutes);
 
-//start server
-app.listen(PORT, () => {
-    console.log(`Server started successfully at ${PORT}`);
-});
-
-//database connection
-const dbConnect = require("./db/db");
-dbConnect();
-
-//default route
-app.get("/", (req, res) => {
-    res.send(`<h1>this is homepage</h1>`);
-})
+module.exports = app;
