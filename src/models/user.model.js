@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -98,34 +99,11 @@ const userSchema = new mongoose.Schema({
     ]
 }, {timestamps: true})
 
+userSchema.methods.genarateAccessToken = function(){
+    return jwt.sign({
+        _id : this._id
+         },process.env.ACCESS_TOKEN_SECRET)
+}
+
 const User = mongoose.model('User', userSchema);
 module.exports = User;
-
-/*
-CUSTOMER:
-
-{
-  "_id": "<ObjectId>",
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "<hashed_password>",
-  "address": "123 Street, City, Country",
-  "phone": "+1234567890",
-  "created_at": "<timestamp>",
-  "wishlist": ["<product_id_1>", "<product_id_2>", "..."],
-  "shopping_cart": [
-    {
-      "product_id": "<product_id_1>",
-      "quantity": 2
-    },
-    {
-      "product_id": "<product_id_2>",
-      "quantity": 1
-    },
-    // Additional products...
-  ]
-}
-+ profile photo
-+ numerous address 
-+ membership
-*/
