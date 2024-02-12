@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user.model");
-const { validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
+
+require("dotenv").config();
 
 //signup route handler
 exports.signup = async (req, res) => {
@@ -46,9 +48,15 @@ exports.signup = async (req, res) => {
             address
         });
 
+        const token = jwt.sign(
+            { userId: user._id, email: user.email },
+            process.env.JWT_SECRET,
+        );
+
         return res.status(201).json({
             success: true,
-            message: "User created successfully"
+            message: "User created successfully",
+            token
         });
     }
     catch(error){
