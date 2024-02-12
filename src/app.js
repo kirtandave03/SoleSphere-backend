@@ -9,10 +9,10 @@ const PORT = process.env.PORT || 4000;
 app.use(express.json());
 
 //import routes for api
-const routes = require("./routes/user");
+const userRoutes = require("./routes/user");
 
 //mount the api routes
-app.use("/api/v1", routes);
+app.use("/api/v1/user", userRoutes);
 
 //start server
 app.listen(PORT, () => {
