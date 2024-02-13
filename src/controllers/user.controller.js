@@ -6,18 +6,18 @@ const upload = require("../middlewares/multer.middleware");
 const uploadOnCloudinary = require('../utils/cloudinary')
 
 const userDetail = asyncHandler(async (req, res) => {
-  const { username, email,phone, address, password } = req.body;
+  const { email, phone, address } = req.body;
 
   // console.log("Request Body :",req.body);
 
-  if ([username, email,phone, password].some((field) => field?.trim() === "")) {
+  if ([email].some((field) => field?.trim() === "")) {
     throw new apiError(400, "All fields are required");
   }
 
-  const existedUser = await User.findOne({email});
+  const existedUser = await User.findOne({ email });
 
-  if (existedUser) {
-    throw new apiError(409, "User with username or email already exist");
+  if(!existedUser){
+    throw new apiError(404, "User not found");
   }
 
   var profilePicLocalPath;
@@ -34,14 +34,15 @@ const userDetail = asyncHandler(async (req, res) => {
 
   const profilePic = await uploadOnCloudinary(profilePicLocalPath);
 
-  const user = await User.create({
-    username: username.toLowerCase(),
-    email,
-    phone,
-    password,
-    address,
-    profilePic: profilePic.url || "",
-  });
+  const user = await User.findByIdAndUpdate(existedUser._id,
+    {
+      $set: {
+        phone,
+        address,
+        profilePic: profilePic.url || "",
+      }
+
+    });
 
   const createdUser = await User.findById(user._id).select("-password");
 
@@ -55,13 +56,13 @@ const userDetail = asyncHandler(async (req, res) => {
 });
 
 const signupUser = asyncHandler(async (req, res) => {
-  const {username, email, password} = req.body;
+  const { username, email, password } = req.body;
 
   if ([username, email, password].some((field) => field?.trim() === "")) {
     throw new apiError(400, "All fields are required");
   }
 
-  const existedUser = await User.findOne({email});
+  const existedUser = await User.findOne({ email });
 
   if (existedUser) {
     throw new apiError(409, "User with username or email already exist");
@@ -86,12 +87,12 @@ const signupUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  console.log("password : ",password)
+  console.log("password : ", password)
   if (!email || !password) {
     throw new apiError(400, "Email and password are required");
   }
 
-  const user = await User.findOne({email});
+  const user = await User.findOne({ email });
 
   if (!user) {
     throw new apiError(400, "User not exist");
