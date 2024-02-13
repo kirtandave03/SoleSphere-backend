@@ -5,12 +5,14 @@ const apiResponse = require("../utils/apiResponse");
 const upload = require("../middlewares/multer.middleware");
 const uploadOnCloudinary = require('../utils/cloudinary')
 
-const signupUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
+
+
+const userDetail = asyncHandler(async (req, res) => {
+  const { username, email,phone, address, password } = req.body;
 
   // console.log("Request Body :",req.body);
 
-  if ([username, email, password].some((field) => field?.trim() === "")) {
+  if ([username, email,phone, password].some((field) => field?.trim() === "")) {
     throw new apiError(400, "All fields are required");
   }
 
@@ -37,7 +39,9 @@ const signupUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     username: username.toLowerCase(),
     email,
+    phone,
     password,
+    address,
     profilePic: profilePic.url || "",
   });
 
@@ -58,7 +62,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new apiError(400, "Email and password are required");
   }
 
-  const user = await User.findOne(email);
+  const user = await User.findOne({email});
 
   if (!user) {
     throw new apiError(400, "User not exist");
@@ -86,4 +90,4 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 });
 
-module.exports = { loginUser, signupUser };
+module.exports = { loginUser, userDetail };

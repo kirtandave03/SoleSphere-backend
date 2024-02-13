@@ -10,7 +10,7 @@ app.use(express.static('public'));
 
 
 //import routes for api
-const userRoutes = require("./routes/user");
+const userRoutes = require("./routes/user.routes");
 
 //mount the api routes
 app.use("/api/v1/user", userRoutes);

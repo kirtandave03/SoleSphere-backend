@@ -21,10 +21,9 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        requirerd: true,
         unique: true
     },
-    address:  [
+    address: [
         {
             house: {
                 type: String,
@@ -48,6 +47,7 @@ const userSchema = new mongoose.Schema({
             },
             adType: {
                 type: String,
+                deafult : "Home",
                 enum: ["Home", "Office", "Other"]
             }
         }
@@ -79,20 +79,23 @@ const userSchema = new mongoose.Schema({
             },
             quantity: {
                 type: Number,
-                required: true
             },
             price : {
                 type : String,
-                required : true
             },
             totalAmount : {
                 type: String,
-                required : true
             },
         }
     ]
 }, {timestamps: true})
 
+userSchema.pre('save',async function(next){
+    if(!this.isModified('password')) return next()
+
+    this.password = await bcrypt.hash(this.password,10);
+    next();
+})
 userSchema.methods.genarateAccessToken = function(){
     return jwt.sign({
         _id : this._id,
