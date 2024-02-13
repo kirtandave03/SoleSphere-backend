@@ -3,7 +3,8 @@ const upload = require('../middlewares/multer.middleware')
 
 const router = Router()
 
-const {loginUser,userDetail} = require('../controllers/user.controller')
+const {signupUser, loginUser,userDetail} = require('../controllers/user.controller');
+const { sign } = require('jsonwebtoken');
 
 
 router.route('/userDetail').post(
@@ -17,5 +18,6 @@ router.route('/userDetail').post(
 
 router.route('/login').post(loginUser);
 
+router.route('/signup').post(signupUser);
 
 module.exports = router;

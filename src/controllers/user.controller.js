@@ -5,8 +5,6 @@ const apiResponse = require("../utils/apiResponse");
 const upload = require("../middlewares/multer.middleware");
 const uploadOnCloudinary = require('../utils/cloudinary')
 
-
-
 const userDetail = asyncHandler(async (req, res) => {
   const { username, email,phone, address, password } = req.body;
 
@@ -122,4 +120,4 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 });
 
-module.exports = { loginUser, userDetail };
+module.exports = { signupUser, loginUser, userDetail };

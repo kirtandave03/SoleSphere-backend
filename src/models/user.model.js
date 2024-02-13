@@ -17,11 +17,11 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     profilePic: {
-        type: String
+        type: String,
+        default: ""
     },
     phone: {
-        type: String,
-        unique: true
+        type: String
     },
     address: [
         {
