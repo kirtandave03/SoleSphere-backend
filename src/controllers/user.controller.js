@@ -56,6 +56,36 @@ const userDetail = asyncHandler(async (req, res) => {
     .json(new apiResponse(200, createdUser, "User Created Sucessfully"));
 });
 
+const signupUser = asyncHandler(async (req, res) => {
+  const {username, email, password} = req.body;
+
+  if ([username, email, password].some((field) => field?.trim() === "")) {
+    throw new apiError(400, "All fields are required");
+  }
+
+  const existedUser = await User.findOne({email});
+
+  if (existedUser) {
+    throw new apiError(409, "User with username or email already exist");
+  }
+
+  const user = await User.create({
+    username: username.toLowerCase(),
+    email,
+    password,
+  });
+
+  const createdUser = await User.findById(user._id).select("-password");
+
+  if (!createdUser) {
+    throw new apiError(500, "Something went wrong while registering the user");
+  }
+
+  res
+    .status(201)
+    .json(new apiResponse(200, createdUser, "User Created Sucessfully"));
+})
+
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
