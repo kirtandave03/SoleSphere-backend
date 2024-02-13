@@ -88,6 +88,7 @@ const signupUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  console.log("password : ",password)
   if (!email || !password) {
     throw new apiError(400, "Email and password are required");
   }
@@ -98,7 +99,8 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new apiError(400, "User not exist");
   }
 
-  const isPassValid = user.isPasswordCorrect(password);
+  const isPassValid = await user.isPasswordCorrect(password);
+  console.log(isPassValid);
 
   if (!isPassValid) {
     throw new apiError(400, "Invalid credentials");
