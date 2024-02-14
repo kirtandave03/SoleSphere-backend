@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const mongoose_delete = require('mongoose-delete');
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -58,11 +59,6 @@ const userSchema = new mongoose.Schema({
         required: true,
         default: false
     },
-    status: {
-        type: String,
-        enum: ["active", "inactive"],
-        default: "active"
-    },
     wishlist: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -89,7 +85,9 @@ const userSchema = new mongoose.Schema({
             },
         }
     ]
-}, {timestamps: true})
+}, {timestamps: true});
+
+userSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
 
 userSchema.pre('save',async function(next){
     if(!this.isModified('password')) return next()
