@@ -23,12 +23,12 @@ const productVariantSchema = new mongoose.Schema({
     discounted_price: {
       type: Number,
       required: true
-    },}
-  ],
-  stock: {
+    },
+    stock: {
       type: Number,
       required: true
-  },
+  }}
+  ],
 });
 
 const productSchema = new mongoose.Schema({
