@@ -118,7 +118,8 @@ const verifyOtp = asyncHandler(async(req, res)=>{
     if (!createdUser) {
       throw new apiError(500, "Something went wrong while registering the user");
     }
-  
+    
+    await Otp.deleteOne({email});
     res
       .status(201)
       .json(new apiResponse(200, createdUser, "User Created Sucessfully"));
