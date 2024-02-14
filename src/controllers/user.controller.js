@@ -73,14 +73,15 @@ const signupUser = asyncHandler(async (req, res) => {
   const existedUser = await User.findOne({ email });
 
   if (existedUser) {
-    throw new apiError(409, "User with username or email already exist");
+    throw new apiError(409, "User with email already exist");
   }
 
   const otp = await generateOtp();
+
   const cDate = new Date()
   await Otp.findOneAndUpdate(
     {email},
-    {otp : otp, isVerified: false, timestamp: new Date(cDate.getTime())},
+    {otp : otp, isVerified: false},
     {new : true, upsert : true, setDefaultsOnInsert: true}
   )
 
@@ -90,7 +91,7 @@ const signupUser = asyncHandler(async (req, res) => {
   sendMail(email, 'Login otp', content)
   res
     .status(201)
-    .json(new apiResponse(200, {user : {username, email}}, "User Created Sucessfully"));
+    .json(new apiResponse(200, {user : {username, email}}, "Otp has been sent successfully!"));
 })
 
 const verifyOtp = asyncHandler(async(req, res)=>{
