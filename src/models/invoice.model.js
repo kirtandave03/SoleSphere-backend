@@ -7,23 +7,8 @@ const invoiceSchema = new mongoose.Schema({
     },
     
     user : {
-        user_id : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
-        user_name : {
-            type : String
-          },
-
-        user_address : {
-            type : String
-          },
-        user_mobile : {
-            type : String
-          },
-        user_email : {
-            type : String
-          }
+        type : mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
 
     products: [{
