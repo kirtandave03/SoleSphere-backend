@@ -1,132 +1,88 @@
 const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
+
+const productVariantSchema = new mongoose.Schema({
+  colorAndImage: [
+   { color: {
+      type: String,
+      required: true
+    },
+    image_urls: [{
+      type: String
+    }]}
+  ],
+  sizeAndPrice:[
+    {size:{
+      type: String,
+      required: true
+    },
+    actual_price: {
+      type: Number,
+      required: true
+    },
+    discounted_price: {
+      type: Number,
+      required: true
+    },}
+  ],
+  stock: {
+      type: Number,
+      required: true
+  },
+});
 
 const productSchema = new mongoose.Schema({
   productName: {
-        type: String,
-        required: true,
-        index: true
-    },
-
-  status: {
-    type: String,
-    enum: ["active", "inactive"],
-    default: "active"
+      type: String,
+      required: true,
+      index: true
   },
-
-  shortDescription:{
-        type: String,
-        trim: true
-    },
-
-  categories : [
-      {
-        type: String
-      }
-  ],
-
+  shortDescription: {
+      type: String,
+      trim: true
+  },
+  categories: [{
+      type: String
+  }],
   brand: {
-    type : String,
-    required: true
+      type: String,
+      required: true
   },
-
-  price : {
-    type : String,
-    required: true
-  },
-
-  image_url: [{
-    type: String
-  }],
-
+  variants: [productVariantSchema], // This is the array of product variants
   lastMonthSell: {
-    type: Number,
-    default : 0
+      type: Number,
+      default: 0
   },
-
-  stock: {
-    type: Number,
-    required : true
-  },
-
-  discount : {
-    startDate : {
-        type : Date
-    },
-
-    discount:{
-        type: Number,
-        default: 0
-    },
-
-    endDate : {
-        type : Date
-    }
-  }, 
-
-  material: {
-    type : String,
-    required : true
-  },
-
-  color : {
-    type : String,
-    required : true
-  },
-
-  rating : [{
-    user : {
-      type : mongoose.Schema.Types.ObjectId,
-      ref : 'User'
-    },
-    rating : {
-      type: Number
-    }
-  }],
-
-  review : [{
-
-    user : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'User'
+  discount: {
+      startDate: {
+          type: Date
       },
-    tag: {
-        type : String
-    },
-    image_url : [{
-        type : String
-      }],
-
-    review : {
-        type: String
-    },
-
-    createdAt: {
-        type: Date,
-        required: true,
-        default: Date.now()
-    }
-
-
-    }],
-
-    longDescription : 
-       {
-            type : String,
-            trim: true
-       },
-    
-    giftPackaging :{
-        type : Boolean,
-        default: false
-    }, 
-
-    qr :
-      {
-        type : String
+      discount: {
+          type: Number,
+          default: 0
+      },
+      endDate: {
+          type: Date
       }
+  },
+  material: {
+      type: String,
+      required: true
+  },
+  longDescription: {
+      type: String,
+      trim: true
+  },
+  giftPackaging: {
+      type: Boolean,
+      default: false
+  },
+  qr: {
+      type: String
+  }
+}, { timestamps: true });
 
-}, {timestamps: true});
-
+Product.plugin(mongooseDelete, { overrideMethods: 'all' });
 
 const Product = mongoose.model('Product', productSchema )
 module.exports = Product;
