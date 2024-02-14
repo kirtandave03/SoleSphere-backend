@@ -1,9 +1,11 @@
 const User = require("../models/user.model");
+const Otp = require('../models/otp.model');
 const apiError = require("../utils/apiError");
 const asyncHandler = require("../utils/asyncHandler");
 const apiResponse = require("../utils/apiResponse");
 const upload = require("../middlewares/multer.middleware");
 const uploadOnCloudinary = require('../utils/cloudinary')
+const sendMail = require('../utils/mailer');
 
 const generateOtp = async()=> {
    const otp =  Math.floor(1000 + Math.random() * 9000)
@@ -62,9 +64,9 @@ const userDetail = asyncHandler(async (req, res) => {
 });
 
 const signupUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email } = req.body;
 
-  if ([username, email, password].some((field) => field?.trim() === "")) {
+  if ([username, email].some((field) => field?.trim() === "")) {
     throw new apiError(400, "All fields are required");
   }
 
@@ -74,22 +76,53 @@ const signupUser = asyncHandler(async (req, res) => {
     throw new apiError(409, "User with username or email already exist");
   }
 
-  const user = await User.create({
-    username: username.toLowerCase(),
-    email,
-    password,
-  });
+  const otp = await generateOtp();
+  const cDate = new Date()
+  await Otp.findOneAndUpdate(
+    {email},
+    {otp : otp, isVerified: false, timestamp: new Date(cDate.getTime())},
+    {new : true, upsert : true, setDefaultsOnInsert: true}
+  )
 
-  const createdUser = await User.findById(user._id).select("-password");
+  const content = `<p>Hello , ${username} <br> <b> ${otp} </b>is your one time verification(OTP) for your SoleSphere Account, valid for 90 seconds.
+  Please do not share with others.`
 
-  if (!createdUser) {
-    throw new apiError(500, "Something went wrong while registering the user");
-  }
-
+  sendMail(email, 'Login otp', content)
   res
     .status(201)
-    .json(new apiResponse(200, createdUser, "User Created Sucessfully"));
+    .json(new apiResponse(200, {user : {username, email}}, "User Created Sucessfully"));
 })
+
+const verifyOtp = asyncHandler(async(req, res)=>{
+
+  const { username, email, password, otp} = req.body;
+  
+  if ([username, email, password, otp].some((field) => field?.trim() === "")) {
+    throw new apiError(400, "All fields are required");
+  }
+
+  const otpData = await Otp.findOne({email,otp});
+
+  if(!otpData){
+    throw new apiError(400,"Incorrect OTP!");
+  }
+
+  const user = await User.create({
+      username: username.toLowerCase(),
+      email,
+      password,
+    });
+  
+    const createdUser = await User.findById(user._id).select("-password");
+  
+    if (!createdUser) {
+      throw new apiError(500, "Something went wrong while registering the user");
+    }
+  
+    res
+      .status(201)
+      .json(new apiResponse(200, createdUser, "User Created Sucessfully"));
+  })
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -127,4 +160,4 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 });
 
-module.exports = { signupUser, loginUser, userDetail };
+module.exports = { signupUser, loginUser, userDetail,verifyOtp };

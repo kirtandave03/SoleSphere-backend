@@ -3,7 +3,7 @@ const upload = require('../middlewares/multer.middleware')
 
 const router = Router()
 
-const {signupUser, loginUser,userDetail} = require('../controllers/user.controller');
+const {signupUser, loginUser,userDetail, verifyOtp} = require('../controllers/user.controller');
 
 
 
@@ -19,5 +19,7 @@ router.route('/userDetail').post(
 router.route('/login').post(loginUser);
 
 router.route('/signup').post(signupUser);
+
+router.route('/verifyotp').post(verifyOtp);
 
 module.exports = router;

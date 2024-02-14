@@ -16,7 +16,9 @@ const transporter = nodemailer.createTransport({
 const sendMail = async (email, subject, content)=>{
         try {
             var mailOptions = {
-                from: 'kirtan.dave@bosctechlabs.com',
+                from: {name: 'SoleSphere',
+                address :process.env.SMTP_USER
+            },
                 to: email,
                 subject: subject,
                 html : content
