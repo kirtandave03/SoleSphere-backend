@@ -5,6 +5,12 @@ const apiResponse = require("../utils/apiResponse");
 const upload = require("../middlewares/multer.middleware");
 const uploadOnCloudinary = require('../utils/cloudinary')
 
+const generateOtp = async()=> {
+   const otp =  Math.floor(1000 + Math.random() * 9000)
+   return otp;
+}
+
+
 const userDetail = asyncHandler(async (req, res) => {
   const { email, phone, address } = req.body;
 
@@ -105,7 +111,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new apiError(400, "Invalid credentials");
   }
 
-  const accessToken = user.genarateAccessToken();
+  const accessToken = user.generateAccessToken();
 
   const loggedInUser = await User.findById(user._id).select("-password");
 
