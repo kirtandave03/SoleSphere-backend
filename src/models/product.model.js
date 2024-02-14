@@ -82,7 +82,7 @@ const productSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-Product.plugin(mongooseDelete, { overrideMethods: 'all' });
+Product.plugin(mongoose_delete, { overrideMethods: 'all' });
 
 const Product = mongoose.model('Product', productSchema )
 module.exports = Product;
