@@ -13,6 +13,3 @@ const app = require("./app");
     console.log("MongoDB connection failed !!!", err);
   });
 
-  app.listen(PORT, () => {
-    console.log('Hello World!!!');
-});
