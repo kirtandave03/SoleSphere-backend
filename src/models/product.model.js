@@ -74,6 +74,9 @@ const productSchema = new mongoose.Schema({
       type: Date
     }
   },
+  closureType : {
+    type : String,
+  },
   material: {
     type: String,
     required: true
