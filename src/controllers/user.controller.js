@@ -9,8 +9,6 @@ const uploadOnCloudinary = require('../sevices/cloudinary')
 create auth service and userService different and split the code
 */
 
-
-
 const userDetail = asyncHandler(async (req, res) => {
   const { email, phone, address } = req.body;
 
