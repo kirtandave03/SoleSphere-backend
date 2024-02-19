@@ -4,11 +4,9 @@ class apiResponse {
     error:{},
     message:""
     */
-    constructor(statusCode, data, message = "Success"){
-        this.statusCode = statusCode
+    constructor(data, message = "Success"){
         this.data = data
         this.message = message
-        this.success = statusCode
     }
 }
 

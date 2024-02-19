@@ -1,8 +1,8 @@
 const User = require("../models/user.model");
 const Otp = require('../models/otp.model');
-const apiError = require("../utils/apiError");
-const asyncHandler = require("../utils/asyncHandler");
-const apiResponse = require("../utils/apiResponse");
+const apiError = require("../interfaces/apiError");
+const asyncHandler = require("../interfaces/asyncHandler");
+const apiResponse = require("../interfaces/apiResponse");
 const uploadOnCloudinary = require('../sevices/cloudinary')
 const sendMail = require('../sevices/mailer');
 
@@ -62,7 +62,7 @@ const userDetail = asyncHandler(async (req, res) => {
 
   res
     .status(201)
-    .json(new apiResponse(200, createdUser, "User Created Sucessfully"));
+    .json(new apiResponse(createdUser, "User Created Sucessfully"));
 });
 
 const signupUser = asyncHandler(async (req, res) => {
@@ -100,7 +100,7 @@ const signupUser = asyncHandler(async (req, res) => {
   sendMail(email, 'Login otp', content)
   res
     .status(201)
-    .json(new apiResponse(200, { user: { username, email } }, "Otp has been sent successfully!"));
+    .json(new apiResponse({ user: { username, email } }, "Otp has been sent successfully!"));
 })
 
 const verifyOtp = asyncHandler(async (req, res) => {
@@ -132,7 +132,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
   await Otp.deleteOne({ email });
   res
     .status(201)
-    .json(new apiResponse(200, createdUser, "User Created Sucessfully"));
+    .json(new apiResponse(createdUser, "User Created Sucessfully"));
 })
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -168,7 +168,6 @@ const loginUser = asyncHandler(async (req, res) => {
 
   return res.status(200).json(
     new apiResponse(
-      200,
       {
         user: loggedInUser,
         accessToken,
