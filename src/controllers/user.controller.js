@@ -3,9 +3,8 @@ const Otp = require('../models/otp.model');
 const apiError = require("../utils/apiError");
 const asyncHandler = require("../utils/asyncHandler");
 const apiResponse = require("../utils/apiResponse");
-const upload = require("../middlewares/multer.middleware");
-const uploadOnCloudinary = require('../utils/cloudinary')
-const sendMail = require('../utils/mailer');
+const uploadOnCloudinary = require('../sevices/cloudinary')
+const sendMail = require('../sevices/mailer');
 
 /*
 create auth service and userService different and split the code
