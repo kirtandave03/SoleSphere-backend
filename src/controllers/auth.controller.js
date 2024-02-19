@@ -25,7 +25,7 @@ const generateOtp = async () => {
   
 
 const signupUser = asyncHandler(async (req, res) => {
-  const { username, email } = signupUserValidator(req.body);
+  const { username, email } = signupUserValidator.parse(req.body);
 
   if ([username, email].some((field) => field?.trim() === "")) {
     throw new apiError(400, "All fields are required");
@@ -91,7 +91,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
 
 
-  const { email, password } = loginUserValidator(req.body);
+  const { email, password } = loginUserValidator.parse(req.body);
   console.log("password : ", password)
   if (!email || !password) {
 
