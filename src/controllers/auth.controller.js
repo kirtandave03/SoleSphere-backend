@@ -22,9 +22,7 @@ const generateOtp = async () => {
   const otp = Math.floor(1000 + Math.random() * 9000)
   return otp;
 }
-  const otp = Math.floor(1000 + Math.random() * 9000)
-  return otp;
-}
+  
 
 const signupUser = asyncHandler(async (req, res) => {
   const { username, email } = signupUserValidator(req.body);
@@ -56,11 +54,6 @@ const signupUser = asyncHandler(async (req, res) => {
     .json(new apiResponse({ user: { username, email } }, "Otp has been sent successfully!"));
 })
 
-  sendMail(email, 'Login otp', content)
-  res
-    .status(201)
-    .json(new apiResponse({ user: { username, email } }, "Otp has been sent successfully!"));
-})
 
 const verifyOtp = asyncHandler(async (req, res) => {
 
@@ -93,36 +86,8 @@ const verifyOtp = asyncHandler(async (req, res) => {
     .status(201)
     .json(new apiResponse(createdUser, "User Created Sucessfully"));
 })
-  const { username, email, password, otp } = req.body;
 
-  if ([username, email, password, otp].some((field) => field?.trim() === "")) {
-    throw new apiError(400, "All fields are required");
-  }
-
-  const otpData = await Otp.findOne({ email, otp });
-
-  if (!otpData) {
-    throw new apiError(400, "Incorrect OTP!");
-  }
-
-  const user = await User.create({
-    username: username.toLowerCase(),
-    email,
-    password,
-  });
-
-  const createdUser = await User.findById(user._id).select("-password");
-
-  if (!createdUser) {
-    throw new apiError(500, "Something went wrong while registering the user");
-  }
-
-  await Otp.deleteOne({ email });
-  res
-    .status(201)
-    .json(new apiResponse(createdUser, "User Created Sucessfully"));
-})
-
+  
 const loginUser = asyncHandler(async (req, res) => {
 
 
