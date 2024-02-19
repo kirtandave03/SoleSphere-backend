@@ -4,11 +4,6 @@ const asyncHandler = require("../interfaces/asyncHandler");
 const apiResponse = require("../interfaces/apiResponse");
 const uploadOnCloudinary = require('../sevices/cloudinary')
 
-
-/*
-create auth service and userService different and split the code
-*/
-
 const userDetail = asyncHandler(async (req, res) => {
   const { email, phone, address } = req.body;
 
@@ -59,4 +54,24 @@ const userDetail = asyncHandler(async (req, res) => {
     .json(new apiResponse(createdUser, "User Created Sucessfully"));
 });
 
-module.exports = { userDetail };
+const deleteUser = asyncHandler(async (req, res)=>{
+
+  const user = await User.findById(req.user._id);
+
+  if(!user){
+    throw new apiError(404,"User not found");
+  }
+
+  deletedUser = await User.deleteOne(user._id, function(err){
+    if(err){
+      throw new apiError(500,'Internal server Error')
+    }else{
+      console.log('User deletd successfully');
+    }
+  })
+
+  return res.status(200)
+  .json( new apiResponse(deletedUser, "User deletd successfully"))
+})
+
+module.exports =  {userDetail, deleteUser}

@@ -11,12 +11,13 @@ app.use(express.static('public'));
 
 //import routes for api
 const userRoutes = require("./routes/user.routes");
+const route = require("./routes/index.routes")
 
 app.get("/",((req,res)=>{
     res.send("Hello world");
 }))
 
 //mount the api routes
-app.use("/api/v1/user", userRoutes);
+app.use("/api/v1",route)
 
 module.exports = app;
