@@ -25,9 +25,9 @@ const userDetail = asyncHandler(async (req, res) => {
     throw new apiError(400, "All fields are required");
   }
 
-  const existedUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email });
 
-  if (!existedUser) {
+  if (!existingUser) {
     throw new apiError(404, "User not found");
   }
 
@@ -45,7 +45,7 @@ const userDetail = asyncHandler(async (req, res) => {
 
   const profilePic = await uploadOnCloudinary(profilePicLocalPath);
 
-  const user = await User.findByIdAndUpdate(existedUser._id,
+  const user = await User.findByIdAndUpdate(existingUser._id,
     {
       $set: {
         phone,
@@ -73,10 +73,10 @@ const signupUser = asyncHandler(async (req, res) => {
     throw new apiError(400, "All fields are required");
   }
 
-  const existedUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email });
 
   // existingUser would be better
-  if (existedUser) {
+  if (existingUser) {
     throw new apiError(409, "User with email already exist");
   }
 
