@@ -63,7 +63,7 @@ const deleteUser = asyncHandler(async (req, res)=>{
     throw new apiError(404,"User not found");
   }
 
-  deletedUser = await User.deleteOne(user._id, function(err){
+  const deletedUser = await User.deleteOne(user._id, function(err){
     if(err){
       throw new apiError(500,'Internal server Error')
     }else{
