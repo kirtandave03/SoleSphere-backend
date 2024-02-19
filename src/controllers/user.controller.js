@@ -59,4 +59,4 @@ const userDetail = asyncHandler(async (req, res) => {
     .json(new apiResponse(createdUser, "User Created Sucessfully"));
 });
 
-module.exports = { userDetail };
+module.exports =  userDetail ;
