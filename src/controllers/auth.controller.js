@@ -48,8 +48,8 @@ const signupUser = asyncHandler(async (req, res) => {
   const content = `<p>Hello , ${username} <br> <b> ${otp} </b>is your one time verification(OTP) for your SoleSphere Account, valid for 90 seconds.
     Please do not share with others.`
 
-  sendMail(email, 'Login otp', content)
-  res
+  sendMail(email, 'Login otp', content);
+  return res
     .status(201)
     .json(new apiResponse({ user: { username, email } }, "Otp has been sent successfully!"));
 })
