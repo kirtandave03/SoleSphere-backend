@@ -4,7 +4,6 @@ const asyncHandler = require("../interfaces/asyncHandler");
 const apiResponse = require("../interfaces/apiResponse");
 const uploadOnCloudinary = require('../sevices/cloudinary')
 
-
 /*
 create auth service and userService different and split the code
 */

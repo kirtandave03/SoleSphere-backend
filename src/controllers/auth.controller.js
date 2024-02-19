@@ -4,7 +4,14 @@ const apiError = require("../interfaces/apiError");
 const asyncHandler = require("../interfaces/asyncHandler");
 const apiResponse = require("../interfaces/apiResponse");
 const sendMail = require('../sevices/mailer');
+const z = require('zod');
 
+const loginUserValidator = z.object({
+  email: z.string().email(),
+  password: z.string().regex(
+    /^(?=.*[a-z]{3})(?=.*[A-Z]{3})(?=.*[!@#$%&*])(?=.*\d)[a-zA-Z\d!@#$%&*]{8,12}$/
+  ),
+});
 
 const generateOtp = async () => {
     const otp = Math.floor(1000 + Math.random() * 9000)
@@ -12,7 +19,7 @@ const generateOtp = async () => {
   }
 
 const signupUser = asyncHandler(async (req, res) => {
-    const { username, email } = req.body;
+    const { username, email } = loginUserValidator.parse(req.body);
   
     if ([username, email].some((field) => field?.trim() === "")) {
       throw new apiError(400, "All fields are required");
@@ -87,7 +94,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
     validations must include length, type and min, max etc
     */
   
-    const { email, password } = req.body;
+    const { email, password } = loginUserValidator.parse(req.body);
     console.log("password : ", password)
     if (!email || !password) {
   
