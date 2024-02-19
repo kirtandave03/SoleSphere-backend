@@ -1,4 +1,9 @@
 class apiResponse {
+    /*
+    data:{},
+    error:{},
+    message:""
+    */
     constructor(statusCode, data, message = "Success"){
         this.statusCode = statusCode
         this.data = data

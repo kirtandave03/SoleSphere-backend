@@ -5,8 +5,11 @@ const router = Router()
 
 const {signupUser, loginUser,userDetail, verifyOtp} = require('../controllers/user.controller');
 
-
-
+/*
+get("/")
+post("/")
+get("/:id")
+*/
 router.route('/userDetail').post(
     upload.fields([
         {
@@ -16,6 +19,11 @@ router.route('/userDetail').post(
     ])
     ,userDetail)
 
+
+    /* Should be seperate file like auth.js
+    API end point will be /auth/login, etc..
+    prefer route.js and split the API from their
+*/
 router.route('/login').post(loginUser);
 
 router.route('/signup').post(signupUser);
