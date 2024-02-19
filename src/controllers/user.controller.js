@@ -58,4 +58,18 @@ const userDetail = asyncHandler(async (req, res) => {
     .json(new apiResponse(createdUser, "User Created Sucessfully"));
 });
 
-module.exports =  userDetail ;
+const deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new apiError(404, "User not found!");
+  }
+
+  user.delete((err, deletedUser) => {
+    if (err) {
+      throw new apiError(500, 'Error in soft deleting user');
+    }
+  });
+})
+
+module.exports = { userDetail, deleteUser };
