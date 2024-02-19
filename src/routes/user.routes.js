@@ -3,7 +3,8 @@ const upload = require('../middlewares/multer.middleware')
 
 const router = Router()
 
-const {signupUser, loginUser,userDetail, verifyOtp} = require('../controllers/user.controller');
+const userDetail = require('../controllers/user.controller');
+const {signupUser, verifyOtp, loginUser} = require('../controllers/auth.controller')
 
 /*
 get("/")
