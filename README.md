@@ -36,6 +36,18 @@ models:
     : for db models
 schema:
     for validation models
+repository:
+    find(){
+        return find()
+    }
+
+    findOne(query){
+        return find(query)
+    }
+
+    update(query, data)
+    return update(query,data,{upsert:true})
+
 
 
 
