@@ -2,7 +2,10 @@ const User = require("../models/user.model");
 const apiError = require("../interfaces/apiError");
 const asyncHandler = require("../interfaces/asyncHandler");
 const apiResponse = require("../interfaces/apiResponse");
-const uploadOnCloudinary = require('../sevices/cloudinary')
+const uploadOnCloudinary = require("../sevices/cloudinary");
+const { UserService } = require("../sevices/user.service");
+
+const userService = new UserService();
 
 const userDetail = asyncHandler(async (req, res) => {
   const { email, phone, address } = req.body;
@@ -33,15 +36,13 @@ const userDetail = asyncHandler(async (req, res) => {
 
   const profilePic = await uploadOnCloudinary(profilePicLocalPath);
 
-  const user = await User.findByIdAndUpdate(existingUser._id,
-    {
-      $set: {
-        phone,
-        address,
-        profilePic: profilePic.url || "",
-      }
-
-    });
+  const user = await User.findByIdAndUpdate(existingUser._id, {
+    $set: {
+      phone,
+      address,
+      profilePic: profilePic.url || "",
+    },
+  });
 
   const createdUser = await User.findById(user._id).select("-password");
 
@@ -51,26 +52,22 @@ const userDetail = asyncHandler(async (req, res) => {
 
   res
     .status(201)
-    .json(new apiResponse(createdUser, "User Created Sucessfully"));
+    .json(new apiResponse(createdUser, "User Created Successfully"));
 });
 
-
-const deleteUser = asyncHandler(async (req, res)=>{
-
+const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
+  // const user = userService.addUser();
 
-  if(!user){
-    throw new apiError(404,"User not found");
+  if (!user) {
+    throw new apiError(404, "User not found");
   }
 
-  const deletedUser = await User.deleteOne(user._id);
+  await user.delete();
 
-  if(!deleteUser){
-    throw new apiError(404, "User not found")
-  }
+  return res
+    .status(200)
+    .json(new apiResponse(user, "User deleted successfully"));
+});
 
-  return res.status(200)
-  .json( new apiResponse(deletedUser, "User deletd successfully"))
-})
-
-module.exports =  {userDetail, deleteUser}
+module.exports = { userDetail, deleteUser };
