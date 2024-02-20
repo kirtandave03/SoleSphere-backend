@@ -1,13 +1,16 @@
-const Router = require('express').Router;
-const { signupUser, verifyOtp, loginUser } = require('../controllers/auth.controller')
+const Router = require("express").Router;
+const {
+  signupUser,
+  verifyOtp,
+  loginUser,
+} = require("../controllers/auth.controller");
 
-const authRouter = Router()
+const authRouter = Router();
 
+authRouter.post("/login", loginUser);
 
-authRouter.post('/login',loginUser)
+authRouter.post("/signup", signupUser);
 
-authRouter.post('/signup',signupUser)
-
-authRouter.post('/verify-otp',verifyOtp)
+authRouter.post("/verify-otp", verifyOtp);
 
 module.exports = authRouter;
