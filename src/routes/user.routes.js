@@ -6,17 +6,8 @@ const router = Router();
 
 const { userDetail, deleteUser } = require("../controllers/user.controller");
 
-// router.route('/userDetail').post(
-//     upload.fields([
-//         {
-//             name:'profilePic',
-//             maxCount: 1
-//         }
-//     ])
-//     ,userDetail)
-
-router.post(
-  "/user-details",
+router.put(
+  "/",
   verifyJWT,
   upload.fields([
     {
@@ -27,5 +18,5 @@ router.post(
   userDetail
 );
 
-router.delete("/delete-user", verifyJWT, deleteUser);
+router.delete("/", verifyJWT, deleteUser);
 module.exports = router;
