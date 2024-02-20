@@ -1,5 +1,6 @@
 const Router = require('express').Router;
 const upload = require('../middlewares/multer.middleware')
+const verifyJWT = require('../middlewares/auth.middleware')
 
 const router = Router()
 
@@ -24,5 +25,5 @@ router.post('/user-details',upload.fields([
         ,userDetail )
 
 
-router.delete('/delete-user',deleteUser)        
+router.delete('/delete-user',verifyJWT,deleteUser)        
 module.exports = router;

@@ -7,23 +7,17 @@ const sendMail = require('../sevices/mailer');
 const { z } = require('zod');
 
 const signupUserValidator = z.object({
-  username: z.string().min(4).max(32).regex(/^[a-zA-Z0-9]+$/),
+  username: z.string().min(4).max(32).regex(/^(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\s]{4,25}$/),
   email: z.string().email(),
 });
 
-const loginUserValidator = z.object({
-  email: z.string().email(),
-  password: z.string().min(8).max(13).regex(
-    /^(?=.[a-z]{3})(?=.[A-Z]{3})(?=.[!@#$%&])(?=.\d)[a-zA-Z\d!@#$%&]{8,12}$/
-  ),
-});
+
 
 const generateOtp = async () => {
   const otp = Math.floor(1000 + Math.random() * 9000)
   return otp;
 }
   
-
 const signupUser = asyncHandler(async (req, res) => {
   const { username, email } = signupUserValidator.parse(req.body);
 
@@ -53,7 +47,6 @@ const signupUser = asyncHandler(async (req, res) => {
     .status(201)
     .json(new apiResponse({ user: { username, email } }, "Otp has been sent successfully!"));
 })
-
 
 const verifyOtp = asyncHandler(async (req, res) => {
 
@@ -91,7 +84,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
 
 
-  const { email, password } = loginUserValidator.parse(req.body);
+  const { email, password } = req.body;
   console.log("password : ", password)
   if (!email || !password) {
 
