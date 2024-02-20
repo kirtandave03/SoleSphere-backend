@@ -16,7 +16,7 @@ const {userDetail, deleteUser} = require('../controllers/user.controller');
 //     ])
 //     ,userDetail)
 
-router.post('/user-details',upload.fields([
+router.post('/user-details',verifyJWT, upload.fields([
             {
                 name:'profilePic',
                 maxCount: 1

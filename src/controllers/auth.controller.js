@@ -74,12 +74,13 @@ const verifyOtp = asyncHandler(async (req, res) => {
     throw new apiError(500, "Something went wrong while registering the user");
   }
 
+  const accessToken = user.generateAccessToken();
+
   await Otp.deleteOne({ email });
   res
     .status(201)
-    .json(new apiResponse(createdUser, "User Created Sucessfully"));
+    .json(new apiResponse({createdUser, accessToken}, "User Created Sucessfully"));
 })
-
   
 const loginUser = asyncHandler(async (req, res) => {
 
