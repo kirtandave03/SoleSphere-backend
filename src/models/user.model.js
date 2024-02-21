@@ -50,8 +50,8 @@ const userSchema = new mongoose.Schema(
         },
         adType: {
           type: String,
-          deafult: "Home",
           enum: ["Home", "Office", "Other"],
+          default: "Home",
         },
       },
     ],

@@ -9,7 +9,7 @@ const {
 class UserService {
   constructor() {}
 
-  userdetails = async (req, res) => {
+  userDetails = async (req, res) => {
     const { email, phone, address } = req.body;
 
     // console.log("Request Body :",req.body);
@@ -82,7 +82,7 @@ class UserService {
     const oldProfileLink = userDocument.profilePic;
 
     if (!ProfilePicLocalPath) {
-      throw new apiError(400, "ProfilePic file is missing");
+      throw new apiError(400, "Profile Picture file is missing");
     }
 
     const ProfilePic = await uploadOnCloudinary(ProfilePicLocalPath);
@@ -94,7 +94,7 @@ class UserService {
     }
 
     if (!ProfilePic.url) {
-      throw new apiError(400, "error while uploading on cloud");
+      throw new apiError(500, "error while uploading on cloud");
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -126,6 +126,134 @@ class UserService {
     }
 
     res.status(200).json(new apiResponse(user, "User sent successfully"));
+  };
+
+  updateUserPhone = async (req, res) => {
+    const { email, updatedPhone } = req.body;
+
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      throw new apiError(404, "User not found");
+    }
+
+    const user = await User.findByIdAndUpdate(existingUser._id, {
+      $set: {
+        phone: updatedPhone,
+      },
+    });
+
+    const updatedUser = await User.findById(user._id).select("-password");
+
+    if (!updatedUser) {
+      throw new apiError(
+        500,
+        "Something went wrong while updating the phone number"
+      );
+    }
+
+    res
+      .status(201)
+      .json(new apiResponse(updatedUser, "User phone number Successfully"));
+  };
+
+  updateHomeAddress = async (req, res) => {
+    const { email, address } = req.body;
+
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      throw new apiError(404, "User not found");
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      existingUser._id,
+      {
+        $set: {
+          "address.0": {
+            house: address.house,
+            area: address.area,
+            pincode: address.pincode,
+            town: address.town,
+            state: address.state,
+            adType: "Home",
+          },
+        },
+      },
+      { new: true }
+    );
+
+    res
+      .status(200)
+      .json(
+        new apiResponse(200, updatedUser, "Home address updated successfully")
+      );
+  };
+
+  updateOfficeAddress = async (req, res) => {
+    const { email, address } = req.body;
+
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      throw new apiError(404, "User not found");
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      existingUser._id,
+      {
+        $set: {
+          "address.1": {
+            house: address.house,
+            area: address.area,
+            pincode: address.pincode,
+            town: address.town,
+            state: address.state,
+            adType: "Office",
+          },
+        },
+      },
+      { new: true }
+    );
+
+    res
+      .status(200)
+      .json(
+        new apiResponse(200, updatedUser, "Office address updated successfully")
+      );
+  };
+
+  updateOtherAddress = async (req, res) => {
+    const { email, address } = req.body;
+
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      throw new apiError(404, "User not found");
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      existingUser._id,
+      {
+        $set: {
+          "address.2": {
+            house: address.house,
+            area: address.area,
+            pincode: address.pincode,
+            town: address.town,
+            state: address.state,
+            adType: "Other",
+          },
+        },
+      },
+      { new: true }
+    );
+
+    res
+      .status(200)
+      .json(
+        new apiResponse(200, updatedUser, "Other address updated successfully")
+      );
   };
 }
 

@@ -9,6 +9,10 @@ const {
   deleteUser,
   updateUserProfilePic,
   getCurrentUser,
+  updateUserPhone,
+  updateHomeAddress,
+  updateOfficeAddress,
+  updateOtherAddress,
 } = require("../controllers/user.controller");
 
 router.get("/", verifyJWT, getCurrentUser);
@@ -32,5 +36,13 @@ router.put(
   upload.single("profilePic"),
   updateUserProfilePic
 );
+
+router.put("/update-user-phone-number", verifyJWT, updateUserPhone);
+
+router.put("/update-home-address", verifyJWT, updateHomeAddress);
+
+router.put("/update-office-address", verifyJWT, updateOfficeAddress);
+
+router.put("/update-other-address", verifyJWT, updateOtherAddress);
 
 module.exports = router;
