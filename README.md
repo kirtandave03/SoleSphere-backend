@@ -34,8 +34,6 @@ config
     : better if we keep all the configuration grouped
 models:
     : for db models
-schema:
-    for validation models
 repository:
     find(){
         return find()
