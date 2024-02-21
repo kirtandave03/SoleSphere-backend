@@ -1,7 +1,10 @@
 const User = require("../models/user.model");
 const apiError = require("../interfaces/apiError");
 const apiResponse = require("../interfaces/apiResponse");
-const uploadOnCloudinary = require("../sevices/cloudinary");
+const {
+  uploadOnCloudinary,
+  deleteOnCloudinary,
+} = require("../sevices/cloudinary");
 
 class UserService {
   constructor() {}
@@ -75,21 +78,30 @@ class UserService {
   updateUserProfilePic = async (req, res) => {
     const ProfilePicLocalPath = req.file?.path;
 
+    const userDocument = await User.findById(req.user?._id);
+    const oldProfileLink = userDocument.profilePic;
+
     if (!ProfilePicLocalPath) {
       throw new apiError(400, "ProfilePic file is missing");
     }
 
     const ProfilePic = await uploadOnCloudinary(ProfilePicLocalPath);
 
+    const isDeleted = await deleteOnCloudinary(oldProfileLink);
+
+    if (!isDeleted) {
+      throw new apiError(500, "error while deleting old profile");
+    }
+
     if (!ProfilePic.url) {
       throw new apiError(400, "error while uploading on cloud");
     }
 
-    const user = await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       req.user?._id,
       {
         $set: {
-          ProfilePic: ProfilePic.url,
+          profilePic: ProfilePic.url,
         },
       },
       { new: true }
@@ -98,7 +110,11 @@ class UserService {
     return res
       .status(200)
       .json(
-        new apiResponse(200, user, "ProfilePic image updated successfully")
+        new apiResponse(
+          200,
+          updatedUser,
+          "ProfilePic image updated successfully"
+        )
       );
   };
 }
