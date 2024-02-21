@@ -1,23 +1,25 @@
 const User = require("../models/user.model");
-const Otp = require('../models/otp.model');
+const Otp = require("../models/otp.model");
 const apiError = require("../interfaces/apiError");
 const asyncHandler = require("../interfaces/asyncHandler");
 const apiResponse = require("../interfaces/apiResponse");
-const sendMail = require('../sevices/mailer');
-const { z } = require('zod');
+const sendMail = require("../sevices/mailer");
+const { z } = require("zod");
 
 const signupUserValidator = z.object({
-  username: z.string().min(4).max(32).regex(/^(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\s]{4,25}$/),
+  username: z
+    .string()
+    .min(4)
+    .max(32)
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\s]{4,25}$/),
   email: z.string().email(),
 });
 
-
-
 const generateOtp = async () => {
-  const otp = Math.floor(1000 + Math.random() * 9000)
+  const otp = Math.floor(1000 + Math.random() * 9000);
   return otp;
-}
-  
+};
+
 const signupUser = asyncHandler(async (req, res) => {
   const { username, email } = signupUserValidator.parse(req.body);
 
@@ -37,19 +39,23 @@ const signupUser = asyncHandler(async (req, res) => {
     { email },
     { otp: otp, isVerified: false },
     { new: true, upsert: true, setDefaultsOnInsert: true }
-  )
+  );
 
   const content = `<p>Hello , ${username} <br> <b> ${otp} </b>is your one time verification(OTP) for your SoleSphere Account, valid for 90 seconds.
-    Please do not share with others.`
+    Please do not share with others.`;
 
-  sendMail(email, 'Login otp', content);
+  sendMail(email, "Login otp", content);
   return res
     .status(201)
-    .json(new apiResponse({ user: { username, email } }, "Otp has been sent successfully!"));
-})
+    .json(
+      new apiResponse(
+        { user: { username, email } },
+        "Otp has been sent successfully!"
+      )
+    );
+});
 
 const verifyOtp = asyncHandler(async (req, res) => {
-
   const { username, email, password, otp } = req.body;
 
   if ([username, email, password, otp].some((field) => field?.trim() === "")) {
@@ -79,16 +85,15 @@ const verifyOtp = asyncHandler(async (req, res) => {
   await Otp.deleteOne({ email });
   res
     .status(201)
-    .json(new apiResponse({createdUser, accessToken}, "User Created Sucessfully"));
-})
-  
+    .json(
+      new apiResponse({ createdUser, accessToken }, "User Created Sucessfully")
+    );
+});
+
 const loginUser = asyncHandler(async (req, res) => {
-
-
   const { email, password } = req.body;
-  console.log("password : ", password)
+  console.log("password : ", password);
   if (!email || !password) {
-
     throw new apiError(400, "Email and password are required");
   }
 
@@ -120,4 +125,4 @@ const loginUser = asyncHandler(async (req, res) => {
   );
 });
 
-module.exports = { signupUser, verifyOtp, loginUser }
+module.exports = { signupUser, verifyOtp, loginUser };
