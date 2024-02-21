@@ -1,126 +1,135 @@
-const mongoose = require('mongoose');
-const mongoose_delete = require('mongoose-delete');
+const mongoose = require("mongoose");
+const mongoose_delete = require("mongoose-delete");
 
 const productVariantSchema = new mongoose.Schema({
   colorAndImage: [
     {
       color: {
         type: String,
-        required: true
+        required: true,
       },
-      image_urls: [{
-        type: String,
-        required: true
-      }]
-    }
+      image_urls: [
+        {
+          type: String,
+          required: true,
+        },
+      ],
+    },
   ],
   sizeAndPrice: [
     {
       size: {
         type: String,
-        required: true
+        required: true,
       },
       actual_price: {
         type: Number,
-        required: true
+        required: true,
       },
       discounted_price: {
         type: Number,
-        required: true
+        required: true,
       },
       stock: {
         type: Number,
-        required: true
+        required: true,
       },
-    }
-  ]
+    },
+  ],
 });
 
-const productSchema = new mongoose.Schema({
-  productName: {
-    type: String,
-    required: true,
-    index: true
-  },
-  shortDescription: {
-    type: String,
-    trim: true
-  },
-  categories: [{
-    type: String
-  }],
-  brand: {
-    type: String,
-    required: true
-  },
-  sizeType: {
-    type: String,
-    required: true
-  },
-  variants: [productVariantSchema], // This is the array of product variants
-  lastMonthSell: {
-    type: Number,
-    default: 0
-  },
-  discount: {
-    startDate: {
-      type: Date
+const productSchema = new mongoose.Schema(
+  {
+    productName: {
+      type: String,
+      required: true,
+      index: true,
+    },
+    shortDescription: {
+      type: String,
+      trim: true,
+    },
+    categories: [
+      {
+        type: String,
+      },
+    ],
+    brand: {
+      type: String,
+      required: true,
+    },
+    sizeType: {
+      type: String,
+      required: true,
+    },
+    variants: [productVariantSchema], // This is the array of product variants
+    lastMonthSell: {
+      type: Number,
+      default: 0,
     },
     discount: {
-      type: Number,
-      default: 0
+      startDate: {
+        type: Date,
+      },
+      discount: {
+        type: Number,
+        default: 0,
+      },
+      endDate: {
+        type: Date,
+      },
     },
-    endDate: {
-      type: Date
-    }
-  },
-  closureType : {
-    type : String,
-  },
-  material: {
-    type: String,
-    required: true
-  },
-  longDescription: {
-    type: String,
-    trim: true
-  },
-  giftPackaging: {
-    type: Boolean,
-    default: false
-  },
-  qr: {
-    type: String
-  },
-  review: [
-    {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+    closureType: {
+      type: String,
+    },
+    material: {
+      type: String,
+      required: true,
+    },
+    longDescription: {
+      type: String,
+      trim: true,
+    },
+    giftPackaging: {
+      type: Boolean,
+      default: false,
+    },
+    qr: {
+      type: String,
+    },
+    review: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        review: {
+          type: String,
+          trim: true,
+        },
+        images: [
+          {
+            type: String,
+          },
+        ],
       },
-      review: {
-        type: String,
-        trim: true
+    ],
+    rating: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        star: {
+          type: Number,
+        },
       },
-      images: [{
-        type: String
-      }]
-    }
-  ],
-  rating: [
-    {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-      },
-      star: {
-        type: Number
-      }
-    }
-  ]
-}, { timestamps: true });
+    ],
+  },
+  { timestamps: true }
+);
 
-productSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+productSchema.plugin(mongoose_delete, { overrideMethods: "all" });
 
-const Product = mongoose.model('Product', productSchema)
+const Product = mongoose.model("Product", productSchema);
 module.exports = Product;
