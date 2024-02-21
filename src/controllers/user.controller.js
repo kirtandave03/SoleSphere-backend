@@ -98,28 +98,28 @@ const updateUserProfilePic = asyncHandler(async (req, res) => {
     .json(new apiResponse(200, user, "ProfilePic image updated successfully"));
 });
 
-const logoutUser = asyncHandler(async (req, res) => {
-  await User.findByIdAndUpdate(
-    req.user._id,
-    {
-      $unset: {
-        accessToken: 1, //removes field from the document
-      },
-    },
-    {
-      new: true,
-    }
-  );
+// const logoutUser = asyncHandler(async (req, res) => {
+//   await User.findByIdAndUpdate(
+//     req.user._id,
+//     {
+//       $unset: {
+//         accessToken: 1, //removes field from the document
+//       },
+//     },
+//     {
+//       new: true,
+//     }
+//   );
 
-  const options = {
-    httpsOnly: true,
-    secure: true,
-  };
+//   const options = {
+//     httpsOnly: true,
+//     secure: true,
+//   };
 
-  return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .json(new apiResponse(200, {}, "User logged out"));
-});
+//   return res
+//     .status(200)
+//     .clearCookie("accessToken", options)
+//     .json(new apiResponse(200, {}, "User logged out"));
+// });
 
-module.exports = { userDetail, deleteUser, updateUserProfilePic, logoutUser };
+module.exports = { userDetail, deleteUser, updateUserProfilePic };
