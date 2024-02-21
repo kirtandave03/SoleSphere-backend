@@ -146,6 +146,107 @@ class AuthService {
       )
     );
   };
+
+  forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+      throw new apiError(400, "email is required");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new apiError(404, "User not found");
+    }
+
+    const otp = await generateOtp();
+    const currentDate = new Date();
+    await Otp.findOneAndUpdate(
+      { email },
+      {
+        otp: otp,
+        isVerified: false,
+        timestamp: new Date(currentDate.getTime()),
+      },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
+
+    const content = `<p>Dear ${user.username}, <br><br>
+    You've requested to reset your password. Please use the OTP code below to proceed:
+    <br><br>OTP Code: <b>${otp}</b><br><br>
+    This OTP is valid for the next 90 seconds. If you haven't requested this password reset, please ignore this message.<br><br>
+    Thank you,<br>SoleSphere Team`;
+
+    // Subject: Password Reset OTP
+    sendMail(email, "Password Reset OTP", content);
+
+    res
+      .status(200)
+      .json(new apiResponse(email, "Otp has been sent successfully!"));
+  };
+
+  forgotPasswordotp = async (req, res) => {
+    const { email, otp } = req.body;
+
+    if ([email, otp].some((field) => field?.trim() === "")) {
+      throw new apiError(400, "email and otp are required");
+    }
+
+    const otpData = await Otp.findOne({
+      email,
+      otp,
+    });
+
+    console.log(otpData);
+    if (!otpData) {
+      throw new apiError(400, "Incorrect Otp");
+    }
+
+    const otpResponse = await Otp.findOneAndUpdate(
+      { email },
+      {
+        isVerified: true,
+      },
+      { new: true }
+    );
+
+    res
+      .status(200)
+      .json(
+        new apiResponse(otpResponse.isVerified, "User verified Sucessfully")
+      );
+  };
+
+  changePassword = async (req, res) => {
+    const { email, isVerified, password, confirmPassword } = req.body;
+
+    // if (
+    //   [email, isVerified, password, confirmPassword].some(
+    //     (field) => field?.trim() === ""
+    //   )
+    // ) {
+    //   throw new apiError(400, "email and otp are required");
+    // }
+
+    if (password !== confirmPassword) {
+      throw new apiError(400, "Password and confirm password are not same");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!isVerified) {
+      throw new apiError(401, "Unauthorized to change password");
+    }
+
+    user.password = password;
+    await user.save({ validateBeforeSave: true });
+
+    const deleted = await Otp.deleteOne({ email });
+    console.log(deleted, email);
+
+    res.status(200).json(new apiResponse(user, "password changed Sucessfully"));
+  };
 }
 
 module.exports = AuthService;
