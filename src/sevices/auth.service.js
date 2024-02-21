@@ -214,7 +214,10 @@ class AuthService {
     res
       .status(200)
       .json(
-        new apiResponse(otpResponse.isVerified, "User verified Sucessfully")
+        new apiResponse(
+          { isVerified: otpResponse.isVerified },
+          "User verified Sucessfully"
+        )
       );
   };
 

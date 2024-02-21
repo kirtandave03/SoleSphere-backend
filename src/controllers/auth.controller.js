@@ -12,6 +12,7 @@ const loginUser = asyncHandler(authService.loginUser);
 const forgotPassword = asyncHandler(authService.forgotPassword);
 
 const forgotPasswordotp = asyncHandler(authService.forgotPasswordotp);
+
 const changePassword = asyncHandler(authService.changePassword);
 
 module.exports = {

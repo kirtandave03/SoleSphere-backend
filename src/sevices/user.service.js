@@ -117,6 +117,16 @@ class UserService {
         )
       );
   };
+
+  getCurrentUser = async (req, res) => {
+    const user = await User.findById(req.user._id).select("-password");
+
+    if (!user) {
+      throw new apiError(404, "User not found");
+    }
+
+    res.status(200).json(new apiResponse(user, "User sent successfully"));
+  };
 }
 
 module.exports = UserService;

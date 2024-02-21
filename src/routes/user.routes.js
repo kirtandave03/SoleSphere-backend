@@ -8,8 +8,10 @@ const {
   userDetail,
   deleteUser,
   updateUserProfilePic,
+  getCurrentUser,
 } = require("../controllers/user.controller");
 
+router.get("/", verifyJWT, getCurrentUser);
 router.put(
   "/",
   verifyJWT,
