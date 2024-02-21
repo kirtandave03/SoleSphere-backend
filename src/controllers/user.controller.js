@@ -3,9 +3,13 @@ const UserService = require("../sevices/user.service");
 
 const userService = new UserService();
 
-const userDetail = asyncHandler(userService.userdetails);
+const userDetail = asyncHandler(userService.userDetails);
 const deleteUser = asyncHandler(userService.deleteUser);
 const updateUserProfilePic = asyncHandler(userService.updateUserProfilePic);
+const updateUserPhone = asyncHandler(userService.updateUserPhone);
+const updateHomeAddress = asyncHandler(userService.updateHomeAddress);
+const updateOfficeAddress = asyncHandler(userService.updateOfficeAddress);
+const updateOtherAddress = asyncHandler(userService.updateOtherAddress);
 
 // const logoutUser = asyncHandler(async (req, res) => {
 //   await User.findByIdAndUpdate(
@@ -31,4 +35,12 @@ const updateUserProfilePic = asyncHandler(userService.updateUserProfilePic);
 //     .json(new apiResponse(200, {}, "User logged out"));
 // });
 
-module.exports = { userDetail, deleteUser, updateUserProfilePic };
+module.exports = {
+  userDetail,
+  deleteUser,
+  updateUserProfilePic,
+  updateUserPhone,
+  updateHomeAddress,
+  updateOfficeAddress,
+  updateOtherAddress,
+};
