@@ -4,7 +4,11 @@ const verifyJWT = require("../middlewares/auth.middleware");
 
 const router = Router();
 
-const { userDetail, deleteUser } = require("../controllers/user.controller");
+const {
+  userDetail,
+  deleteUser,
+  updateUserProfilePic,
+} = require("../controllers/user.controller");
 
 router.put(
   "/",
@@ -19,4 +23,12 @@ router.put(
 );
 
 router.delete("/", verifyJWT, deleteUser);
+
+router.put(
+  "/update-profile-pic",
+  verifyJWT,
+  upload.single("profilePic"),
+  updateUserProfilePic
+);
+
 module.exports = router;
