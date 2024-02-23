@@ -1,7 +1,7 @@
 const User = require("../models/user.model");
 const apiError = require("../interfaces/apiError");
 const apiResponse = require("../interfaces/apiResponse");
-const sendMail = require("../sevices/mailer");
+const sendMail = require("../services/mailer");
 const { z } = require("zod");
 const Otp = require("../models/otp.model");
 

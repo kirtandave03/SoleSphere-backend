@@ -4,7 +4,7 @@ const apiResponse = require("../interfaces/apiResponse");
 const {
   uploadOnCloudinary,
   deleteOnCloudinary,
-} = require("../sevices/cloudinary");
+} = require("../services/cloudinary");
 
 class UserService {
   constructor() {}

@@ -1,5 +1,5 @@
 const asyncHandler = require("../interfaces/asyncHandler");
-const UserService = require("../sevices/user.service");
+const UserService = require("../services/user.service");
 
 const userService = new UserService();
 
