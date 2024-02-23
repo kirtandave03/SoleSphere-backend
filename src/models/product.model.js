@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const mongoose_delete = require("mongoose-delete");
+const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const productVariantSchema = new mongoose.Schema({
   colorAndImage: [
@@ -63,10 +64,6 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     variants: [productVariantSchema], // This is the array of product variants
-    lastMonthSell: {
-      type: Number,
-      default: 0,
-    },
     discount: {
       startDate: {
         type: Date,
@@ -97,38 +94,15 @@ const productSchema = new mongoose.Schema(
     qr: {
       type: String,
     },
-    review: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        review: {
-          type: String,
-          trim: true,
-        },
-        images: [
-          {
-            type: String,
-          },
-        ],
-      },
-    ],
-    rating: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        star: {
-          type: Number,
-        },
-      },
-    ],
+    review: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Review",
+    },
   },
   { timestamps: true }
 );
 
+productSchema.plugin(mongooseAggregatePaginate);
 productSchema.plugin(mongoose_delete, { overrideMethods: "all" });
 
 const Product = mongoose.model("Product", productSchema);
