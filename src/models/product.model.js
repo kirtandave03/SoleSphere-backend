@@ -50,10 +50,6 @@ const productSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    brand: {
-      type: String,
-      required: true,
-    },
     sizeType: {
       type: String,
       required: true,
@@ -89,9 +85,22 @@ const productSchema = new mongoose.Schema(
     qr: {
       type: String,
     },
+    gender: {
+      type: "String",
+      required: true,
+    },
     review: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Review",
+    },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    brand: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brand",
     },
   },
   { timestamps: true }
