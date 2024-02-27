@@ -3,38 +3,18 @@ const mongoose_delete = require("mongoose-delete");
 const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const productVariantSchema = new mongoose.Schema({
-  colorAndImage: [
+  colors: [
     {
-      color: {
-        type: String,
-        required: true,
-      },
-      image_urls: [
+      color: { type: String },
+      image_urls: [String],
+      sizes: [
         {
-          type: String,
-          required: true,
+          size: { type: String, required: true },
+          actual_price: { type: Number, required: true },
+          discounted_price: { type: Number, required: true },
+          stock: { type: Number, required: true },
         },
       ],
-    },
-  ],
-  sizeAndPrice: [
-    {
-      size: {
-        type: String,
-        required: true,
-      },
-      actual_price: {
-        type: Number,
-        required: true,
-      },
-      discounted_price: {
-        type: Number,
-        required: true,
-      },
-      stock: {
-        type: Number,
-        required: true,
-      },
     },
   ],
 });
