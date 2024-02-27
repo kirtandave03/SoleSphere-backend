@@ -1,4 +1,7 @@
+const apiError = require("../interfaces/apiError");
 const Product = require("../models/product.model");
+const apiResponse = require("../interfaces/apiResponse");
+
 class ProductService {
   constructor() {}
 
@@ -29,16 +32,6 @@ class ProductService {
     // }
 
     // Once all uploads are complete, send the response with the URLs
-    const urls = [
-      "http://res.cloudinary.com/dz9ga1vmp/image/upload/v1709023633/dnidyjrzvivu1wjpouxi.jpg",
-      "http://res.cloudinary.com/dz9ga1vmp/image/upload/v1709023634/ebvehsck82iuefhzyby7.png",
-      "http://res.cloudinary.com/dz9ga1vmp/image/upload/v1709023634/xaujce8duztsuv2bpeh8.png",
-      "http://res.cloudinary.com/dz9ga1vmp/image/upload/v1709023635/rhogdtbh18f0ez5tg0bt.png",
-      "http://res.cloudinary.com/dz9ga1vmp/image/upload/v1709023636/w8efqhvkyj30t2n1wvff.png",
-    ];
-    if (variants && urls.length > 0) {
-      variants[0].image_urls = urls;
-    }
 
     const newProduct = new Product({
       productName,
@@ -66,6 +59,31 @@ class ProductService {
       message: "Product added successfully",
       product: savedProduct,
     });
+  };
+
+  addVariant = async (req, res) => {
+    const { product, variants } = req.body;
+
+    const existedProduct = await Product.findById(product);
+
+    if (!existedProduct) {
+      throw new apiError(404, "Product not found");
+    }
+
+    const newVariant = [...existedProduct.variants];
+    newVariant.push(variants);
+
+    const updatedProduct = await Product.findByIdAndUpdate(product, {
+      variants: newVariant,
+    });
+
+    if (!updatedProduct) {
+      throw new apiError(500, "Error while adding variant");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(updatedProduct, "Variant added successfully"));
   };
 }
 

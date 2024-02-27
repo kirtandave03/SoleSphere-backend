@@ -2,14 +2,13 @@ const mongoose = require("mongoose");
 const mongoose_delete = require("mongoose-delete");
 const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
-const productVariantSchema = new mongoose.Schema({});
-
 const productSchema = new mongoose.Schema(
   {
     productName: {
       type: String,
       required: true,
       index: true,
+      unique: true,
     },
     shortDescription: {
       type: String,
@@ -21,7 +20,7 @@ const productSchema = new mongoose.Schema(
     },
     variants: [
       {
-        color: { type: String },
+        color: { type: String, lowercase: true },
         image_urls: [String],
         sizes: [
           {

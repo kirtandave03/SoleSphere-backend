@@ -45,9 +45,13 @@ class AuthService {
       throw new apiError(500, "Error while registering user");
     }
 
+    const accessToken = user.generateAccessToken();
+
     return res
       .status(201)
-      .json(new apiResponse(user, "User Created successfully"));
+      .json(
+        new apiResponse({ user, accessToken }, "User Created successfully")
+      );
   };
 
   signupUser = async (req, res) => {
