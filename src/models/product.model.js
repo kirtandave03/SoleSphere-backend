@@ -2,22 +2,7 @@ const mongoose = require("mongoose");
 const mongoose_delete = require("mongoose-delete");
 const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
-const productVariantSchema = new mongoose.Schema({
-  colors: [
-    {
-      color: { type: String },
-      image_urls: [String],
-      sizes: [
-        {
-          size: { type: String, required: true },
-          actual_price: { type: Number, required: true },
-          discounted_price: { type: Number, required: true },
-          stock: { type: Number, required: true },
-        },
-      ],
-    },
-  ],
-});
+const productVariantSchema = new mongoose.Schema({});
 
 const productSchema = new mongoose.Schema(
   {
@@ -34,7 +19,20 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    variants: [productVariantSchema], // This is the array of product variants
+    variants: [
+      {
+        color: { type: String },
+        image_urls: [String],
+        sizes: [
+          {
+            size: { type: String, required: true },
+            actual_price: { type: Number, required: true },
+            discounted_price: { type: Number, required: true },
+            stock: { type: Number, required: true },
+          },
+        ],
+      },
+    ],
     discount: {
       startDate: {
         type: Date,

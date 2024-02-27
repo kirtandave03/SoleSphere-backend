@@ -6,9 +6,11 @@ const {
   forgotPassword,
   forgotPasswordotp,
   changePassword,
+  createUser,
 } = require("../controllers/auth.controller");
 
 const authRouter = Router();
+authRouter.post("/", createUser);
 
 authRouter.post("/login", loginUser);
 

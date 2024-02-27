@@ -22,6 +22,34 @@ const generateOtp = async () => {
 class AuthService {
   constructor() {}
 
+  createUser = async (req, res) => {
+    const { UID, email, username } = req.body;
+
+    if ([username, email, UID].some((field) => field?.trim() === "")) {
+      throw new apiError(400, "All fields are required");
+    }
+
+    const existedUser = await User.findOne({ email });
+
+    if (existedUser) {
+      throw new apiError(409, "User with email already exist");
+    }
+
+    const user = await User.create({
+      UID,
+      username,
+      email,
+    });
+
+    if (!user) {
+      throw new apiError(500, "Error while registering user");
+    }
+
+    return res
+      .status(201)
+      .json(new apiResponse(user, "User Created successfully"));
+  };
+
   signupUser = async (req, res) => {
     const { username, email } = signupUserValidator.parse(req.body);
 

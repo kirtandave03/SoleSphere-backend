@@ -5,6 +5,6 @@ const Router = require("express").Router;
 
 const router = Router();
 
-router.post("/", verifyJWT, upload.array("images"), addProduct);
+router.post("/", verifyJWT, addProduct);
 
 module.exports = router;
