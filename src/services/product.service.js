@@ -138,8 +138,9 @@ class ProductService {
 
     const cart = {
       cartItems,
-      totalAmount,
+      totalAmount: totalAmount,
     };
+    console.log(cart);
 
     const user = await User.findByIdAndUpdate(
       req.user._id,
