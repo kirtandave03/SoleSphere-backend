@@ -46,11 +46,13 @@ class BrandService {
   deleteBrand = async (req, res) => {
     const { brand } = req.body;
 
-    const existingBrand = await Brand.findOneAndDelete({ brand });
+    const existingBrand = await Brand.findOne({ brand });
 
     if (!existingBrand) {
       throw new apiError(404, "Brand not found");
     }
+
+    await existedCategory.delete();
 
     return res
       .status(200)

@@ -109,6 +109,24 @@ class ProductService {
       .status(200)
       .json(new apiResponse(responseData, "Products fetched successfully"));
   };
+
+  deleteProduct = async (req, res) => {
+    const { productName } = req.body;
+
+    const product = await Product.findOne({
+      productName: productName.toLowerCase(),
+    });
+
+    if (!product) {
+      throw new apiError(404, "Product not found");
+    }
+
+    await product.delete();
+
+    return res
+      .status(200)
+      .json(new apiResponse(product, "Product deleted successfully"));
+  };
 }
 
 module.exports = ProductService;

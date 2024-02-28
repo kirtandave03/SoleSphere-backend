@@ -20,15 +20,19 @@ class CategoryService {
   deleteCategory = async (req, res) => {
     const { category } = req.body;
 
-    const existingCategory = await Category.findOneAndDelete({ category });
+    const existedCategory = await Category.findOne({
+      category: category.toLowerCase(),
+    });
 
-    if (!existingCategory) {
-      throw new apiError(404, "Category not found");
+    if (!existedCategory) {
+      throw new apiError(404, "Product not found");
     }
+
+    await existedCategory.delete();
 
     return res
       .status(200)
-      .json(new apiResponse(existingCategory, "Category deleted successfully"));
+      .json(new apiResponse(existedCategory, "Category deleted successfully"));
   };
 
   updateCategory = async (req, res) => {
