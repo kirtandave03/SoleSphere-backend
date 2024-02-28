@@ -129,9 +129,9 @@ class UserService {
   };
 
   updateUserPhone = async (req, res) => {
-    const { email, updatedPhone } = req.body;
+    const { updatedPhone } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findById(req.user._id);
 
     if (!existingUser) {
       throw new apiError(404, "User not found");

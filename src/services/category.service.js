@@ -53,7 +53,7 @@ class CategoryService {
   };
 
   getAllCategories = async (req, res) => {
-    const categories = await Category.find();
+    const categories = await Category.find().select("category");
     const categoriesLength = categories.length;
 
     return res

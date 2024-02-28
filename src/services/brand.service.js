@@ -52,7 +52,7 @@ class BrandService {
       throw new apiError(404, "Brand not found");
     }
 
-    await existedCategory.delete();
+    await existingBrand.delete();
 
     return res
       .status(200)
@@ -63,7 +63,7 @@ class BrandService {
     const { oldBrand, brand } = req.body;
 
     const brandData = await Brand.findOneAndUpdate(
-      { brand: oldBrand },
+      { brand: oldBrand.toLowerCase() },
       { brand: brand.toLowerCase() }
     );
 
@@ -77,7 +77,7 @@ class BrandService {
   };
 
   getAllBrands = async (req, res) => {
-    const brands = await Brand.find();
+    const brands = await Brand.find().select("brand brandIcon");
     const brandLength = brands.length;
 
     if (!brands) {
