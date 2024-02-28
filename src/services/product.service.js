@@ -153,7 +153,6 @@ class ProductService {
       throw new apiError(404, "User not found");
     }
 
-    console.log(cartItems);
     return res
       .status(200)
       .json(new apiResponse(user, "Cart updated successfully"));
