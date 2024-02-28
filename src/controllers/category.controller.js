@@ -9,4 +9,11 @@ const deleteCategory = asyncHandler(categoryService.deleteCategory);
 
 const updateCategory = asyncHandler(categoryService.updateCategory);
 
-module.exports = { addCategory, deleteCategory, updateCategory };
+const getAllCategories = asyncHandler(categoryService.getAllCategories);
+
+module.exports = {
+  addCategory,
+  deleteCategory,
+  updateCategory,
+  getAllCategories,
+};

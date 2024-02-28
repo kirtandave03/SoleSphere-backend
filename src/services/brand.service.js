@@ -1,16 +1,42 @@
 const apiError = require("../interfaces/apiError");
 const apiResponse = require("../interfaces/apiResponse");
 const Brand = require("../models/brand.model");
+const { uploadOnCloudinary } = require("./cloudinary");
+const fs = require("fs");
 class BrandService {
   constructor() {}
 
   addBrand = async (req, res) => {
     const { brand } = req.body;
+    const brandIconLocalPath = req.file?.path;
 
     if (!brand) {
       throw new apiError(400, "brand is required");
     }
-    const brandData = await Brand.create({ brand });
+
+    const existedBrand = await Brand.findOne({ brand });
+
+    if (existedBrand) {
+      fs.unlinkSync(brandIconLocalPath);
+      throw new apiError(400, "Brand already exists");
+    }
+
+    if (!brandIconLocalPath) {
+      throw new apiError(400, "Brand icon is missing");
+    }
+
+    const brandIcon = await uploadOnCloudinary(brandIconLocalPath);
+
+    if (!brandIcon.url) {
+      throw new apiError(500, "Error while uploading file");
+    }
+
+    const brandData = new Brand({
+      brand,
+      brandIcon: brandIcon.url,
+    });
+
+    await brandData.save();
 
     return res
       .status(200)
@@ -46,6 +72,19 @@ class BrandService {
     return res
       .status(200)
       .json(new apiResponse(brandData, "Brand updated successfully"));
+  };
+
+  getAllBrands = async (req, res) => {
+    const brands = await Brand.find();
+    const brandLength = brands.length;
+
+    if (!brands) {
+      throw new apiError(404, "Brands not found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse({ brands, availableBrands: brandLength }));
   };
 }
 

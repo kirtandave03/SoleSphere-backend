@@ -85,6 +85,30 @@ class ProductService {
       .status(200)
       .json(new apiResponse(updatedProduct, "Variant added successfully"));
   };
+
+  getProducts = async (req, res) => {
+    const product = await Product.find();
+
+    if (!product) {
+      throw new apiError(404, "No product found");
+    }
+    const responseData = [];
+
+    product.map((item) => {
+      let temp = {};
+      (temp.productName = item.productName),
+        (temp.actual_price = item.variants[0].sizes[0].actual_price),
+        (temp.discounted_price = item.variants[0].sizes[0].discounted_price),
+        (temp.colors = item.variants.length),
+        (temp.shortDescription = item.shortDescription),
+        (temp.image = item.variants[0].image_urls[0]);
+
+      responseData.push(temp);
+    });
+    return res
+      .status(200)
+      .json(new apiResponse(responseData, "Products fetched successfully"));
+  };
 }
 
 module.exports = ProductService;

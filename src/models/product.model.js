@@ -7,7 +7,6 @@ const productSchema = new mongoose.Schema(
     productName: {
       type: String,
       required: true,
-      index: true,
       unique: true,
     },
     shortDescription: {
@@ -66,10 +65,12 @@ const productSchema = new mongoose.Schema(
       type: "String",
       required: true,
     },
-    review: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Review",
-    },
+    review: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",

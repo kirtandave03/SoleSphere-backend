@@ -47,6 +47,20 @@ class CategoryService {
       .status(200)
       .json(new apiResponse(catData, "Category updated successfully"));
   };
+
+  getAllCategories = async (req, res) => {
+    const categories = await Category.find();
+    const categoriesLength = categories.length;
+
+    return res
+      .status(200)
+      .json(
+        new apiResponse(
+          { categories, availableCategories: categoriesLength },
+          "Categories fetched successfully"
+        )
+      );
+  };
 }
 
 module.exports = CategoryService;

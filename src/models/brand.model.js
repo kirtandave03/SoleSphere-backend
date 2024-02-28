@@ -9,6 +9,11 @@ const brandSchema = new mongoose.Schema(
       trim: true,
       unique: true,
     },
+
+    brandIcon: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

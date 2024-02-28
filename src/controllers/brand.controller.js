@@ -9,4 +9,6 @@ const deleteBrand = asyncHandler(brandService.deleteBrand);
 
 const updateBrand = asyncHandler(brandService.updateBrand);
 
-module.exports = { addBrand, deleteBrand, updateBrand };
+const getAllBrands = asyncHandler(brandService.getAllBrands);
+
+module.exports = { addBrand, deleteBrand, updateBrand, getAllBrands };
