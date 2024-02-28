@@ -1,6 +1,7 @@
 const apiError = require("../interfaces/apiError");
 const Product = require("../models/product.model");
 const apiResponse = require("../interfaces/apiResponse");
+const User = require("../models/user.model");
 
 class ProductService {
   constructor() {}
@@ -73,9 +74,13 @@ class ProductService {
     const newVariant = [...existedProduct.variants];
     newVariant.push(variants);
 
-    const updatedProduct = await Product.findByIdAndUpdate(product, {
-      variants: newVariant,
-    });
+    const updatedProduct = await Product.findByIdAndUpdate(
+      product,
+      {
+        variants: newVariant,
+      },
+      { new: true }
+    );
 
     if (!updatedProduct) {
       throw new apiError(500, "Error while adding variant");
@@ -126,6 +131,32 @@ class ProductService {
     return res
       .status(200)
       .json(new apiResponse(product, "Product deleted successfully"));
+  };
+
+  addToCart = async (req, res) => {
+    const { cartItems, totalAmount } = req.body;
+
+    const cart = {
+      cartItems,
+      totalAmount,
+    };
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        cart,
+      },
+      { new: true }
+    ).select("cart");
+
+    if (!user) {
+      throw new apiError(404, "User not found");
+    }
+
+    console.log(cartItems);
+    return res
+      .status(200)
+      .json(new apiResponse(user, "Cart updated successfully"));
   };
 }
 

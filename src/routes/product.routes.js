@@ -3,6 +3,7 @@ const {
   addVariant,
   getProducts,
   deleteProduct,
+  addToCart,
 } = require("../controllers/product.controller.model");
 const verifyJWT = require("../middlewares/auth.middleware");
 const upload = require("../middlewares/multer.middleware");
@@ -14,5 +15,6 @@ router.post("/", verifyJWT, addProduct);
 router.get("/", getProducts);
 router.post("/add-variant", verifyJWT, addVariant);
 router.delete("/", verifyJWT, deleteProduct);
+router.post("/add-to-cart", verifyJWT, addToCart);
 
 module.exports = router;

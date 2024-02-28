@@ -7,5 +7,12 @@ const addProduct = asyncHandler(productService.addProduct);
 const addVariant = asyncHandler(productService.addVariant);
 const getProducts = asyncHandler(productService.getProducts);
 const deleteProduct = asyncHandler(productService.deleteProduct);
+const addToCart = asyncHandler(productService.addToCart);
 
-module.exports = { addProduct, addVariant, getProducts, deleteProduct };
+module.exports = {
+  addProduct,
+  addVariant,
+  getProducts,
+  deleteProduct,
+  addToCart,
+};
