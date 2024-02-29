@@ -4,8 +4,9 @@ const userRouter = require("./user.routes");
 const productRouter = require("./product.routes");
 const categoryRouter = require("./category.routes");
 const brandRouter = require("./brand.rotes");
-const subCategoryRouter = require("./subcategory.routes");
+// const subCategoryRouter = require("./subcategory.routes");
 const uploadFile = require("../controllers/fileupload.controller");
+const reviewRouter = require("../routes/review.routes");
 const upload = require("../middlewares/multer.middleware");
 const router = Router();
 
@@ -20,6 +21,7 @@ router.use("/users", userRouter);
 router.use("/products", productRouter);
 router.use("/categories", categoryRouter);
 router.use("/brands", brandRouter);
-router.use("/subcategories", subCategoryRouter);
+router.use("/reviews", reviewRouter);
+// router.use("/subcategories", subCategoryRouter);
 
 module.exports = router;
