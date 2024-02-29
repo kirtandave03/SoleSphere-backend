@@ -8,9 +8,7 @@ const deleteUser = asyncHandler(userService.deleteUser);
 
 const updateUserProfilePic = asyncHandler(userService.updateUserProfilePic);
 const updateUserPhone = asyncHandler(userService.updateUserPhone);
-const updateHomeAddress = asyncHandler(userService.updateHomeAddress);
-const updateOfficeAddress = asyncHandler(userService.updateOfficeAddress);
-const updateOtherAddress = asyncHandler(userService.updateOtherAddress);
+const updateUserAddress = asyncHandler(userService.updateUserAddress);
 
 const getCurrentUser = asyncHandler(userService.getCurrentUser);
 
@@ -20,7 +18,5 @@ module.exports = {
   updateUserProfilePic,
   getCurrentUser,
   updateUserPhone,
-  updateHomeAddress,
-  updateOfficeAddress,
-  updateOtherAddress,
+  updateUserAddress,
 };

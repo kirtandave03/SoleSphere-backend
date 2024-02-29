@@ -157,102 +157,48 @@ class UserService {
       .json(new apiResponse(updatedUser, "User phone number Successfully"));
   };
 
-  updateHomeAddress = async (req, res) => {
-    const { email, address } = req.body;
+  updateUserAddress = async (req, res) => {
+    const { newAddress, target } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findById(req.user._id);
 
     if (!existingUser) {
       throw new apiError(404, "User not found");
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      existingUser._id,
-      {
-        $set: {
-          "address.0": {
-            house: address.house,
-            area: address.area,
-            pincode: address.pincode,
-            town: address.town,
-            state: address.state,
-            adType: "Home",
-          },
-        },
-      },
-      { new: true }
-    );
+    const targetProvided = target.trim().toLowerCase();
 
-    res
-      .status(200)
-      .json(
-        new apiResponse(200, updatedUser, "Home address updated successfully")
+    if (!targetProvided) {
+      throw new apiError(404, "No target found");
+    }
+
+    const toUpdateAddress = existingUser.address;
+
+    if (targetProvided === "home") {
+      toUpdateAddress[0] = newAddress;
+    } else if (targetProvided === "office") {
+      toUpdateAddress[1] = newAddress;
+    } else if (targetProvided === "other") {
+      toUpdateAddress[2] = newAddress;
+    } else {
+      throw new apiError(
+        400,
+        "target can only be either 'home', 'office' or 'other'"
       );
-  };
-
-  updateOfficeAddress = async (req, res) => {
-    const { email, address } = req.body;
-
-    const existingUser = await User.findOne({ email });
-
-    if (!existingUser) {
-      throw new apiError(404, "User not found");
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      existingUser._id,
-      {
-        $set: {
-          "address.1": {
-            house: address.house,
-            area: address.area,
-            pincode: address.pincode,
-            town: address.town,
-            state: address.state,
-            adType: "Office",
-          },
-        },
-      },
-      { new: true }
-    );
+    existingUser.address = toUpdateAddress;
+
+    const updatedUser = await existingUser.save();
 
     res
       .status(200)
       .json(
-        new apiResponse(200, updatedUser, "Office address updated successfully")
-      );
-  };
-
-  updateOtherAddress = async (req, res) => {
-    const { email, address } = req.body;
-
-    const existingUser = await User.findOne({ email });
-
-    if (!existingUser) {
-      throw new apiError(404, "User not found");
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(
-      existingUser._id,
-      {
-        $set: {
-          "address.2": {
-            house: address.house,
-            area: address.area,
-            pincode: address.pincode,
-            town: address.town,
-            state: address.state,
-            adType: "Other",
-          },
-        },
-      },
-      { new: true }
-    );
-
-    res
-      .status(200)
-      .json(
-        new apiResponse(200, updatedUser, "Other address updated successfully")
+        new apiResponse(
+          200,
+          updatedUser,
+          "Provided Address updated successfully"
+        )
       );
   };
 }
