@@ -23,7 +23,7 @@ class ProductService {
       qr,
     } = req.body;
 
-    console.log(productName);
+    // console.log(productName);
 
     // console.log(variants);
 
@@ -46,7 +46,7 @@ class ProductService {
       giftPackaging,
       qr,
       gender,
-      review: null, // Set review to null initially
+      review: [], // Set review to null initially
       category, // Convert category to ObjectId
       brand, // Convert brand to ObjectId
     });
@@ -92,7 +92,10 @@ class ProductService {
   };
 
   getProducts = async (req, res) => {
-    const product = await Product.find();
+    const product = await Product.find().populate({
+      path: "review",
+      select: "rating review",
+    });
 
     if (!product) {
       throw new apiError(404, "No product found");
@@ -106,7 +109,12 @@ class ProductService {
         (temp.discounted_price = item.variants[0].sizes[0].discounted_price),
         (temp.colors = item.variants.length),
         (temp.shortDescription = item.shortDescription),
-        (temp.image = item.variants[0].image_urls[0]);
+        (temp.totalReview = item.review.length),
+        (temp.image = item.variants[0].image_urls[0]),
+        (temp.totalRating = item.review.reduce(
+          (acc, curr) => acc + curr.rating,
+          0
+        ));
 
       responseData.push(temp);
     });
@@ -157,6 +165,50 @@ class ProductService {
     return res
       .status(200)
       .json(new apiResponse(user, "Cart updated successfully"));
+  };
+
+  searchProduct = async (req, res) => {
+    const { productName } = req.body;
+
+    const product = await Product.find({
+      productName: { $regex: ".*" + productName.trim().toLowerCase() + ".*" },
+    }).populate({
+      path: "review",
+      select: "rating review",
+    });
+
+    if (!product) {
+      throw new apiError(500, "Error while searching products");
+    }
+
+    // console.log(product);
+
+    if (product.length > 0) {
+      let responseData = [];
+
+      product.map((item) => {
+        let temp = {};
+        (temp.productName = item.productName),
+          (temp.actual_price = item.variants[0].sizes[0].actual_price),
+          (temp.discounted_price = item.variants[0].sizes[0].discounted_price),
+          (temp.colors = item.variants.length),
+          (temp.shortDescription = item.shortDescription),
+          (temp.totalReview = item.review.length),
+          (temp.image = item.variants[0].image_urls[0]),
+          (temp.totalRating = item.review.reduce(
+            (acc, curr) => acc + curr.rating,
+            0
+          ));
+
+        responseData.push(temp);
+      });
+
+      return res
+        .status(200)
+        .json(new apiResponse(responseData, "Products fetched successfully"));
+    } else {
+      res.status(200).json(new apiResponse([], "no product matched"));
+    }
   };
 }
 
