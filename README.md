@@ -51,3 +51,22 @@ repository:
 
 
     (use spell checker extension)
+
+
+
+
+
+    req:body:{
+        productName: "xyz",
+        variant:[
+            {color:"red",imageUrls:[""]},
+            {color:"green",imageUrls:['']}
+        ]
+    }
+
+
+    const res = variant.map((im)=>{
+        return upload()
+    })
+
+    

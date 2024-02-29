@@ -1,7 +1,7 @@
 const User = require("../models/user.model");
 const apiError = require("../interfaces/apiError");
 const apiResponse = require("../interfaces/apiResponse");
-const sendMail = require("../sevices/mailer");
+const sendMail = require("../services/mailer");
 const { z } = require("zod");
 const Otp = require("../models/otp.model");
 
@@ -21,6 +21,38 @@ const generateOtp = async () => {
 
 class AuthService {
   constructor() {}
+
+  createUser = async (req, res) => {
+    const { UID, email, username } = req.body;
+
+    if ([username, email, UID].some((field) => field?.trim() === "")) {
+      throw new apiError(400, "All fields are required");
+    }
+
+    const existedUser = await User.findOne({ email });
+
+    if (existedUser) {
+      throw new apiError(409, "User with email already exist");
+    }
+
+    const user = await User.create({
+      UID,
+      username,
+      email,
+    });
+
+    if (!user) {
+      throw new apiError(500, "Error while registering user");
+    }
+
+    const accessToken = user.generateAccessToken();
+
+    return res
+      .status(201)
+      .json(
+        new apiResponse({ user, accessToken }, "User Created successfully")
+      );
+  };
 
   signupUser = async (req, res) => {
     const { username, email } = signupUserValidator.parse(req.body);

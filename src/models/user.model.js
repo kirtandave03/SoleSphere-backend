@@ -14,8 +14,9 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    password: {
+    UID: {
       type: String,
+      unique: true,
       required: true,
     },
     profilePic: {
@@ -66,26 +67,22 @@ const userSchema = new mongoose.Schema(
         ref: "Product",
       },
     ],
-    cart: [
-      {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
+    cart: {
+      cartItems: [
+        {
+          product_id: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+          productName: { type: String, lowercase: true },
+          image_url: { type: String, lowercase: true },
+          color: { type: String, lowercase: true },
+          size: Number,
+          quantity: Number,
+          price: Number,
         },
-        productImage: {
-          type: String,
-        },
-        quantity: {
-          type: Number,
-        },
-        price: {
-          type: String,
-        },
-        totalAmount: {
-          type: String,
-        },
+      ],
+      totalAmount: {
+        type: Number,
       },
-    ],
+    },
   },
   { timestamps: true }
 );

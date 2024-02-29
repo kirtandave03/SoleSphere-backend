@@ -16,7 +16,7 @@ const {
 } = require("../controllers/user.controller");
 
 router.get("/", verifyJWT, getCurrentUser);
-router.put(
+router.post(
   "/",
   verifyJWT,
   upload.fields([
