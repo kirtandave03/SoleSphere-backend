@@ -22,7 +22,7 @@ const uploadFile = asyncHandler(async (req, res) => {
     // Wait for all uploads to finish
     await Promise.all(imageToUpload);
     // console.log(uploads); // Log upload results
-    console.log(urls); // Log URLs array after all uploads
+    // console.log(urls); // Log URLs array after all uploads
 
     res.status(200).json(new apiResponse(urls, "Files uploaded successfully"));
   } catch (err) {
