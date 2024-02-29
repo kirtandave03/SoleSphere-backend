@@ -1,72 +1,36 @@
 const mongoose = require("mongoose");
 const mongoose_delete = require("mongoose-delete");
-
-const productVariantSchema = new mongoose.Schema({
-  colorAndImage: [
-    {
-      color: {
-        type: String,
-        required: true,
-      },
-      image_urls: [
-        {
-          type: String,
-          required: true,
-        },
-      ],
-    },
-  ],
-  sizeAndPrice: [
-    {
-      size: {
-        type: String,
-        required: true,
-      },
-      actual_price: {
-        type: Number,
-        required: true,
-      },
-      discounted_price: {
-        type: Number,
-        required: true,
-      },
-      stock: {
-        type: Number,
-        required: true,
-      },
-    },
-  ],
-});
+const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const productSchema = new mongoose.Schema(
   {
     productName: {
       type: String,
       required: true,
-      index: true,
+      unique: true,
     },
     shortDescription: {
       type: String,
       trim: true,
     },
-    categories: [
-      {
-        type: String,
-      },
-    ],
-    brand: {
-      type: String,
-      required: true,
-    },
     sizeType: {
       type: String,
       required: true,
     },
-    variants: [productVariantSchema], // This is the array of product variants
-    lastMonthSell: {
-      type: Number,
-      default: 0,
-    },
+    variants: [
+      {
+        color: { type: String, lowercase: true },
+        image_urls: [String],
+        sizes: [
+          {
+            size: { type: String, required: true },
+            actual_price: { type: Number, required: true },
+            discounted_price: { type: Number, required: true },
+            stock: { type: Number, required: true },
+          },
+        ],
+      },
+    ],
     discount: {
       startDate: {
         type: Date,
@@ -97,38 +61,30 @@ const productSchema = new mongoose.Schema(
     qr: {
       type: String,
     },
+    gender: {
+      type: "String",
+      required: true,
+    },
     review: [
       {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        review: {
-          type: String,
-          trim: true,
-        },
-        images: [
-          {
-            type: String,
-          },
-        ],
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Review",
       },
     ],
-    rating: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        star: {
-          type: Number,
-        },
-      },
-    ],
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    brand: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brand",
+    },
   },
   { timestamps: true }
 );
 
+productSchema.plugin(mongooseAggregatePaginate);
 productSchema.plugin(mongoose_delete, { overrideMethods: "all" });
 
 const Product = mongoose.model("Product", productSchema);

@@ -1,7 +1,9 @@
-const AuthService = require("../sevices/auth.service");
+const AuthService = require("../services/auth.service");
 const asyncHandler = require("../utils/asyncHandler");
 
 const authService = new AuthService();
+
+const createUser = asyncHandler(authService.createUser);
 
 const signupUser = asyncHandler(authService.signupUser);
 
@@ -22,4 +24,5 @@ module.exports = {
   forgotPassword,
   forgotPasswordotp,
   changePassword,
+  createUser,
 };
