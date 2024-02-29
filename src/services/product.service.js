@@ -158,6 +158,44 @@ class ProductService {
       .status(200)
       .json(new apiResponse(user, "Cart updated successfully"));
   };
+
+  searchProduct = async (req, res) => {
+    const { productName } = req.body;
+
+    const product = await Product.find({
+      productName: { $regex: ".*" + productName.trim().toLowerCase() + ".*" },
+    });
+
+    if (!product) {
+      throw new apiError(500, "Error while searching products");
+    }
+
+    // console.log(product);
+
+    let responseData = [];
+
+    if (product.length > 0) {
+      const responseData = [];
+
+      product.map((item) => {
+        let temp = {};
+        (temp.productName = item.productName),
+          (temp.actual_price = item.variants[0].sizes[0].actual_price),
+          (temp.discounted_price = item.variants[0].sizes[0].discounted_price),
+          (temp.colors = item.variants.length),
+          (temp.shortDescription = item.shortDescription),
+          (temp.image = item.variants[0].image_urls[0]);
+
+        responseData.push(temp);
+      });
+
+      return res
+        .status(200)
+        .json(new apiResponse(responseData, "Products fetched successfully"));
+    } else {
+      res.status(200).json(new apiResponse([], "no product matched"));
+    }
+  };
 }
 
 module.exports = ProductService;
