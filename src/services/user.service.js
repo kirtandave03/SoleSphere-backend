@@ -1,10 +1,7 @@
 const User = require("../models/user.model");
 const apiError = require("../interfaces/apiError");
 const apiResponse = require("../interfaces/apiResponse");
-const {
-  uploadOnCloudinary,
-  deleteOnCloudinary,
-} = require("../sevices/cloudinary");
+const { uploadOnCloudinary, deleteOnCloudinary } = require("./cloudinary");
 
 class UserService {
   constructor() {}
