@@ -83,24 +83,16 @@ class ProductService {
   };
 
   getProducts = async (req, res) => {
-    const productName = req.query.productName;
-    let products;
+    const productName = req.query?.productName || " ";
 
-    if (productName) {
-      products = await Product.find({
-        productName: {
-          $regex: ".*" + productName.trim().toLowerCase() + ".*",
-        },
-      }).populate({
-        path: "review",
-        select: "rating review",
-      });
-    } else {
-      products = await Product.find().populate({
-        path: "review",
-        select: "rating review",
-      });
-    }
+    const products = await Product.find({
+      productName: {
+        $regex: ".*" + productName.trim().toLowerCase() + ".*",
+      },
+    }).populate({
+      path: "review",
+      select: "rating review",
+    });
 
     if (!products || products.length === 0) {
       return res.status(404).json(new apiResponse([], "No products found"));
@@ -166,6 +158,10 @@ class ProductService {
     return res
       .status(200)
       .json(new apiResponse(user, "Cart updated successfully"));
+  };
+
+  productDetail = async (req, res) => {
+    res.send("Hello world");
   };
 }
 

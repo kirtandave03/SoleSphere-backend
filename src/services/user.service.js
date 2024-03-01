@@ -169,20 +169,6 @@ class UserService {
     // const toUpdateAddress = existingUser.address[index];
 
     const toUpdateAddress = newAddress;
-    console.log(toUpdateAddress);
-
-    // if (targetProvided === "home") {
-    //   toUpdateAddress[0] = newAddress;
-    // } else if (targetProvided === "office") {
-    //   toUpdateAddress[1] = newAddress;
-    // } else if (targetProvided === "other") {
-    //   toUpdateAddress[2] = newAddress;
-    // } else {
-    //   throw new apiError(
-    //     400,
-    //     "target can only be either 'home', 'office' or 'other'"
-    //   );
-    // }
 
     existingUser.address.index = toUpdateAddress;
     console.log(existingUser.address.index);

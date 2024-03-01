@@ -10,6 +10,8 @@ class CategoryService {
     if (!category) {
       throw new apiError(400, "category is required");
     }
+
+    // console.log(category);
     const catData = await Category.create({ category });
 
     return res
