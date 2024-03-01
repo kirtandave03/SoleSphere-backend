@@ -92,20 +92,8 @@ class ProductService {
   };
 
   getProducts = async (req, res) => {
-<<<<<<< HEAD
-    /* let query ={}
-    // if(produc){
-      query["product"] = ""
-      */
-    // }
-    const product = await Product.find().populate({
-      path: "review",
-      select: "rating review",
-    });
-=======
     const productName = req.query.productName;
     let products;
->>>>>>> updating-address-apis
 
     if (productName) {
       products = await Product.find({

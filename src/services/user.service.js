@@ -10,15 +10,11 @@ class UserService {
   constructor() {}
 
   userDetails = async (req, res) => {
-    const { email, phone, address } = req.body;
+    const { phone, address } = req.body;
 
     // console.log("Request Body :",req.body);
 
-    if ([email].some((field) => field?.trim() === "")) {
-      throw new apiError(400, "All fields are required");
-    }
-
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findById(req.user._id);
 
     if (!existingUser) {
       throw new apiError(404, "User not found");
@@ -158,7 +154,7 @@ class UserService {
   };
 
   updateUserAddress = async (req, res) => {
-    const { newAddress, target } = req.body;
+    const { newAddress, index } = req.body;
 
     const existingUser = await User.findById(req.user._id);
 
@@ -166,28 +162,30 @@ class UserService {
       throw new apiError(404, "User not found");
     }
 
-    const targetProvided = target.trim().toLowerCase();
-
-    if (!targetProvided) {
-      throw new apiError(404, "No target found");
+    if (!index) {
+      throw new apiError(404, "index not provided");
     }
 
-    const toUpdateAddress = existingUser.address;
+    // const toUpdateAddress = existingUser.address[index];
 
-    if (targetProvided === "home") {
-      toUpdateAddress[0] = newAddress;
-    } else if (targetProvided === "office") {
-      toUpdateAddress[1] = newAddress;
-    } else if (targetProvided === "other") {
-      toUpdateAddress[2] = newAddress;
-    } else {
-      throw new apiError(
-        400,
-        "target can only be either 'home', 'office' or 'other'"
-      );
-    }
+    const toUpdateAddress = newAddress;
+    console.log(toUpdateAddress);
 
-    existingUser.address = toUpdateAddress;
+    // if (targetProvided === "home") {
+    //   toUpdateAddress[0] = newAddress;
+    // } else if (targetProvided === "office") {
+    //   toUpdateAddress[1] = newAddress;
+    // } else if (targetProvided === "other") {
+    //   toUpdateAddress[2] = newAddress;
+    // } else {
+    //   throw new apiError(
+    //     400,
+    //     "target can only be either 'home', 'office' or 'other'"
+    //   );
+    // }
+
+    existingUser.address.index = toUpdateAddress;
+    console.log(existingUser.address.index);
 
     const updatedUser = await existingUser.save();
 
