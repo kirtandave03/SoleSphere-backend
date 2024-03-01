@@ -161,7 +161,16 @@ class ProductService {
   };
 
   productDetail = async (req, res) => {
-    res.send("Hello world");
+    const product_id = req.query?.product_id;
+
+    const product = await Product.findById(product_id);
+    if (!product) {
+      throw new apiError(404, "Product not found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(product, "Product fetched successfully"));
   };
 }
 
