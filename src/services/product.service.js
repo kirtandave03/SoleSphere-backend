@@ -92,32 +92,42 @@ class ProductService {
   };
 
   getProducts = async (req, res) => {
-    const product = await Product.find().populate({
-      path: "review",
-      select: "rating review",
-    });
+    const productName = req.query.productName;
+    let products;
 
-    if (!product) {
-      throw new apiError(404, "No product found");
+    if (productName) {
+      products = await Product.find({
+        productName: {
+          $regex: ".*" + productName.trim().toLowerCase() + ".*",
+        },
+      }).populate({
+        path: "review",
+        select: "rating review",
+      });
+    } else {
+      products = await Product.find().populate({
+        path: "review",
+        select: "rating review",
+      });
     }
-    const responseData = [];
 
-    product.map((item) => {
-      let temp = {};
-      (temp.productName = item.productName),
-        (temp.actual_price = item.variants[0].sizes[0].actual_price),
-        (temp.discounted_price = item.variants[0].sizes[0].discounted_price),
-        (temp.colors = item.variants.length),
-        (temp.shortDescription = item.shortDescription),
-        (temp.totalReview = item.review.length),
-        (temp.image = item.variants[0].image_urls[0]),
-        (temp.totalRating = item.review.reduce(
-          (acc, curr) => acc + curr.rating,
-          0
-        ));
+    if (!products || products.length === 0) {
+      return res.status(404).json(new apiResponse([], "No products found"));
+    }
 
-      responseData.push(temp);
+    const responseData = products.map((item) => {
+      return {
+        productName: item.productName,
+        actual_price: item.variants[0].sizes[0].actual_price,
+        discounted_price: item.variants[0].sizes[0].discounted_price,
+        colors: item.variants.length,
+        shortDescription: item.shortDescription,
+        totalReview: item.review.length,
+        image: item.variants[0].image_urls[0],
+        totalRating: item.review.reduce((acc, curr) => acc + curr.rating, 0),
+      };
     });
+
     return res
       .status(200)
       .json(new apiResponse(responseData, "Products fetched successfully"));
@@ -165,50 +175,6 @@ class ProductService {
     return res
       .status(200)
       .json(new apiResponse(user, "Cart updated successfully"));
-  };
-
-  searchProduct = async (req, res) => {
-    const { productName } = req.query;
-
-    const product = await Product.find({
-      productName: { $regex: ".*" + productName.trim().toLowerCase() + ".*" },
-    }).populate({
-      path: "review",
-      select: "rating review",
-    });
-
-    if (!product) {
-      throw new apiError(500, "Error while searching products");
-    }
-
-    // console.log(product);
-
-    if (product.length > 0) {
-      let responseData = [];
-
-      product.map((item) => {
-        let temp = {};
-        (temp.productName = item.productName),
-          (temp.actual_price = item.variants[0].sizes[0].actual_price),
-          (temp.discounted_price = item.variants[0].sizes[0].discounted_price),
-          (temp.colors = item.variants.length),
-          (temp.shortDescription = item.shortDescription),
-          (temp.totalReview = item.review.length),
-          (temp.image = item.variants[0].image_urls[0]),
-          (temp.totalRating = item.review.reduce(
-            (acc, curr) => acc + curr.rating,
-            0
-          ));
-
-        responseData.push(temp);
-      });
-
-      return res
-        .status(200)
-        .json(new apiResponse(responseData, "Products fetched successfully"));
-    } else {
-      res.status(200).json(new apiResponse([], "no product matched"));
-    }
   };
 }
 
