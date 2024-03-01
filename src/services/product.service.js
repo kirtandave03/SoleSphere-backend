@@ -168,7 +168,7 @@ class ProductService {
   };
 
   searchProduct = async (req, res) => {
-    const { productName } = req.body;
+    const { productName } = req.query;
 
     const product = await Product.find({
       productName: { $regex: ".*" + productName.trim().toLowerCase() + ".*" },
