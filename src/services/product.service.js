@@ -92,6 +92,11 @@ class ProductService {
   };
 
   getProducts = async (req, res) => {
+    /* let query ={}
+    // if(produc){
+      query["product"] = ""
+      */
+    // }
     const product = await Product.find().populate({
       path: "review",
       select: "rating review",

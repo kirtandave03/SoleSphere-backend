@@ -38,13 +38,21 @@ class ReviewService {
   };
 
   deleteReview = async (req, res) => {
-    const { _id } = req.body;
+    const { product_id, _id } = req.body;
 
-    const review = await Review.findByIdAndDelete(_id).select("rating review");
+    const review = await Review.findByIdAndDelete(_id)
+      .populate({ path: "user", select: "username" })
+      .select("user review rating");
 
     if (!review) {
       throw new apiError(404, "Review not found");
     }
+
+    const product = await Product.findByIdAndUpdate(
+      product_id,
+      { $pull: { review: _id } },
+      { new: true }
+    );
 
     return res
       .status(200)

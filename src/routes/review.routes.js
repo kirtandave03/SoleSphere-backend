@@ -5,5 +5,5 @@ const Router = require("express").Router;
 const router = Router();
 
 router.post("/", verifyJWT, addReview);
-router.delete("/", deleteReview);
+router.delete("/", verifyJWT, deleteReview);
 module.exports = router;
