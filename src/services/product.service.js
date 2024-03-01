@@ -23,15 +23,6 @@ class ProductService {
       qr,
     } = req.body;
 
-    // console.log(productName);
-
-    // console.log(variants);
-
-    // Update variants with the uploaded image URLs
-    // if (variants && variants.length > 0 && urls.length > 0) {
-    //   variants[0].colorAndImage[0].image_urls = urls;
-    // }
-
     // Once all uploads are complete, send the response with the URLs
 
     const newProduct = new Product({
@@ -92,20 +83,8 @@ class ProductService {
   };
 
   getProducts = async (req, res) => {
-<<<<<<< HEAD
-    /* let query ={}
-    // if(produc){
-      query["product"] = ""
-      */
-    // }
-    const product = await Product.find().populate({
-      path: "review",
-      select: "rating review",
-    });
-=======
     const productName = req.query.productName;
     let products;
->>>>>>> updating-address-apis
 
     if (productName) {
       products = await Product.find({
