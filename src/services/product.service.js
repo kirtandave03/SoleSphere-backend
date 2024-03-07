@@ -314,6 +314,14 @@ class ProductService {
       .status(200)
       .json(new apiResponse(product, "Product fetched successfully"));
   };
+
+  getCart = async (req, res) => {
+    const cart = await User.findById(req.user._id).select("cart");
+
+    return res
+      .status(200)
+      .json(new apiResponse(cart, "Cart fetched successfully"));
+  };
 }
 
 module.exports = ProductService;

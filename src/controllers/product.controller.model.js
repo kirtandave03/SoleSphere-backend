@@ -8,6 +8,7 @@ const addVariant = asyncHandler(productService.addVariant);
 const getProducts = asyncHandler(productService.getProducts);
 const deleteProduct = asyncHandler(productService.deleteProduct);
 const addToCart = asyncHandler(productService.addToCart);
+const getCart = asyncHandler(productService.getCart);
 const productDetail = asyncHandler(productService.productDetail);
 
 module.exports = {
@@ -17,4 +18,5 @@ module.exports = {
   deleteProduct,
   addToCart,
   productDetail,
+  getCart,
 };
