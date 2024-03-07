@@ -85,6 +85,7 @@ class ProductService {
 
   getProducts = async (req, res) => {
     const productName = req.query?.productName || "";
+
     let category = req.query?.category || "";
     let color = req.query?.color || "";
     let size = req.query?.size || "";
@@ -188,6 +189,7 @@ class ProductService {
     ];
 
     // If categories are provided, filter products based on those categories
+
     if (category && category.length > 0) {
       pipeline.push({
         $match: { "category.category": { $in: [...category] } },
@@ -293,6 +295,24 @@ class ProductService {
     return res
       .status(200)
       .json(new apiResponse(user, "Cart updated successfully"));
+  };
+
+  addToWhishList = async (req, res) => {
+    const { product_id } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      throw new apiError(404, "User not exists");
+    }
+
+    user.wishlist.push(product_id);
+
+    return res
+      .status(200)
+      .json(
+        new apiResponse(product_id, "Product added successfully into whishlist")
+      );
   };
 
   productDetail = async (req, res) => {
