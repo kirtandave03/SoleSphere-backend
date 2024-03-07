@@ -320,7 +320,7 @@ class ProductService {
 
     user.wishlist.push(product_id);
 
-    // await user.save();
+    await user.save();
 
     return res
       .status(200)
