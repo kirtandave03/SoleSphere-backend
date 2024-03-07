@@ -297,8 +297,12 @@ class ProductService {
       .json(new apiResponse(user, "Cart updated successfully"));
   };
 
-  addToWhishList = async (req, res) => {
+  addToWishList = async (req, res) => {
     const { product_id } = req.body;
+
+    if (!product_id) {
+      throw new apiError(400, "Product id is required");
+    }
 
     const user = await User.findById(req.user._id);
 
@@ -306,14 +310,22 @@ class ProductService {
       throw new apiError(404, "User not exists");
     }
 
+    if (user.wishlist.includes(product_id)) {
+      return res
+        .status(200)
+        .json(
+          new apiResponse(product_id, "Product already exists in wishlist")
+        );
+    }
+
     user.wishlist.push(product_id);
 
-    await user.save();
+    // await user.save();
 
     return res
       .status(200)
       .json(
-        new apiResponse(product_id, "Product added successfully into whishlist")
+        new apiResponse(product_id, "Product added successfully into wishlist")
       );
   };
 
