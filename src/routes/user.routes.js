@@ -11,6 +11,8 @@ const {
   getCurrentUser,
   updateUserPhone,
   updateUserAddress,
+  addToWishList,
+  getWishList,
 } = require("../controllers/user.controller");
 
 router.get("/", verifyJWT, getCurrentUser);
@@ -38,5 +40,8 @@ router.put(
 router.put("/update-user-phone-number", verifyJWT, updateUserPhone);
 
 router.put("/update-address", verifyJWT, updateUserAddress);
+
+router.post("/add-to-wishlist", verifyJWT, addToWishList);
+router.get("/wishlist", verifyJWT, getWishList);
 
 module.exports = router;

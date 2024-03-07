@@ -5,6 +5,7 @@ const {
   uploadOnCloudinary,
   deleteOnCloudinary,
 } = require("../services/cloudinary");
+const Product = require("../models/product.model");
 
 class UserService {
   constructor() {}
@@ -184,6 +185,69 @@ class UserService {
           "Provided Address updated successfully"
         )
       );
+  };
+
+  addToWishList = async (req, res) => {
+    const { product_id } = req.body;
+
+    if (!product_id) {
+      throw new apiError(400, "Product id is required");
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      throw new apiError(404, "User not exists");
+    }
+
+    if (user.wishlist.includes(product_id)) {
+      return res
+        .status(200)
+        .json(
+          new apiResponse(product_id, "Product already exists in wishlist")
+        );
+    }
+
+    user.wishlist.push(product_id);
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json(
+        new apiResponse(product_id, "Product added successfully into wishlist")
+      );
+  };
+
+  getWishList = async (req, res) => {
+    const wishlist = await User.findById(req.user._id)
+      .select("wishlist")
+      .populate({
+        path: "wishlist",
+        populate: {
+          path: "category brand review",
+          select: "category brand brandIcon review rating",
+        },
+      });
+
+    const responseData = wishlist.wishlist.map((item) => {
+      return {
+        productName: item.productName,
+        actual_price: item.variants[0].sizes[0].actual_price,
+        discounted_price: item.variants[0].sizes[0].discounted_price,
+        colors: item.variants.length,
+        category: item.category,
+        brand: item.brand,
+        shortDescription: item.shortDescription,
+        totalReview: item.review.length,
+        image: item.variants[0].image_urls[0],
+        totalRating: item.review.reduce((acc, curr) => acc + curr.rating, 0),
+      };
+    });
+
+    return res
+      .status(200)
+      .json(new apiResponse(responseData, "wishlist fetched successfully"));
   };
 }
 

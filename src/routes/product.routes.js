@@ -5,8 +5,8 @@ const {
   deleteProduct,
   addToCart,
   productDetail,
-  addToWishList,
 } = require("../controllers/product.controller.model");
+
 const verifyJWT = require("../middlewares/auth.middleware");
 const Router = require("express").Router;
 
@@ -18,6 +18,5 @@ router.post("/add-variant", verifyJWT, addVariant);
 router.delete("/", verifyJWT, deleteProduct);
 router.post("/add-to-cart", verifyJWT, addToCart);
 router.get("/product-detail", productDetail);
-router.post("/add-to-wishlist", verifyJWT, addToWishList);
 
 module.exports = router;

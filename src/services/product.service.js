@@ -2,8 +2,6 @@ const apiError = require("../interfaces/apiError");
 const Product = require("../models/product.model");
 const apiResponse = require("../interfaces/apiResponse");
 const User = require("../models/user.model");
-const mongoose = require("mongoose");
-
 class ProductService {
   constructor() {}
 
@@ -295,38 +293,6 @@ class ProductService {
     return res
       .status(200)
       .json(new apiResponse(user, "Cart updated successfully"));
-  };
-
-  addToWishList = async (req, res) => {
-    const { product_id } = req.body;
-
-    if (!product_id) {
-      throw new apiError(400, "Product id is required");
-    }
-
-    const user = await User.findById(req.user._id);
-
-    if (!user) {
-      throw new apiError(404, "User not exists");
-    }
-
-    if (user.wishlist.includes(product_id)) {
-      return res
-        .status(200)
-        .json(
-          new apiResponse(product_id, "Product already exists in wishlist")
-        );
-    }
-
-    user.wishlist.push(product_id);
-
-    await user.save();
-
-    return res
-      .status(200)
-      .json(
-        new apiResponse(product_id, "Product added successfully into wishlist")
-      );
   };
 
   productDetail = async (req, res) => {

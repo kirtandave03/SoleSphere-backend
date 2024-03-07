@@ -12,6 +12,9 @@ const updateUserAddress = asyncHandler(userService.updateUserAddress);
 
 const getCurrentUser = asyncHandler(userService.getCurrentUser);
 
+const addToWishList = asyncHandler(userService.addToWishList);
+const getWishList = asyncHandler(userService.getWishList);
+
 module.exports = {
   userDetail,
   deleteUser,
@@ -19,4 +22,6 @@ module.exports = {
   getCurrentUser,
   updateUserPhone,
   updateUserAddress,
+  addToWishList,
+  getWishList,
 };
