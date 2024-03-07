@@ -96,7 +96,7 @@ class screenUpdatingService {
   getSplashScreen = async (req, res) => {
     const { name } = req.body;
 
-    const screen = await SplashScreen.findOne({ name });
+    const screen = await SplashScreen.find();
 
     if (!screen) {
       throw new apiError(404, "No Screen found");
