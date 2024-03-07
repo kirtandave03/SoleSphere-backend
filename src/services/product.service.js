@@ -84,16 +84,148 @@ class ProductService {
   };
 
   getProducts = async (req, res) => {
-    const productName = req.query?.productName || " ";
+    const productName = req.query?.productName || "";
+    let category = req.query?.category || "";
+    let color = req.query?.color || "";
+    let size = req.query?.size || "";
+    const price = req.query?.price || "";
+    let closureType = req.query?.closureType || "";
+    let brand = req.query?.brand || "";
+    let gender = req.query?.gender || "";
 
-    const products = await Product.find({
-      productName: {
-        $regex: ".*" + productName.trim().toLowerCase() + ".*",
+    if (category && !Array.isArray(category)) {
+      category = [category];
+    }
+
+    if (brand && !Array.isArray(brand)) {
+      brand = [brand];
+    }
+
+    if (closureType && !Array.isArray(closureType)) {
+      closureType = [closureType];
+    }
+
+    if (gender && !Array.isArray(gender)) {
+      gender = [gender];
+    }
+
+    if (color && !Array.isArray(color)) {
+      color = [color];
+    }
+
+    if (size && !Array.isArray(size)) {
+      size = [size];
+    }
+
+    let pipeline = [
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+          pipeline: [
+            {
+              $project: {
+                category: 1,
+              },
+            },
+          ],
+        },
       },
-    }).populate({
-      path: "review",
-      select: "rating review",
-    });
+      {
+        $addFields: {
+          category: {
+            $arrayElemAt: ["$category", 0],
+          },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+          pipeline: [
+            {
+              $project: {
+                brand: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          brand: { $arrayElemAt: ["$brand", 0] },
+        },
+      },
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "review",
+          foreignField: "_id",
+          as: "review",
+          pipeline: [
+            {
+              $project: {
+                rating: 1,
+                review: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $match: {
+          productName: {
+            $regex: `.*${productName.toLowerCase().trim()}.*`,
+            $options: "i",
+          },
+        },
+      },
+    ];
+
+    // If categories are provided, filter products based on those categories
+    if (category && category.length > 0) {
+      pipeline.push({
+        $match: { "category.category": { $in: [...category] } },
+      });
+    }
+
+    if (brand && brand.length > 0) {
+      pipeline.push({
+        $match: { "brand.brand": { $in: [...brand] } },
+      });
+    }
+
+    if (closureType && closureType.length > 0) {
+      pipeline.push({
+        $match: { closureType: { $in: [...closureType] } },
+      });
+    }
+
+    if (gender && gender.length > 0) {
+      pipeline.push({
+        $match: { gender: { $in: [...gender] } },
+      });
+    }
+
+    if (color && color.length > 0) {
+      pipeline.push({
+        $match: { "variants.color": { $in: [...color] } },
+      });
+    }
+
+    if (size && size.length > 0) {
+      pipeline.push({
+        $match: { "variants.sizes.size": { $in: [...size] } },
+      });
+    }
+
+    // MongoDB aggregation to get filtered products
+    const products = await Product.aggregate(pipeline);
 
     if (!products || products.length === 0) {
       return res.status(404).json(new apiResponse([], "No products found"));
@@ -105,6 +237,8 @@ class ProductService {
         actual_price: item.variants[0].sizes[0].actual_price,
         discounted_price: item.variants[0].sizes[0].discounted_price,
         colors: item.variants.length,
+        category: item.category,
+        brand: item.brand,
         shortDescription: item.shortDescription,
         totalReview: item.review.length,
         image: item.variants[0].image_urls[0],
