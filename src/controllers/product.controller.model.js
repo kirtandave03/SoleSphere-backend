@@ -9,6 +9,7 @@ const getProducts = asyncHandler(productService.getProducts);
 const deleteProduct = asyncHandler(productService.deleteProduct);
 const addToCart = asyncHandler(productService.addToCart);
 const productDetail = asyncHandler(productService.productDetail);
+const addToWhishList = asyncHandler(productService.addToWhishList);
 
 module.exports = {
   addProduct,
@@ -17,4 +18,5 @@ module.exports = {
   deleteProduct,
   addToCart,
   productDetail,
+  addToWhishList,
 };
