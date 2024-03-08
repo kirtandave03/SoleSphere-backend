@@ -87,10 +87,12 @@ class ProductService {
     let category = req.query?.category || "";
     let color = req.query?.color || "";
     let size = req.query?.size || "";
-    const price = req.query?.price || "";
+    const sort = req.query?.sort || "";
     let closureType = req.query?.closureType || "";
     let brand = req.query?.brand || "";
     let gender = req.query?.gender || "";
+
+    let sortOptions = {};
 
     if (category && !Array.isArray(category)) {
       category = [category];
@@ -184,6 +186,11 @@ class ProductService {
           },
         },
       },
+      {
+        $addFields: {
+          avgReview: { $avg: "$review.rating" },
+        },
+      },
     ];
 
     // If categories are provided, filter products based on those categories
@@ -224,6 +231,29 @@ class ProductService {
       });
     }
 
+    // sort based on price
+
+    if (sort === "price_asc") {
+      sortOptions = { "variants.0.sizes.0.discounted_price": 1 };
+      pipeline.push({
+        $sort: sortOptions,
+      });
+    } else if (sort === "price_des") {
+      sortOptions = { "variants.0.sizes.0.discounted_price": -1 };
+      pipeline.push({
+        $sort: sortOptions,
+      });
+    }
+
+    if (sort === "review") {
+      let sortReview = {
+        $sort: {
+          avgReview: -1,
+        },
+      };
+      pipeline.push(sortReview);
+    }
+
     // MongoDB aggregation to get filtered products
     const products = await Product.aggregate(pipeline);
 
@@ -240,9 +270,9 @@ class ProductService {
         category: item.category,
         brand: item.brand,
         shortDescription: item.shortDescription,
-        totalReview: item.review.length,
+        avgRating: item.avgReview,
         image: item.variants[0].image_urls[0],
-        totalRating: item.review.reduce((acc, curr) => acc + curr.rating, 0),
+        totalReview: item.review.length,
       };
     });
 
