@@ -2,6 +2,8 @@ const apiError = require("../interfaces/apiError");
 const Product = require("../models/product.model");
 const apiResponse = require("../interfaces/apiResponse");
 const User = require("../models/user.model");
+const mongoose = require("mongoose");
+const { use } = require("bcrypt/promises");
 class ProductService {
   constructor() {}
 
@@ -266,6 +268,7 @@ class ProductService {
 
     const responseData = products.map((item) => {
       return {
+        _id: item._id,
         productName: item.productName,
         actual_price: item.variants[0].sizes[0].actual_price,
         discounted_price: item.variants[0].sizes[0].discounted_price,
@@ -303,29 +306,88 @@ class ProductService {
   };
 
   addToCart = async (req, res) => {
-    const { cartItems, totalAmount } = req.body;
+    const { product_id, productName, color, size } = req.body;
 
-    const cart = {
-      cartItems,
-      totalAmount: totalAmount,
-    };
-    console.log(cart);
+    const product = await Product.findById(product_id);
 
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      {
-        cart,
-      },
-      { new: true }
-    ).select("cart");
-
-    if (!user) {
-      throw new apiError(404, "User not found");
+    if (!product) {
+      throw new apiError(404, "product not found");
     }
 
-    return res
-      .status(200)
-      .json(new apiResponse(user, "Cart updated successfully"));
+    if (product.productName !== productName) {
+      throw new apiError(400, "Invalid product name");
+    }
+
+    const user = await User.findById(req.user._id).select("cart");
+
+    let cartItems = user.cart.cartItems;
+    let variants = product.variants;
+
+    let indexOfVariant = variants.findIndex((item) => item.color === color);
+
+    if (indexOfVariant === -1) {
+      throw new apiError(404, "Variant not found");
+    }
+
+    let indexOfSize = variants[indexOfVariant].sizes.findIndex(
+      (item) => item.size == size
+    );
+
+    if (indexOfSize === -1) {
+      throw new apiError(404, "product size not fount");
+    }
+
+    const { actual_price, discounted_price, stock } =
+      variants[indexOfVariant].sizes[indexOfSize];
+
+    const image_url = variants[indexOfVariant].image_urls[0];
+
+    const index = cartItems.findIndex(
+      (item) =>
+        item.productName === productName &&
+        item.color === color &&
+        item.size === size
+    );
+
+    if (index !== -1 && stock >= cartItems[index].quantity) {
+      cartItems[index].quantity++;
+      user.cart.cartItems = cartItems;
+      await user.save();
+      res
+        .status(200)
+        .json(
+          new apiResponse(cartItems, "Product added to the cart successfully!")
+        );
+    }
+
+    if (index === -1 && stock >= 1) {
+      let response = {
+        product_id: product._id,
+        productName: product.productName,
+        image_url,
+        actual_price,
+        discounted_price,
+        color,
+        size,
+        quantity: 1,
+      };
+      user.cart.cartItems = [...cartItems, response];
+      await user.save();
+      return res
+        .status(200)
+        .json(
+          new apiResponse(
+            [...cartItems, response],
+            "Product added to the cart successfully!"
+          )
+        );
+    }
+
+    if (index !== -1 && stock < cartItems[index].quantity) {
+      return res
+        .status(200)
+        .json(new apiResponse(cartItems, "Not Enough stock available"));
+    }
   };
 
   productDetail = async (req, res) => {
@@ -354,6 +416,12 @@ class ProductService {
     return res
       .status(200)
       .json(new apiResponse(cart, "Cart fetched successfully"));
+  };
+
+  buyProduct = async (req, res) => {
+    const { index, paymentMethod } = req.body;
+
+    const user = await User.findById(req.user._id).select("cart address");
   };
 }
 

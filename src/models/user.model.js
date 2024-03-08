@@ -76,12 +76,10 @@ const userSchema = new mongoose.Schema(
           color: { type: String, lowercase: true },
           size: Number,
           quantity: Number,
-          price: Number,
+          actual_price: Number,
+          discounted_price: Number,
         },
       ],
-      totalAmount: {
-        type: Number,
-      },
     },
   },
   { timestamps: true }
@@ -95,6 +93,7 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
+
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
