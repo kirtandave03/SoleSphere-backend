@@ -83,14 +83,17 @@ class ProductService {
 
   getProducts = async (req, res) => {
     const productName = req.query?.productName || "";
-
     let category = req.query?.category || "";
     let color = req.query?.color || "";
     let size = req.query?.size || "";
-    const price = req.query?.price || "";
+    const sort = req.query?.sort || "";
     let closureType = req.query?.closureType || "";
     let brand = req.query?.brand || "";
     let gender = req.query?.gender || "";
+    let page = Number(req.query?.page) || 0;
+    let limit = Number(req.query?.limit) || 12;
+
+    let sortOptions = {};
 
     if (category && !Array.isArray(category)) {
       category = [category];
@@ -184,6 +187,11 @@ class ProductService {
           },
         },
       },
+      {
+        $addFields: {
+          avgReview: { $avg: "$review.rating" },
+        },
+      },
     ];
 
     // If categories are provided, filter products based on those categories
@@ -224,8 +232,33 @@ class ProductService {
       });
     }
 
+    // sort based on price
+
+    if (sort === "price_asc") {
+      sortOptions = { "variants.0.sizes.0.discounted_price": 1 };
+      pipeline.push({
+        $sort: sortOptions,
+      });
+    } else if (sort === "price_des") {
+      sortOptions = { "variants.0.sizes.0.discounted_price": -1 };
+      pipeline.push({
+        $sort: sortOptions,
+      });
+    }
+
+    if (sort === "review") {
+      let sortReview = {
+        $sort: {
+          avgReview: -1,
+        },
+      };
+      pipeline.push(sortReview);
+    }
+
     // MongoDB aggregation to get filtered products
-    const products = await Product.aggregate(pipeline);
+    const products = await Product.aggregate(pipeline)
+      .skip(page * limit)
+      .limit(limit);
 
     if (!products || products.length === 0) {
       return res.status(404).json(new apiResponse([], "No products found"));
@@ -240,9 +273,9 @@ class ProductService {
         category: item.category,
         brand: item.brand,
         shortDescription: item.shortDescription,
-        totalReview: item.review.length,
+        avgRating: item.avgReview,
         image: item.variants[0].image_urls[0],
-        totalRating: item.review.reduce((acc, curr) => acc + curr.rating, 0),
+        totalReview: item.review.length,
       };
     });
 
@@ -313,6 +346,14 @@ class ProductService {
     return res
       .status(200)
       .json(new apiResponse(product, "Product fetched successfully"));
+  };
+
+  getCart = async (req, res) => {
+    const cart = await User.findById(req.user._id).select("cart");
+
+    return res
+      .status(200)
+      .json(new apiResponse(cart, "Cart fetched successfully"));
   };
 }
 
