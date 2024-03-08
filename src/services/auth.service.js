@@ -4,6 +4,8 @@ const apiResponse = require("../interfaces/apiResponse");
 const sendMail = require("../services/mailer");
 const { z } = require("zod");
 const Otp = require("../models/otp.model");
+const Admin = require("../models/admin.model");
+const { options } = require("../app");
 
 const signupUserValidator = z.object({
   username: z
@@ -66,6 +68,67 @@ class AuthService {
     if (existingUser) {
       throw new apiError(409, "User with email already exist");
     }
+  };
+
+  verifyOtp = async (req, res) => {
+    const { email, otp } = req.body;
+
+    if ([email, otp].some((field) => field?.trim() === "")) {
+      throw new apiError(400, "All fields are required");
+    }
+
+    const otpData = await Otp.findOne({
+      email,
+      otp,
+    });
+
+    console.log(otpData);
+    if (!otpData) {
+      throw new apiError(400, "Incorrect Otp");
+    }
+
+    const admin = await Admin.findOne({ email }).select("-password");
+
+    const accessToken = admin.generateAccessToken();
+
+    const deleted = await Otp.deleteOne({ email });
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    console.log(deleted, email);
+    return res
+      .status(201)
+      .cookie("accessToken", accessToken, options)
+      .json(
+        new apiResponse(
+          { admin, accessToken },
+          "Admin verified Sucessfully & Login successful"
+        )
+      );
+  };
+
+  loginUser = async (req, res) => {
+    const { email, password } = req.body;
+    console.log("password : ", password);
+    if (!email || !password) {
+      throw new apiError(400, "Email and password are required");
+    }
+
+    const user = await Admin.findOne({ email });
+
+    if (!user) {
+      throw new apiError(400, "Admin not exist");
+    }
+
+    const isPassValid = await user.isPasswordCorrect(password);
+    console.log(isPassValid);
+
+    if (!isPassValid) {
+      throw new apiError(401, "Invalid credentials");
+    }
 
     const otp = await generateOtp();
 
@@ -80,7 +143,7 @@ class AuthService {
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );
 
-    const content = `<p>Hello , ${username} <br> <b> ${otp} </b>is your one time verification(OTP) for your SoleSphere Account, valid for 90 seconds.
+    const content = `<p>Hello , Admin <br> <b> ${otp} </b>is your one time verification(OTP) for your SoleSphere Account, valid for 90 seconds.
     Please do not share with others.`;
 
     sendMail(email, "Login otp", content);
@@ -88,95 +151,8 @@ class AuthService {
     return res
       .status(201)
       .json(
-        new apiResponse(
-          { user: { username, email } },
-          "Otp has been sent successfully!"
-        )
+        new apiResponse({ Admin: { email } }, "Otp has been sent successfully!")
       );
-  };
-
-  verifyOtp = async (req, res) => {
-    const { username, email, password, otp } = req.body;
-
-    if (
-      [username, email, password, otp].some((field) => field?.trim() === "")
-    ) {
-      throw new apiError(400, "All fields are required");
-    }
-
-    const otpData = await Otp.findOne({
-      email,
-      otp,
-    });
-
-    console.log(otpData);
-    if (!otpData) {
-      throw new apiError(400, "Incorrect Otp");
-    }
-
-    const user = await User.create({
-      username: username.toLowerCase(),
-      email,
-      password,
-    });
-
-    const createdUser = await User.findById(user._id).select("-password");
-
-    if (!createdUser) {
-      throw new apiError(
-        500,
-        "Something went wrong while registering the user"
-      );
-    }
-
-    const accessToken = user.generateAccessToken();
-
-    const deleted = await Otp.deleteOne({ email });
-
-    console.log(deleted, email);
-    res
-      .status(201)
-      .json(
-        new apiResponse(
-          { createdUser, accessToken },
-          "User Created Sucessfully"
-        )
-      );
-  };
-
-  loginUser = async (req, res) => {
-    const { email, password } = req.body;
-    console.log("password : ", password);
-    if (!email || !password) {
-      throw new apiError(400, "Email and password are required");
-    }
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      throw new apiError(400, "User not exist");
-    }
-
-    const isPassValid = await user.isPasswordCorrect(password);
-    console.log(isPassValid);
-
-    if (!isPassValid) {
-      throw new apiError(401, "Invalid credentials");
-    }
-
-    const accessToken = user.generateAccessToken();
-
-    const loggedInUser = await User.findById(user._id).select("-password");
-
-    return res.status(200).json(
-      new apiResponse(
-        {
-          user: loggedInUser,
-          accessToken,
-        },
-        "Login successfully!"
-      )
-    );
   };
 
   forgotPassword = async (req, res) => {
