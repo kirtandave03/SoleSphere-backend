@@ -83,7 +83,6 @@ class ProductService {
 
   getProducts = async (req, res) => {
     const productName = req.query?.productName || "";
-
     let category = req.query?.category || "";
     let color = req.query?.color || "";
     let size = req.query?.size || "";
@@ -91,6 +90,8 @@ class ProductService {
     let closureType = req.query?.closureType || "";
     let brand = req.query?.brand || "";
     let gender = req.query?.gender || "";
+    let page = Number(req.query?.page) || 0;
+    let limit = Number(req.query?.limit) || 12;
 
     let sortOptions = {};
 
@@ -255,7 +256,9 @@ class ProductService {
     }
 
     // MongoDB aggregation to get filtered products
-    const products = await Product.aggregate(pipeline);
+    const products = await Product.aggregate(pipeline)
+      .skip(page * limit)
+      .limit(limit);
 
     if (!products || products.length === 0) {
       return res.status(404).json(new apiResponse([], "No products found"));
