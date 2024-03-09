@@ -3,7 +3,6 @@ const Product = require("../models/product.model");
 const apiResponse = require("../interfaces/apiResponse");
 const User = require("../models/user.model");
 const mongoose = require("mongoose");
-const { use } = require("bcrypt/promises");
 class ProductService {
   constructor() {}
 
@@ -307,7 +306,6 @@ class ProductService {
 
   addToCart = async (req, res) => {
     const { product_id, productName, color, size } = req.body;
-
     const product = await Product.findById(product_id);
 
     if (!product) {
@@ -411,11 +409,74 @@ class ProductService {
   };
 
   getCart = async (req, res) => {
-    const cart = await User.findById(req.user._id).select("cart");
+    const user = await User.findById(req.user._id).select("member cart");
+
+    let cartItems = user.cart.cartItems;
+    let deliveryCharge = 0;
+
+    const totalAmount = cartItems.reduce((accumulator, currentValue) => {
+      return (
+        accumulator + currentValue.quantity * currentValue.discounted_price
+      );
+    }, 0);
+
+    if (!user.member) {
+      deliveryCharge = 40;
+    }
 
     return res
       .status(200)
-      .json(new apiResponse(cart, "Cart fetched successfully"));
+      .json(
+        new apiResponse(
+          { cartItems, totalAmount, deliveryCharge },
+          "Fetched cartItems successfully"
+        )
+      );
+  };
+
+  deleteCartItem = async (req, res) => {
+    const { product_id, productName, color, size } = req.body;
+
+    const user = await User.findById(req.user._id).select("cart");
+    let cartItems = user.cart.cartItems;
+
+    const index = cartItems.findIndex(
+      (item) =>
+        item.productName === productName &&
+        item.color === color &&
+        item.size === size
+    );
+
+    if (index === -1) {
+      throw new apiError(404, "Product not found in cart");
+    }
+
+    if (cartItems[index].quantity === 1) {
+      cartItems.splice(index, 1);
+      user.cart.cartItems = cartItems;
+      await user.save();
+      res
+        .status(200)
+        .json(
+          new apiResponse(
+            user.cart.cartItems,
+            "Product removed from the cart successfully"
+          )
+        );
+    }
+
+    cartItems[index].quantity--;
+    user.cart.cartItems = cartItems;
+    await user.save();
+
+    res
+      .status(200)
+      .json(
+        new apiResponse(
+          user.cart.cartItems,
+          "Product removed from the cart successfully"
+        )
+      );
   };
 
   buyProduct = async (req, res) => {
