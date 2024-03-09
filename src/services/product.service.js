@@ -2,7 +2,8 @@ const apiError = require("../interfaces/apiError");
 const Product = require("../models/product.model");
 const apiResponse = require("../interfaces/apiResponse");
 const User = require("../models/user.model");
-const mongoose = require("mongoose");
+const Category = require("../models/category.model");
+const Brand = require("../models/brand.model");
 class ProductService {
   constructor() {}
 
@@ -23,7 +24,16 @@ class ProductService {
       qr,
     } = req.body;
 
-    // Once all uploads are complete, send the response with the URLs
+    const iscategory = await Category.findById(category);
+    const isBrand = await Brand.findById(brand);
+
+    if (!iscategory) {
+      throw new apiError(404, "Category not found");
+    }
+
+    if (!isBrand) {
+      throw new apiError(404, "Brand not found");
+    }
 
     const newProduct = new Product({
       productName,
@@ -37,12 +47,11 @@ class ProductService {
       giftPackaging,
       qr,
       gender,
-      review: [], // Set review to null initially
-      category, // Convert category to ObjectId
-      brand, // Convert brand to ObjectId
+      review: [],
+      category,
+      brand,
     });
 
-    // Save the new product to the database
     const savedProduct = await newProduct.save();
 
     // Respond with the saved product
@@ -54,19 +63,28 @@ class ProductService {
   };
 
   addVariant = async (req, res) => {
-    const { product, variants } = req.body;
+    const { product_id, variants } = req.body;
+    const { color } = variants;
 
-    const existedProduct = await Product.findById(product);
+    const existedProduct = await Product.findById(product_id);
 
     if (!existedProduct) {
       throw new apiError(404, "Product not found");
+    }
+
+    const index = existedProduct.variants.findIndex(
+      (item) => item.color === color
+    );
+
+    if (index !== -1) {
+      throw new apiError(400, "Variant already exists");
     }
 
     const newVariant = [...existedProduct.variants];
     newVariant.push(variants);
 
     const updatedProduct = await Product.findByIdAndUpdate(
-      product,
+      product_id,
       {
         variants: newVariant,
       },
