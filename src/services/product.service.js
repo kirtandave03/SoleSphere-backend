@@ -372,7 +372,10 @@ class ProductService {
       res
         .status(200)
         .json(
-          new apiResponse(cartItems, "Product added to the cart successfully!")
+          new apiResponse(
+            user.cart.cartItems,
+            "Product added to the cart successfully!"
+          )
         );
     }
 
@@ -393,7 +396,7 @@ class ProductService {
         .status(200)
         .json(
           new apiResponse(
-            [...cartItems, response],
+            user.cart.cartItems,
             "Product added to the cart successfully!"
           )
         );
@@ -497,10 +500,50 @@ class ProductService {
       );
   };
 
-  buyProduct = async (req, res) => {
-    const { index, paymentMethod } = req.body;
+  getOrderSummary = async (req, res) => {
+    const index = req.query?.index || 0;
+    const paymentMethod = req.query?.paymentMethod || "COD";
+    const deliveryCharge = 0;
 
-    const user = await User.findById(req.user._id).select("cart address");
+    const user = await User.findById(req.user._id).select(
+      "cart address member"
+    );
+    const address = user.address[index];
+    const cartItems = user.cart.cartItems;
+
+    if (!address) {
+      throw new apiError(404, "Address not found");
+    }
+
+    if (!cartItems) {
+      throw new apiError(400, "Please add something to your cart!");
+    }
+
+    if (!user.member) {
+      deliveryCharge = 40;
+    }
+
+    const TotalActualAmount = cartItems.reduce((acc, currVal) => {
+      return acc + currVal.quantity * currVal.actual_price;
+    }, 0);
+
+    const TotalDiscountedAmount = cartItems.reduce((acc, currVal) => {
+      return acc + currVal.quantity * currVal.discounted_price;
+    }, 0);
+
+    const totalDiscount = TotalActualAmount - TotalDiscountedAmount;
+
+    return res.status(200).json(
+      new apiResponse({
+        address,
+        paymentMethod,
+        TotalActualAmount,
+        TotalDiscountedAmount,
+        totalDiscount,
+        deliveryCharge,
+        cartItems,
+      })
+    );
   };
 }
 
