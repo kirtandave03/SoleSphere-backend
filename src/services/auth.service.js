@@ -57,7 +57,7 @@ class AuthService {
   };
 
   signupUser = async (req, res) => {
-    const { username, email } = signupUserValidator.parse(req.body);
+    const { username, email, password } = signupUserValidator.parse(req.body);
 
     if ([username, email].some((field) => field?.trim() === "")) {
       throw new apiError(400, "All fields are required");

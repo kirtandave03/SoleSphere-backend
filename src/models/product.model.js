@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema(
         image_urls: [String],
         sizes: [
           {
-            size: { type: String, required: true },
+            size: { type: Number, required: true },
             actual_price: { type: Number, required: true },
             discounted_price: { type: Number, required: true },
             stock: { type: Number, required: true },
@@ -65,6 +65,8 @@ const productSchema = new mongoose.Schema(
     gender: {
       type: "String",
       required: true,
+      lowercase: true,
+      enum: ["male", "female"],
     },
     review: [
       {
