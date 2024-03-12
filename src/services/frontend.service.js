@@ -1,13 +1,12 @@
-const SplashScreen = require("../models/splash.model");
+const OnBoardScreen = require("../models/onBoardScreen.model");
 const apiError = require("../interfaces/apiError");
 const apiResponse = require("../interfaces/apiResponse");
 const { uploadOnCloudinary } = require("../services/cloudinary");
-const asyncHandler = require("../utils/asyncHandler");
 
 class screenUpdatingService {
   constructor() {}
 
-  updateSplashScreen = async (req, res) => {
+  updateOnBoardScreen = async (req, res) => {
     const { name, title, subtitle } = req.body;
 
     var splashImageLocalPath;
@@ -24,7 +23,7 @@ class screenUpdatingService {
 
     const image = await uploadOnCloudinary(splashImageLocalPath);
 
-    const updatedSplashScreen = await SplashScreen.findOneAndUpdate(
+    const updatedOnBoardScreen = await OnBoardScreen.findOneAndUpdate(
       { name },
       {
         title,
@@ -34,7 +33,7 @@ class screenUpdatingService {
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );
 
-    if (!updatedSplashScreen) {
+    if (!updatedOnBoardScreen) {
       throw new apiError(500, "Something went wrong while updating screen");
     }
 
@@ -42,20 +41,20 @@ class screenUpdatingService {
       .status(201)
       .json(
         new apiResponse(
-          updatedSplashScreen,
+          updatedOnBoardScreen,
           "Splash Screen Updated Successfully"
         )
       );
   };
 
-  //   createSplashScreen = async (req, res) => {
+  //   createOnBoardScreen = async (req, res) => {
   //     const { name, title, subtitle } = req.body;
 
   //     if ([name, title, subtitle].some((field) => field?.trim() === "")) {
   //       throw new apiError(400, "All fields are required");
   //     }
 
-  //     const existedScreen = await SplashScreen.findOne({ name });
+  //     const existedScreen = await OnBoardScreen.findOne({ name });
 
   //     if (existedScreen) {
   //       throw new apiError(409, `Screen with ${name} already exist`);
@@ -75,7 +74,7 @@ class screenUpdatingService {
 
   //     const image = await uploadOnCloudinary(splashImageLocalPath);
 
-  //     const screen = new SplashScreen({
+  //     const screen = new OnBoardScreen({
   //       name,
   //       title,
   //       subtitle,
@@ -93,10 +92,10 @@ class screenUpdatingService {
   //       .json(new apiResponse(createdScreen, "Screen Created successfully"));
   //   };
 
-  getSplashScreen = async (req, res) => {
+  getOnBoardScreen = async (req, res) => {
     const { name } = req.body;
 
-    const screen = await SplashScreen.find();
+    const screen = await OnBoardScreen.find();
 
     if (!screen) {
       throw new apiError(404, "No Screen found");
