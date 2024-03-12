@@ -438,7 +438,7 @@ class ProductService {
         select: "rating review images",
         populate: {
           path: "user",
-          select: "username", // select the username field
+          select: "username",
         },
       })
       .populate({ path: "brand", select: "brand brandIcon" })
