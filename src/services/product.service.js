@@ -409,13 +409,37 @@ class ProductService {
     }
   };
 
+  // productDetail = async (req, res) => {
+  //   const product_id = req.query?.product_id;
+
+  //   const product = await Product.findById(product_id)
+  //     .populate({
+  //       path: "review",
+  //       select: "user rating review images",
+  //     })
+  //     .populate({ path: "brand", select: "brand brandIcon" })
+  //     .populate({ path: "category", select: "category" });
+
+  //   if (!product) {
+  //     throw new apiError(404, "Product not found");
+  //   }
+
+  //   return res
+  //     .status(200)
+  //     .json(new apiResponse(product, "Product fetched successfully"));
+  // };
+
   productDetail = async (req, res) => {
     const product_id = req.query?.product_id;
 
     const product = await Product.findById(product_id)
       .populate({
         path: "review",
-        select: "user rating review images",
+        select: "rating review images",
+        populate: {
+          path: "user",
+          select: "username", // select the username field
+        },
       })
       .populate({ path: "brand", select: "brand brandIcon" })
       .populate({ path: "category", select: "category" });

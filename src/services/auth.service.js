@@ -120,7 +120,7 @@ class AuthService {
     const user = await Admin.findOne({ email });
 
     if (!user) {
-      throw new apiError(400, "Admin not exist");
+      throw new apiError(404, "Admin not exist");
     }
 
     const isPassValid = await user.isPasswordCorrect(password);
