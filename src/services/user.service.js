@@ -151,7 +151,9 @@ class UserService {
 
     res
       .status(201)
-      .json(new apiResponse(updatedUser, "User phone number Successfully"));
+      .json(
+        new apiResponse(updatedUser, "User phone number updated Successfully")
+      );
   };
 
   updateUserAddress = async (req, res) => {
