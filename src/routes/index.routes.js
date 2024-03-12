@@ -4,7 +4,7 @@ const userRouter = require("./user.routes");
 const productRouter = require("./product.routes");
 const categoryRouter = require("./category.routes");
 const brandRouter = require("./brand.routes");
-const splashScreenRouter = require("./splashScreen.route");
+const splashScreenRouter = require("./onBoardScreen.route");
 // const subCategoryRouter = require("./subcategory.routes");
 const uploadFile = require("../controllers/fileupload.controller");
 const reviewRouter = require("../routes/review.routes");
@@ -24,6 +24,6 @@ router.use("/categories", categoryRouter);
 router.use("/brands", brandRouter);
 router.use("/products/reviews", reviewRouter);
 // router.use("/subcategories", subCategoryRouter);
-router.use("/splashScreen", splashScreenRouter);
+router.use("/onboard", splashScreenRouter);
 
 module.exports = router;
