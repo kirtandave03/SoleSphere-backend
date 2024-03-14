@@ -274,6 +274,14 @@ class ProductService {
       pipeline.push(sortReview);
     }
 
+    if (sort === "timestamp") {
+      pipeline.push({
+        $sort: {
+          createdAt: -1,
+        },
+      });
+    }
+
     // MongoDB aggregation to get filtered products
     const products = await Product.aggregate(pipeline)
       .skip(page * limit)
