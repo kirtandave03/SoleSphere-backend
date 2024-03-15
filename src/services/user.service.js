@@ -37,8 +37,8 @@ class UserService {
 
     const user = await User.findByIdAndUpdate(existingUser._id, {
       $set: {
-        phone,
-        address,
+        phone: phone || "",
+        address: address || "",
         profilePic: profilePic.url || "",
       },
     });
