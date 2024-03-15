@@ -17,6 +17,7 @@ const productSchema = new mongoose.Schema(
     sizeType: {
       type: String,
       required: true,
+      enum: ["UK", "US", "EU"],
     },
     variants: [
       {
@@ -32,24 +33,36 @@ const productSchema = new mongoose.Schema(
         ],
       },
     ],
-    discount: {
-      startDate: {
-        type: Date,
-      },
-      discount: {
-        type: Number,
-        default: 0,
-      },
-      endDate: {
-        type: Date,
-      },
-    },
     closureType: {
       type: String,
+      lowercase: true,
+      enum: [
+        "Zipper",
+        "Button",
+        "Hook and Loop",
+        "Lace-up",
+        "Buckle",
+        "Velcro",
+      ],
     },
     material: {
       type: String,
       required: true,
+      lowercase: true,
+      enum: [
+        "Leather",
+        "Suede",
+        "Canvas",
+        "Mesh",
+        "Rubber",
+        "Synthetic",
+        "Textile",
+        "Knit",
+        "Velvet",
+        "Denim",
+        "Cork",
+        "Faux Leather",
+      ],
     },
     longDescription: {
       type: String,
