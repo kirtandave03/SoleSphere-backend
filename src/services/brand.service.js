@@ -61,19 +61,44 @@ class BrandService {
 
   updateBrand = async (req, res) => {
     const { oldBrand, brand } = req.body;
+    const brandIconLocalPath = req.file?.path;
 
-    const brandData = await Brand.findOneAndUpdate(
-      { brand: oldBrand.toLowerCase() },
-      { brand: brand.toLowerCase() }
-    );
+    if (!brandIconLocalPath) {
+      const brandData = await Brand.findOneAndUpdate(
+        { brand: oldBrand.toLowerCase() },
+        { brand: brand.toLowerCase() },
+        {
+          new: true,
+        }
+      );
 
-    if (!brandData) {
-      throw new apiError(400, "Brand not found");
+      if (!brandData) {
+        throw new apiError(400, "Brand not found");
+      }
+
+      return res
+        .status(200)
+        .json(new apiResponse(brandData, "Brand updated successfully"));
+    } else {
+      const brandIcon = await uploadOnCloudinary(brandIconLocalPath);
+
+      if (!brandIcon.url) {
+        throw new apiError(500, "Error while uploading file");
+      }
+
+      const brandData = await Brand.findOneAndUpdate(
+        { brand: oldBrand.toLowerCase() },
+        { brand: brand.toLowerCase(), brandIcon: brandIcon.url }
+      );
+
+      if (!brandData) {
+        throw new apiError(400, "Brand not found");
+      }
+
+      return res
+        .status(200)
+        .json(new apiResponse(brandData, "Brand updated successfully"));
     }
-
-    return res
-      .status(200)
-      .json(new apiResponse(brandData, "Brand updated successfully"));
   };
 
   getAllBrands = async (req, res) => {

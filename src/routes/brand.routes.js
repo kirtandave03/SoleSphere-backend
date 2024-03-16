@@ -13,7 +13,7 @@ const router = Router();
 
 router.post("/", verifyJWT, upload.single("brandIcon"), addBrand);
 router.delete("/", verifyJWT, deleteBrand);
-router.put("/", verifyJWT, updateBrand);
+router.put("/", verifyJWT, upload.single("brandIcon"), updateBrand);
 router.get("/", getAllBrands);
 
 module.exports = router;

@@ -27,7 +27,7 @@ class CategoryService {
     });
 
     if (!existedCategory) {
-      throw new apiError(404, "Product not found");
+      throw new apiError(404, "Category not found");
     }
 
     await existedCategory.delete();
@@ -46,7 +46,7 @@ class CategoryService {
     );
 
     if (!catData) {
-      throw new apiError(400, "Category not found");
+      throw new apiError(404, "Category not found");
     }
 
     return res

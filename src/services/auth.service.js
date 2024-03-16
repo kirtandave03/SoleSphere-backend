@@ -5,7 +5,11 @@ const sendMail = require("../services/mailer");
 const { z } = require("zod");
 const Otp = require("../models/otp.model");
 const Admin = require("../models/admin.model");
-const { options } = require("../app");
+const cors = require("cors");
+const express = require("express");
+const app = express();
+
+app.use(cors());
 
 const signupUserValidator = z.object({
   username: z
