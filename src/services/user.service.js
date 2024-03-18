@@ -33,13 +33,18 @@ class UserService {
 
     console.log("Request Files : ", req.files);
 
-    const profilePic = await uploadOnCloudinary(profilePicLocalPath);
+    const profilePic = profilePicLocalPath
+      ? await uploadOnCloudinary(profilePicLocalPath)
+      : null;
 
     const user = await User.findByIdAndUpdate(existingUser._id, {
       $set: {
         phone: phone || "",
         address: address || "",
-        profilePic: profilePic.url || "",
+        profilePic:
+          profilePic === null
+            ? "https://res.cloudinary.com/dz9ga1vmp/image/upload/v1709285608/y2qgtgbukd0qosbxiub4.jpg"
+            : profilePic.url,
       },
     });
 
