@@ -536,7 +536,7 @@ class ProductService {
   };
 
   deleteCartItem = async (req, res) => {
-    const { product_id, productName, color, size } = req.body;
+    const { productName, color, size } = req.body;
 
     const user = await User.findById(req.user._id).select("cart");
     let cartItems = user.cart.cartItems;
