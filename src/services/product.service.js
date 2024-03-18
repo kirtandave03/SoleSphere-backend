@@ -312,6 +312,18 @@ class ProductService {
       .json(new apiResponse(responseData, "Products fetched successfully"));
   };
 
+  getAllProducts = async (req, res) => {
+    const product = await Product.find().select("productName");
+
+    if (!product) {
+      throw new apiError(500, "Error while fetching products");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(product, "Products fetched successfully"));
+  };
+
   deleteProduct = async (req, res) => {
     const { productName } = req.body;
 
