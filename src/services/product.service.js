@@ -342,6 +342,42 @@ class ProductService {
       .json(new apiResponse(product, "Product deleted successfully"));
   };
 
+  editProduct = async (req, res) => {
+    const {
+      productName,
+      updatedProductName,
+      updatedActualPrice,
+      updatedDiscountPrice,
+    } = req.body;
+
+    const updateObject = {};
+    if (updatedProductName) {
+      updateObject.productName = updatedProductName;
+    }
+    if (updatedActualPrice) {
+      updateObject.actual_price = updatedActualPrice;
+    }
+    if (updatedDiscountPrice) {
+      updateObject.discounted_price = updatedDiscountPrice;
+    }
+
+    const product = await Product.findOneAndUpdate(
+      { productName },
+      {
+        $set: updateObject,
+      },
+      { new: true }
+    );
+
+    if (!product) {
+      throw new apiError(404, "Product not found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(product, "Product Updated Successfully"));
+  };
+
   addToCart = async (req, res) => {
     const { product_id, productName, color, size } = req.body;
     const product = await Product.findById(product_id);

@@ -9,6 +9,7 @@ const {
   deleteCartItem,
   getAllProducts,
   getOrderSummary,
+  editProduct,
 } = require("../controllers/product.controller.model");
 
 const verifyJWT = require("../middlewares/auth.middleware");
@@ -26,5 +27,6 @@ router.get("/get-cart", verifyJWT, getCart);
 router.get("/product-detail", productDetail);
 router.delete("/delete-cart-item", verifyJWT, deleteCartItem);
 router.get("/order-summary", verifyJWT, getOrderSummary);
+router.post("/edit-product", verifyJWT, editProduct);
 
 module.exports = router;
