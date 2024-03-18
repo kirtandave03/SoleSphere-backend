@@ -7,6 +7,7 @@ const {
   productDetail,
   getCart,
   deleteCartItem,
+  getAllProducts,
   getOrderSummary,
 } = require("../controllers/product.controller.model");
 
@@ -17,6 +18,7 @@ const router = Router();
 
 router.post("/", verifyJWT, addProduct);
 router.get("/", getProducts);
+router.get("/all-products", getAllProducts);
 router.post("/add-variant", verifyJWT, addVariant);
 router.delete("/", verifyJWT, deleteProduct);
 router.post("/add-to-cart", verifyJWT, addToCart);

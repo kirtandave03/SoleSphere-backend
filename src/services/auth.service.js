@@ -38,7 +38,8 @@ class AuthService {
     const existedUser = await User.findOne({ email });
 
     if (existedUser) {
-      throw new apiError(409, "User with email already exist");
+      // throw new apiError(409, "User with email already exist");
+      return res.status(409).json({ message: "User exists" });
     }
 
     const user = await User.create({
