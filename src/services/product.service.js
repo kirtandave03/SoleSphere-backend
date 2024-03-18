@@ -344,6 +344,11 @@ class ProductService {
 
   addToCart = async (req, res) => {
     const { product_id, productName, color, size } = req.body;
+
+    console.log(color, typeof color);
+    console.log(size, typeof size);
+    console.log(productName, typeof productName);
+
     const product = await Product.findById(product_id);
 
     if (!product) {
@@ -358,6 +363,8 @@ class ProductService {
 
     let cartItems = user.cart.cartItems;
     let variants = product.variants;
+
+    console.log(cartItems);
 
     let indexOfVariant = variants.findIndex((item) => item.color === color);
 
@@ -382,10 +389,27 @@ class ProductService {
       (item) =>
         item.productName === productName &&
         item.color === color &&
-        item.size === size
+        item.size == size
     );
 
-    if (index !== -1 && stock >= cartItems[index].quantity) {
+    // const indexOFName = await cartItems.findIndex(
+    //   (item) => item.productName == productName
+    // );
+
+    // const indexOFCOLOR = await cartItems.findIndex((item) => {
+    //   item.color == color;
+    //   console.log(item.color, " ", color);
+    // });
+    // const indexOFSize = await cartItems.findIndex((item) => item.size == size);
+
+    // console.log(cartItems);
+    // console.log("Product Name", indexOFName);
+    // console.log("color", indexOFCOLOR);
+    // console.log("Size", indexOFSize);
+
+    console.log(index);
+
+    if (index != -1 && stock >= cartItems[index].quantity) {
       cartItems[index].quantity++;
       user.cart.cartItems = cartItems;
       await user.save();
@@ -427,6 +451,7 @@ class ProductService {
         .status(200)
         .json(new apiResponse(cartItems, "Not Enough stock available"));
     }
+    // res.send("hello");
   };
 
   // productDetail = async (req, res) => {
