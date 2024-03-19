@@ -346,19 +346,55 @@ class ProductService {
     const {
       productName,
       updatedProductName,
-      updatedActualPrice,
-      updatedDiscountPrice,
+      shortDescription,
+      longDescription,
+      closureType,
+      material,
+      gender,
+      sizeType,
+      category,
+      brand,
     } = req.body;
 
     const updateObject = {};
     if (updatedProductName) {
-      updateObject.productName = updatedProductName;
+      updateObject.productName = updatedProductName.toLowerCase();
     }
-    if (updatedActualPrice) {
-      updateObject.actual_price = updatedActualPrice;
+    if (shortDescription) {
+      updateObject.shortDescription = shortDescription;
     }
-    if (updatedDiscountPrice) {
-      updateObject.discounted_price = updatedDiscountPrice;
+    if (longDescription) {
+      updateObject.longDescription = longDescription;
+    }
+    if (closureType) {
+      updateObject.closureType = closureType.toLowerCase();
+    }
+    if (material) {
+      updateObject.material = material.toLowerCase();
+    }
+    if (gender) {
+      updateObject.gender = gender.toLowerCase();
+    }
+    if (sizeType) {
+      updateObject.sizeType = sizeType.toUpperCase();
+    }
+    if (category) {
+      const isCategory = await Category.findOne({ category });
+
+      if (isCategory) {
+        updateObject.category = isCategory._id;
+      } else {
+        throw new apiError(404, "Category not found");
+      }
+    }
+    if (brand) {
+      const isBrand = await Brand.findOne({ brand });
+
+      if (isBrand) {
+        updateObject.brand = isBrand._id;
+      } else {
+        throw new apiError(404, "Brand not found");
+      }
     }
 
     const product = await Product.findOneAndUpdate(
