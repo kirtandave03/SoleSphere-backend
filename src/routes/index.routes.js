@@ -14,7 +14,7 @@ const verifyToken = require("../middlewares/firebase_auth.middleware");
 const router = Router();
 
 router.get("/", verifyToken, (req, res) => {
-  res.send("Hello word");
+  res.send("Hello word, Welcome to application");
 });
 
 router.post("/file-upload", upload.array("images"), uploadFile);
