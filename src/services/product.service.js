@@ -427,7 +427,7 @@ class ProductService {
       throw new apiError(400, "Invalid product name");
     }
 
-    const user = await User.findById(req.user._id).select("cart");
+    const user = await User.findOne({ UID: req.user.UID }).select("cart");
 
     let cartItems = user.cart.cartItems;
     let variants = product.variants;
@@ -500,7 +500,6 @@ class ProductService {
         .status(200)
         .json(new apiResponse(cartItems, "Not Enough stock available"));
     }
-    // res.send("hello");
   };
 
   // productDetail = async (req, res) => {
@@ -548,7 +547,9 @@ class ProductService {
   };
 
   getCart = async (req, res) => {
-    const user = await User.findById(req.user._id).select("member cart");
+    const user = await User.findOne({ UID: req.user.UID }).select(
+      "member cart"
+    );
 
     let cartItems = user.cart.cartItems;
     let deliveryCharge = 0;
@@ -577,7 +578,7 @@ class ProductService {
     const { productName, color, size } = req.body;
     const flag = req.body.flag || 0;
 
-    const user = await User.findById(req.user._id).select("cart");
+    const user = await User.findOne({ UID: req.user.UID }).select("cart");
     let cartItems = user.cart.cartItems;
 
     const index = cartItems.findIndex(
@@ -638,7 +639,7 @@ class ProductService {
     const paymentMethod = req.query?.paymentMethod || "COD";
     const deliveryCharge = 0;
 
-    const user = await User.findById(req.user._id).select(
+    const user = await User.findOne({ UID: req.user.UID }).select(
       "cart address member"
     );
     const address = user.address[index];

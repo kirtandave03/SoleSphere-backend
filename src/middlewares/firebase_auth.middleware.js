@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 const asyncHandler = require("../utils/asyncHandler");
 const User = require("../models/user.model");
 const apiError = require("../interfaces/apiError");
-// const credential = require("../credential.json");
+
 const base64Encoded = process.env.CREDENTIALS;
 const credential = atob(base64Encoded);
 const parsedCredentials = JSON.parse(credential);
