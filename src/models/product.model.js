@@ -21,7 +21,7 @@ const productSchema = new mongoose.Schema(
     },
     variants: [
       {
-        color: { type: String, lowercase: true },
+        color: { type: String },
         image_urls: [String],
         sizes: [
           {
