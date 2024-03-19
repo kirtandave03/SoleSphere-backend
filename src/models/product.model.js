@@ -79,7 +79,7 @@ const productSchema = new mongoose.Schema(
       type: "String",
       required: true,
       lowercase: true,
-      enum: ["male", "female"],
+      enum: ["male", "female", "unisex"],
     },
     review: [
       {

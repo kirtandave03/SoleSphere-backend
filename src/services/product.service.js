@@ -381,10 +381,6 @@ class ProductService {
   addToCart = async (req, res) => {
     const { product_id, productName, color, size } = req.body;
 
-    console.log(color, typeof color);
-    console.log(size, typeof size);
-    console.log(productName, typeof productName);
-
     const product = await Product.findById(product_id);
 
     if (!product) {
@@ -427,23 +423,6 @@ class ProductService {
         item.color === color &&
         item.size == size
     );
-
-    // const indexOFName = await cartItems.findIndex(
-    //   (item) => item.productName == productName
-    // );
-
-    // const indexOFCOLOR = await cartItems.findIndex((item) => {
-    //   item.color == color;
-    //   console.log(item.color, " ", color);
-    // });
-    // const indexOFSize = await cartItems.findIndex((item) => item.size == size);
-
-    // console.log(cartItems);
-    // console.log("Product Name", indexOFName);
-    // console.log("color", indexOFCOLOR);
-    // console.log("Size", indexOFSize);
-
-    console.log(index);
 
     if (index != -1 && stock >= cartItems[index].quantity) {
       cartItems[index].quantity++;
