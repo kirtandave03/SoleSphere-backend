@@ -11,10 +11,12 @@ const reviewRouter = require("../routes/review.routes");
 const paymentRouter = require("./payment.routes");
 const upload = require("../middlewares/multer.middleware");
 const verifyToken = require("../middlewares/firebase_auth.middleware");
+const User = require("../models/user.model");
 const router = Router();
 
-router.get("/", verifyToken, (req, res) => {
-  res.send("Hello word");
+router.get("/", verifyToken, async (req, res) => {
+  const user = await User.findOne({ UID: req.user.UID });
+  res.send(user);
 });
 
 router.post("/file-upload", upload.array("images"), uploadFile);
