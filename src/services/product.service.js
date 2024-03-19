@@ -432,8 +432,6 @@ class ProductService {
     let cartItems = user.cart.cartItems;
     let variants = product.variants;
 
-    console.log(cartItems);
-
     let indexOfVariant = variants.findIndex((item) => item.color === color);
 
     if (indexOfVariant === -1) {
@@ -577,6 +575,7 @@ class ProductService {
 
   deleteCartItem = async (req, res) => {
     const { productName, color, size } = req.body;
+    const flag = req.body.flag || 0;
 
     const user = await User.findById(req.user._id).select("cart");
     let cartItems = user.cart.cartItems;
@@ -592,7 +591,34 @@ class ProductService {
       throw new apiError(404, "Product not found in cart");
     }
 
-    if (cartItems[index].quantity === 1) {
+    if (!flag) {
+      if (cartItems[index].quantity === 1) {
+        cartItems.splice(index, 1);
+        user.cart.cartItems = cartItems;
+        await user.save();
+        res
+          .status(200)
+          .json(
+            new apiResponse(
+              user.cart.cartItems,
+              "Product removed from the cart successfully"
+            )
+          );
+      }
+
+      cartItems[index].quantity--;
+      user.cart.cartItems = cartItems;
+      await user.save();
+
+      res
+        .status(200)
+        .json(
+          new apiResponse(
+            user.cart.cartItems,
+            "Product removed from the cart successfully"
+          )
+        );
+    } else {
       cartItems.splice(index, 1);
       user.cart.cartItems = cartItems;
       await user.save();
@@ -605,19 +631,6 @@ class ProductService {
           )
         );
     }
-
-    cartItems[index].quantity--;
-    user.cart.cartItems = cartItems;
-    await user.save();
-
-    res
-      .status(200)
-      .json(
-        new apiResponse(
-          user.cart.cartItems,
-          "Product removed from the cart successfully"
-        )
-      );
   };
 
   getOrderSummary = async (req, res) => {
