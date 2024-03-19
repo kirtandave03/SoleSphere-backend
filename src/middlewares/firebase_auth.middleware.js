@@ -1,8 +1,8 @@
 const admin = require("firebase-admin");
-const credentials = require("./credential.json");
+const credentials = require("../credential.json");
 const asyncHandler = require("../utils/asyncHandler");
 const User = require("../models/user.model");
-
+const apiError = require("../interfaces/apiError");
 admin.initializeApp({
   credential: admin.credential.cert(credentials),
 });
