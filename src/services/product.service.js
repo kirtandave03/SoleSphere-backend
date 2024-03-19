@@ -416,6 +416,7 @@ class ProductService {
 
   addToCart = async (req, res) => {
     const { product_id, productName, color, size } = req.body;
+
     const product = await Product.findById(product_id);
 
     if (!product) {
@@ -430,6 +431,8 @@ class ProductService {
 
     let cartItems = user.cart.cartItems;
     let variants = product.variants;
+
+    console.log(cartItems);
 
     let indexOfVariant = variants.findIndex((item) => item.color === color);
 
@@ -454,10 +457,10 @@ class ProductService {
       (item) =>
         item.productName === productName &&
         item.color === color &&
-        item.size === size
+        item.size == size
     );
 
-    if (index !== -1 && stock >= cartItems[index].quantity) {
+    if (index != -1 && stock >= cartItems[index].quantity) {
       cartItems[index].quantity++;
       user.cart.cartItems = cartItems;
       await user.save();
@@ -499,6 +502,7 @@ class ProductService {
         .status(200)
         .json(new apiResponse(cartItems, "Not Enough stock available"));
     }
+    // res.send("hello");
   };
 
   // productDetail = async (req, res) => {

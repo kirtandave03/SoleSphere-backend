@@ -73,7 +73,7 @@ const userSchema = new mongoose.Schema(
           product_id: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
           productName: { type: String, lowercase: true },
           image_url: { type: String, lowercase: true },
-          color: { type: String, lowercase: true },
+          color: { type: String },
           size: Number,
           quantity: Number,
           actual_price: Number,
