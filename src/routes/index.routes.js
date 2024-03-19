@@ -9,9 +9,10 @@ const splashScreenRouter = require("./onBoardScreen.route");
 const uploadFile = require("../controllers/fileupload.controller");
 const reviewRouter = require("../routes/review.routes");
 const upload = require("../middlewares/multer.middleware");
+const verifyToken = require("../middlewares/firebase_auth.middleware");
 const router = Router();
 
-router.get("/", (req, res) => {
+router.get("/", verifyToken, (req, res) => {
   res.send("Hello word");
 });
 
