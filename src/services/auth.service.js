@@ -234,7 +234,7 @@ class AuthService {
   };
 
   changePassword = async (req, res) => {
-    const { email, isVerified, password, confirmPassword } = req.body;
+    const { email, password, confirmPassword } = req.body;
 
     // if (
     //   [email, isVerified, password, confirmPassword].some(
@@ -243,6 +243,10 @@ class AuthService {
     // ) {
     //   throw new apiError(400, "email and otp are required");
     // }
+
+    const otp = await Otp.findOne({ email });
+
+    const { isVerified } = otp;
 
     if (password !== confirmPassword) {
       throw new apiError(400, "Password and confirm password are not same");
@@ -260,7 +264,9 @@ class AuthService {
     const deleted = await Otp.deleteOne({ email });
     console.log(deleted, email);
 
-    res.status(200).json(new apiResponse(user, "password changed Sucessfully"));
+    res
+      .status(200)
+      .json(new apiResponse(user, "password changed Successfully"));
   };
 }
 
