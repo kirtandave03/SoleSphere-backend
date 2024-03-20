@@ -93,12 +93,13 @@ class AuthService {
     const admin = await Admin.findOne({ email }).select("-password");
 
     const accessToken = admin.generateAccessToken();
+    console.log(accessToken);
 
     const deleted = await Otp.deleteOne({ email });
 
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: false,
     };
 
     console.log(deleted, email);
