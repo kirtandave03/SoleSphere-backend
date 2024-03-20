@@ -268,6 +268,50 @@ class AuthService {
       .status(200)
       .json(new apiResponse(user, "password changed Successfully"));
   };
+
+  sendOtp = async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+      throw new apiError(400, "Email is required");
+    }
+
+    const user = await Admin.findOne({ email });
+
+    if (!user) {
+      throw new apiError(404, "Admin not exist");
+    }
+
+    const isOtpThere = await Otp.findOne({ email });
+
+    if (!isOtpThere) {
+      throw new apiError(404, "Otp was not even sent earlier");
+    }
+
+    const otp = await generateOtp();
+
+    const currentDate = new Date();
+    await Otp.findOneAndUpdate(
+      { email },
+      {
+        otp: otp,
+        isVerified: false,
+        timestamp: new Date(currentDate.getTime()),
+      },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
+
+    const content = `<p>Hello , Admin <br> <b> ${otp} </b>is your one time verification(OTP) for your SoleSphere Account, valid for 90 seconds.
+    Please do not share with others.`;
+
+    sendMail(email, "Login otp", content);
+
+    return res
+      .status(201)
+      .json(
+        new apiResponse({ Admin: { email } }, "Otp has been sent successfully!")
+      );
+  };
 }
 
 module.exports = AuthService;
