@@ -1,9 +1,9 @@
 const { addReview, deleteReview } = require("../controllers/review.controller");
-const verifyJWT = require("../middlewares/auth.middleware");
+const verifyToken = require("../middlewares/firebase_auth.middleware");
 
 const Router = require("express").Router;
 const router = Router();
 
-router.post("/", verifyJWT, addReview);
-router.delete("/", verifyJWT, deleteReview);
+router.post("/", verifyToken, addReview);
+router.delete("/", verifyToken, deleteReview);
 module.exports = router;

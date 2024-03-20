@@ -13,6 +13,7 @@ const {
 } = require("../controllers/product.controller.model");
 
 const verifyJWT = require("../middlewares/auth.middleware");
+const verifyToken = require("../middlewares/firebase_auth.middleware");
 const Router = require("express").Router;
 
 const router = Router();
@@ -22,11 +23,12 @@ router.get("/", getProducts);
 router.get("/all-products", getAllProducts);
 router.post("/add-variant", verifyJWT, addVariant);
 router.delete("/", verifyJWT, deleteProduct);
-router.post("/add-to-cart", verifyJWT, addToCart);
-router.get("/get-cart", verifyJWT, getCart);
 router.get("/product-detail", productDetail);
-router.delete("/delete-cart-item", verifyJWT, deleteCartItem);
-router.get("/order-summary", verifyJWT, getOrderSummary);
 router.post("/edit-product", verifyJWT, editProduct);
+
+router.post("/add-to-cart", verifyToken, addToCart);
+router.get("/get-cart", verifyToken, getCart);
+router.delete("/delete-cart-item", verifyToken, deleteCartItem);
+router.get("/order-summary", verifyToken, getOrderSummary);
 
 module.exports = router;

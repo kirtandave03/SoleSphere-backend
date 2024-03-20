@@ -10,7 +10,7 @@ class ReviewService {
     const { product_id, rating, review, images } = req.body;
 
     const reviewObj = new Review({
-      user: req.user._id,
+      user: req.user.UID,
       rating,
       review,
       images,

@@ -15,7 +15,7 @@ class UserService {
 
     // console.log("Request Body :",req.body);
 
-    const existingUser = await User.findById(req.user._id);
+    const existingUser = await User.findOne({ UID: req.user.UID });
 
     if (!existingUser) {
       throw new apiError(404, "User not found");
@@ -63,7 +63,7 @@ class UserService {
   };
 
   deleteUser = async (req, res) => {
-    const user = await User.findById(req.user._id);
+    const user = await User.findOne({ UID: req.user.UID });
     // const user = userService.addUser();
 
     if (!user) {
@@ -80,7 +80,7 @@ class UserService {
   updateUserProfilePic = async (req, res) => {
     const ProfilePicLocalPath = req.file?.path;
 
-    const userDocument = await User.findById(req.user?._id);
+    const userDocument = await User.findOne({ UID: req.user.UID });
     const oldProfileLink = userDocument.profilePic;
 
     if (!ProfilePicLocalPath) {
@@ -121,7 +121,7 @@ class UserService {
   };
 
   getCurrentUser = async (req, res) => {
-    const user = await User.findById(req.user._id).select("-password");
+    const user = await User.findOne({ UID: req.user.UID }).select("-password");
 
     if (!user) {
       throw new apiError(404, "User not found");
@@ -133,7 +133,7 @@ class UserService {
   updateUserPhone = async (req, res) => {
     const { updatedPhone } = req.body;
 
-    const existingUser = await User.findById(req.user._id);
+    const existingUser = await User.findOne({ UID: req.user.UID });
 
     if (!existingUser) {
       throw new apiError(404, "User not found");
@@ -164,7 +164,7 @@ class UserService {
   updateUserAddress = async (req, res) => {
     const { newAddress, index } = req.body;
 
-    const existingUser = await User.findById(req.user._id);
+    const existingUser = await User.findOne({ UID: req.user.UID });
 
     if (!existingUser) {
       throw new apiError(404, "User not found");
@@ -201,7 +201,7 @@ class UserService {
       throw new apiError(400, "Product id is required");
     }
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findOne({ UID: req.user.UID });
 
     if (!user) {
       throw new apiError(404, "User not exists");
@@ -227,7 +227,7 @@ class UserService {
   };
 
   getWishList = async (req, res) => {
-    const wishlist = await User.findById(req.user._id)
+    const wishlist = await User.findOne({ UID: req.user.UID })
       .select("wishlist")
       .populate({
         path: "wishlist",

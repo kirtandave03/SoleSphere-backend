@@ -1,6 +1,6 @@
 const Router = require("express").Router;
 const upload = require("../middlewares/multer.middleware");
-const verifyJWT = require("../middlewares/auth.middleware");
+const verifyToken = require("../middlewares/firebase_auth.middleware");
 
 const router = Router();
 
@@ -15,10 +15,10 @@ const {
   getWishList,
 } = require("../controllers/user.controller");
 
-router.get("/", verifyJWT, getCurrentUser);
+router.get("/", verifyToken, getCurrentUser);
 router.post(
   "/",
-  verifyJWT,
+  verifyToken,
   upload.fields([
     {
       name: "profilePic",
@@ -28,20 +28,21 @@ router.post(
   userDetail
 );
 
-router.delete("/", verifyJWT, deleteUser);
+router.delete("/", verifyToken, deleteUser);
 
 router.put(
   "/update-profile-pic",
-  verifyJWT,
+  verifyToken,
   upload.single("profilePic"),
   updateUserProfilePic
 );
 
-router.put("/update-user-phone-number", verifyJWT, updateUserPhone);
+router.put("/update-user-phone-number", verifyToken, updateUserPhone);
 
-router.put("/update-address", verifyJWT, updateUserAddress);
+router.put("/update-address", verifyToken, updateUserAddress);
 
-router.post("/add-to-wishlist", verifyJWT, addToWishList);
-router.get("/wishlist", verifyJWT, getWishList);
+router.post("/add-to-wishlist", verifyToken, addToWishList);
+
+router.get("/wishlist", verifyToken, getWishList);
 
 module.exports = router;
