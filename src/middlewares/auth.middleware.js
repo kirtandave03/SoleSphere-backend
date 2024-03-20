@@ -5,7 +5,7 @@ const asyncHandler = require("../utils/asyncHandler");
 
 const verifyJWT = asyncHandler(async (req, _, next) => {
   try {
-    const token = req.cookies.authToken;
+    const token = req.header("auth-token") || req.cookies.authToken;
 
     if (!token) {
       // check the status code use 401

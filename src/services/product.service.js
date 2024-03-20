@@ -547,9 +547,7 @@ class ProductService {
   };
 
   getCart = async (req, res) => {
-    const user = await User.findOne({ UID: req.user.UID }).select(
-      "member cart"
-    );
+    const user = await User.findOne({ UID: req.user.UID }).select("cart");
 
     let cartItems = user.cart.cartItems;
     let deliveryCharge = 0;
@@ -560,7 +558,7 @@ class ProductService {
       );
     }, 0);
 
-    if (!user.member) {
+    if (totalAmount < 500) {
       deliveryCharge = 40;
     }
 

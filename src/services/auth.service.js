@@ -165,7 +165,7 @@ class AuthService {
       throw new apiError(400, "email is required");
     }
 
-    const user = await User.findOne({ email });
+    const user = await Admin.findOne({ email });
 
     if (!user) {
       throw new apiError(404, "User not found");
@@ -247,7 +247,7 @@ class AuthService {
       throw new apiError(400, "Password and confirm password are not same");
     }
 
-    const user = await User.findOne({ email });
+    const user = await Admin.findOne({ email });
 
     if (!isVerified) {
       throw new apiError(401, "Unauthorized to change password");

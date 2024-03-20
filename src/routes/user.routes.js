@@ -15,6 +15,8 @@ const {
   getWishList,
 } = require("../controllers/user.controller");
 
+// Secure Routes
+
 router.get("/", verifyToken, getCurrentUser);
 router.post(
   "/",
@@ -27,22 +29,16 @@ router.post(
   ]),
   userDetail
 );
-
 router.delete("/", verifyToken, deleteUser);
-
 router.put(
   "/update-profile-pic",
   verifyToken,
   upload.single("profilePic"),
   updateUserProfilePic
 );
-
 router.put("/update-user-phone-number", verifyToken, updateUserPhone);
-
 router.put("/update-address", verifyToken, updateUserAddress);
-
 router.post("/add-to-wishlist", verifyToken, addToWishList);
-
 router.get("/wishlist", verifyToken, getWishList);
 
 module.exports = router;
