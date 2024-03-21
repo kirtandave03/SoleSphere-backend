@@ -18,14 +18,18 @@ const Router = require("express").Router;
 
 const router = Router();
 
-router.post("/", verifyJWT, addProduct);
+// Open Routes
 router.get("/", getProducts);
 router.get("/all-products", getAllProducts);
+router.get("/product-detail", productDetail);
+
+// Admin Routes
+router.post("/", verifyJWT, addProduct);
 router.post("/add-variant", verifyJWT, addVariant);
 router.delete("/", verifyJWT, deleteProduct);
-router.get("/product-detail", productDetail);
 router.post("/edit-product", verifyJWT, editProduct);
 
+// Secure Routes
 router.post("/add-to-cart", verifyToken, addToCart);
 router.get("/get-cart", verifyToken, getCart);
 router.delete("/delete-cart-item", verifyToken, deleteCartItem);

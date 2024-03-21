@@ -1,10 +1,18 @@
 const Router = require("express").Router;
 
 const verifyJWT = require("../middlewares/auth.middleware");
-const { order, verify } = require("../controllers/payment.controller");
+const {
+  razorpayOrder,
+  razorpayVerify,
+  order,
+} = require("../controllers/payment.controller");
+const verifyToken = require("../middlewares/firebase_auth.middleware");
 const router = Router();
 
-router.post("/orders", verifyJWT, order);
-router.post("/verify", verifyJWT, verify);
+// Secure Routes
+router.post("/razorpay-orders", verifyToken, razorpayOrder);
+router.post("/razorpay-verify", verifyToken, razorpayVerify);
+
+router.post("/order", verifyJWT, order);
 
 module.exports = router;

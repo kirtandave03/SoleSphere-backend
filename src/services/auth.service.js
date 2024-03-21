@@ -192,7 +192,7 @@ class AuthService {
       throw new apiError(400, "email is required");
     }
 
-    const user = await User.findOne({ email });
+    const user = await Admin.findOne({ email });
 
     if (!user) {
       throw new apiError(404, "User not found");
@@ -260,7 +260,7 @@ class AuthService {
   };
 
   changePassword = async (req, res) => {
-    const { email, isVerified, password, confirmPassword } = req.body;
+    const { email, password, confirmPassword } = req.body;
 
     // if (
     //   [email, isVerified, password, confirmPassword].some(
@@ -270,11 +270,15 @@ class AuthService {
     //   throw new apiError(400, "email and otp are required");
     // }
 
+    const otp = await Otp.findOne({ email });
+
+    const { isVerified } = otp;
+
     if (password !== confirmPassword) {
       throw new apiError(400, "Password and confirm password are not same");
     }
 
-    const user = await User.findOne({ email });
+    const user = await Admin.findOne({ email });
 
     if (!isVerified) {
       throw new apiError(401, "Unauthorized to change password");
@@ -286,7 +290,61 @@ class AuthService {
     const deleted = await Otp.deleteOne({ email });
     console.log(deleted, email);
 
-    res.status(200).json(new apiResponse(user, "password changed Sucessfully"));
+    res
+      .status(200)
+      .json(new apiResponse(user, "password changed Successfully"));
+  };
+
+  verifyAdmin = async (req, res) => {
+    const admin = await Admin.findById(req.user._id);
+    console.log(admin);
+    return res
+      .status(200)
+      .json(new apiResponse({ success: true }, "Access Token Verified"));
+  };
+
+  sendOtp = async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+      throw new apiError(400, "Email is required");
+    }
+
+    const user = await Admin.findOne({ email });
+
+    if (!user) {
+      throw new apiError(404, "Admin not exist");
+    }
+
+    const isOtpThere = await Otp.findOne({ email });
+
+    if (!isOtpThere) {
+      throw new apiError(404, "Otp was not even sent earlier");
+    }
+
+    const otp = await generateOtp();
+
+    const currentDate = new Date();
+    await Otp.findOneAndUpdate(
+      { email },
+      {
+        otp: otp,
+        isVerified: false,
+        timestamp: new Date(currentDate.getTime()),
+      },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
+
+    const content = `<p>Hello , Admin <br> <b> ${otp} </b>is your one time verification(OTP) for your SoleSphere Account, valid for 90 seconds.
+    Please do not share with others.`;
+
+    sendMail(email, "Login otp", content);
+
+    return res
+      .status(201)
+      .json(
+        new apiResponse({ Admin: { email } }, "Otp has been sent successfully!")
+      );
   };
 
   verifyToken = (req, res) => {

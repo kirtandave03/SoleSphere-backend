@@ -3,7 +3,9 @@ const asyncHandler = require("../utils/asyncHandler");
 
 const paymentService = new PaymentService();
 
-const order = asyncHandler(paymentService.order);
-const verify = asyncHandler(paymentService.verify);
+const razorpayOrder = asyncHandler(paymentService.razorpayOrder);
+const razorpayVerify = asyncHandler(paymentService.razorpayVerify);
 
-module.exports = { order, verify };
+const order = asyncHandler(paymentService.order);
+
+module.exports = { razorpayOrder, razorpayVerify, order };

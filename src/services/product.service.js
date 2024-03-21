@@ -547,9 +547,7 @@ class ProductService {
   };
 
   getCart = async (req, res) => {
-    const user = await User.findOne({ UID: req.user.UID }).select(
-      "member cart"
-    );
+    const user = await User.findOne({ UID: req.user.UID }).select("cart");
 
     let cartItems = user.cart.cartItems;
     let deliveryCharge = 0;
@@ -560,7 +558,7 @@ class ProductService {
       );
     }, 0);
 
-    if (!user.member) {
+    if (totalAmount < 500) {
       deliveryCharge = 40;
     }
 
@@ -636,7 +634,8 @@ class ProductService {
 
   getOrderSummary = async (req, res) => {
     const index = req.query?.index || 0;
-    const paymentMethod = req.query?.paymentMethod || 1;
+    let paymentMethod = req.query?.paymentMethod || 0;
+    const deliveryCharge = 0;
 
     const user = await User.findOne({ UID: req.user.UID }).select(
       "cart address"
@@ -660,10 +659,14 @@ class ProductService {
       return acc + currVal.quantity * currVal.discounted_price;
     }, 0);
 
-    const totalDiscount = TotalActualAmount - TotalDiscountedAmount;
-
-    if (totalDiscount < 500) {
+    if (TotalDiscountedAmount < 500) {
       deliveryCharge = 40;
+    }
+    const totalDiscount = TotalActualAmount - TotalDiscountedAmount;
+    if (paymentMethod) {
+      paymentMethod = "Cash On Delivery";
+    } else {
+      paymentMethod = "Razorpay";
     }
     return res.status(200).json(
       new apiResponse({
