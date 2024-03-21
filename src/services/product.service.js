@@ -635,7 +635,7 @@ class ProductService {
   getOrderSummary = async (req, res) => {
     const index = req.query?.index || 0;
     let paymentMethod = req.query?.paymentMethod || 0;
-    const deliveryCharge = 0;
+    let deliveryCharge = 0;
 
     const user = await User.findOne({ UID: req.user.UID }).select(
       "cart address member"
@@ -663,11 +663,12 @@ class ProductService {
       deliveryCharge = 40;
     }
     const totalDiscount = TotalActualAmount - TotalDiscountedAmount;
-    if (paymentMethod) {
-      paymentMethod = "Cash On Delivery";
-    } else {
+    if (paymentMethod == 0) {
       paymentMethod = "Razorpay";
+    } else {
+      paymentMethod = "Cash On Delivery";
     }
+
     return res.status(200).json(
       new apiResponse({
         address,

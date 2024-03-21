@@ -174,11 +174,14 @@ class UserService {
       throw new apiError(404, "index not provided");
     }
 
+    if (index >= 3) {
+      throw new apiError(400, "Can not add more than 3 address");
+    }
+
     // const toUpdateAddress = existingUser.address[index];
 
-    const toUpdateAddress = newAddress;
+    existingUser.address[index] = newAddress;
 
-    existingUser.address.index = toUpdateAddress;
     console.log(existingUser.address.index);
 
     const updatedUser = await existingUser.save();
