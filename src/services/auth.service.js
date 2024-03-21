@@ -269,6 +269,14 @@ class AuthService {
       .json(new apiResponse(user, "password changed Successfully"));
   };
 
+  verifyAdmin = async (req, res) => {
+    const admin = await Admin.findById(req.user._id);
+    console.log(admin);
+    return res
+      .status(200)
+      .json(new apiResponse({ success: true }, "Access Token Verified"));
+  };
+
   sendOtp = async (req, res) => {
     const { email } = req.body;
 

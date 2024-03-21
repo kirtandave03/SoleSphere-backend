@@ -19,6 +19,8 @@ const changePassword = asyncHandler(authService.changePassword);
 
 const sendOtp = asyncHandler(authService.sendOtp);
 
+const verifyAdmin = asyncHandler(authService.verifyAdmin);
+
 module.exports = {
   signupUser,
   verifyOtp,
@@ -28,4 +30,5 @@ module.exports = {
   changePassword,
   createUser,
   sendOtp,
+  verifyAdmin,
 };

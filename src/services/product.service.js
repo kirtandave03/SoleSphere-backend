@@ -634,7 +634,7 @@ class ProductService {
 
   getOrderSummary = async (req, res) => {
     const index = req.query?.index || 0;
-    const paymentMethod = req.query?.paymentMethod || "COD";
+    let paymentMethod = req.query?.paymentMethod || 0;
     const deliveryCharge = 0;
 
     const user = await User.findOne({ UID: req.user.UID }).select(
@@ -651,10 +651,6 @@ class ProductService {
       throw new apiError(400, "Please add something to your cart!");
     }
 
-    if (!user.member) {
-      deliveryCharge = 40;
-    }
-
     const TotalActualAmount = cartItems.reduce((acc, currVal) => {
       return acc + currVal.quantity * currVal.actual_price;
     }, 0);
@@ -663,8 +659,15 @@ class ProductService {
       return acc + currVal.quantity * currVal.discounted_price;
     }, 0);
 
+    if (TotalDiscountedAmount < 500) {
+      deliveryCharge = 40;
+    }
     const totalDiscount = TotalActualAmount - TotalDiscountedAmount;
-
+    if (paymentMethod) {
+      paymentMethod = "Cash On Delivery";
+    } else {
+      paymentMethod = "Razorpay";
+    }
     return res.status(200).json(
       new apiResponse({
         address,
