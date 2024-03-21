@@ -28,15 +28,21 @@ const generateOtp = async () => {
 class AuthService {
   constructor() {}
 
-  // isUser = async (req, res) => {
-  //   const {UID} = req.body;
+  isUser = async (req, res) => {
+    const { UID } = req.body;
 
-  //   const user = await User.findOne({UID});
+    if (!UID) {
+      return res.status(400).json({ message: "UID is required" });
+    }
 
-  //   if(user){
-  //     return res.status(200).json(new apiResponse(user, message: ""));
-  //   }
-  // };
+    const user = await User.findOne({ UID });
+
+    if (user) {
+      return res.status(200).json(new apiResponse({ user }, "User Exists"));
+    }
+
+    return res.status(404).json(new apiResponse({}, "User doesn't exists"));
+  };
 
   deleteUser = async (req, res) => {
     const { email } = req.body;
