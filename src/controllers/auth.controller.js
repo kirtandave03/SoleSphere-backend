@@ -16,10 +16,10 @@ const forgotPassword = asyncHandler(authService.forgotPassword);
 const forgotPasswordotp = asyncHandler(authService.forgotPasswordotp);
 
 const changePassword = asyncHandler(authService.changePassword);
-
+const deleteUser = asyncHandler(authService.deleteUser);
 const sendOtp = asyncHandler(authService.sendOtp);
-
 const verifyAdmin = asyncHandler(authService.verifyAdmin);
+const isUser = asyncHandler(authService.isUser);
 
 module.exports = {
   signupUser,
@@ -31,4 +31,6 @@ module.exports = {
   createUser,
   sendOtp,
   verifyAdmin,
+  deleteUser,
+  isUser,
 };

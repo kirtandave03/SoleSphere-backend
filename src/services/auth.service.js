@@ -28,6 +28,38 @@ const generateOtp = async () => {
 class AuthService {
   constructor() {}
 
+  isUser = async (req, res) => {
+    const { UID } = req.body;
+
+    if (!UID) {
+      return res.status(400).json({ message: "UID is required" });
+    }
+
+    const user = await User.findOne({ UID });
+
+    if (user) {
+      return res.status(200).json(new apiResponse({ user }, "User Exists"));
+    }
+
+    return res.status(404).json(new apiResponse({}, "User doesn't exists"));
+  };
+
+  deleteUser = async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+      throw new apiError(400, "Email is required");
+    }
+
+    const user = await User.deleteOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ message: "User deleted successfully" });
+  };
+
   createUser = async (req, res) => {
     const { UID, email, username } = req.body;
 
@@ -319,6 +351,10 @@ class AuthService {
       .json(
         new apiResponse({ Admin: { email } }, "Otp has been sent successfully!")
       );
+  };
+
+  verifyToken = (req, res) => {
+    return res.status(200).json({ message: "Token is valid", user: req.user });
   };
 }
 

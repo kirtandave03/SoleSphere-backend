@@ -638,7 +638,7 @@ class ProductService {
     let deliveryCharge = 0;
 
     const user = await User.findOne({ UID: req.user.UID }).select(
-      "cart address member"
+      "cart address"
     );
     const address = user.address[index];
     const cartItems = user.cart.cartItems;
