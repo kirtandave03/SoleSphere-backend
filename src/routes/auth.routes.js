@@ -7,7 +7,10 @@ const {
   forgotPasswordotp,
   changePassword,
   createUser,
+  verifyToken,
+  deleteUser,
 } = require("../controllers/auth.controller");
+const verifyJWT = require("../middlewares/auth.middleware");
 
 const authRouter = Router();
 
@@ -24,5 +27,9 @@ authRouter.post("/forgot-password", forgotPassword);
 authRouter.post("/forgot-password-verify", forgotPasswordotp);
 
 authRouter.post("/change-password", changePassword);
+
+authRouter.get("/verify-token", verifyJWT, verifyToken);
+
+authRouter.delete("/", deleteUser);
 
 module.exports = authRouter;

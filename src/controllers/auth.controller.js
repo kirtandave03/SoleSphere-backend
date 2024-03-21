@@ -17,6 +17,10 @@ const forgotPasswordotp = asyncHandler(authService.forgotPasswordotp);
 
 const changePassword = asyncHandler(authService.changePassword);
 
+const verifyToken = asyncHandler(authService.verifyToken);
+
+const deleteUser = asyncHandler(authService.deleteUser);
+
 module.exports = {
   signupUser,
   verifyOtp,
@@ -25,4 +29,6 @@ module.exports = {
   forgotPasswordotp,
   changePassword,
   createUser,
+  verifyToken,
+  deleteUser,
 };

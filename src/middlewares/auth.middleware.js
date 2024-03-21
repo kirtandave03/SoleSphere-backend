@@ -2,10 +2,11 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
 const apiError = require("../interfaces/apiError");
 const asyncHandler = require("../utils/asyncHandler");
+const Admin = require("../models/admin.model");
 
 const verifyJWT = asyncHandler(async (req, _, next) => {
   try {
-    const token = req.cookies.authToken;
+    const token = req.header("auth-token");
 
     if (!token) {
       // check the status code use 401
@@ -15,7 +16,7 @@ const verifyJWT = asyncHandler(async (req, _, next) => {
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
     // call the function from service
-    const user = await User.findById(decodedToken._id).select("-password");
+    const user = await Admin.findById(decodedToken._id).select("-password");
 
     if (!user) {
       throw new apiError(401, "Invalid Access token");

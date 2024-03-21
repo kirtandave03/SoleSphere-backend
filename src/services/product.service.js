@@ -636,11 +636,10 @@ class ProductService {
 
   getOrderSummary = async (req, res) => {
     const index = req.query?.index || 0;
-    const paymentMethod = req.query?.paymentMethod || "COD";
-    const deliveryCharge = 0;
+    const paymentMethod = req.query?.paymentMethod || 1;
 
     const user = await User.findOne({ UID: req.user.UID }).select(
-      "cart address member"
+      "cart address"
     );
     const address = user.address[index];
     const cartItems = user.cart.cartItems;
@@ -653,10 +652,6 @@ class ProductService {
       throw new apiError(400, "Please add something to your cart!");
     }
 
-    if (!user.member) {
-      deliveryCharge = 40;
-    }
-
     const TotalActualAmount = cartItems.reduce((acc, currVal) => {
       return acc + currVal.quantity * currVal.actual_price;
     }, 0);
@@ -667,6 +662,9 @@ class ProductService {
 
     const totalDiscount = TotalActualAmount - TotalDiscountedAmount;
 
+    if (totalDiscount < 500) {
+      deliveryCharge = 40;
+    }
     return res.status(200).json(
       new apiResponse({
         address,

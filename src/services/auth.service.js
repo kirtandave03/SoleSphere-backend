@@ -28,6 +28,32 @@ const generateOtp = async () => {
 class AuthService {
   constructor() {}
 
+  // isUser = async (req, res) => {
+  //   const {UID} = req.body;
+
+  //   const user = await User.findOne({UID});
+
+  //   if(user){
+  //     return res.status(200).json(new apiResponse(user, message: ""));
+  //   }
+  // };
+
+  deleteUser = async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+      throw new apiError(400, "Email is required");
+    }
+
+    const user = await User.deleteOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ message: "User deleted successfully" });
+  };
+
   createUser = async (req, res) => {
     const { UID, email, username } = req.body;
 
@@ -261,6 +287,10 @@ class AuthService {
     console.log(deleted, email);
 
     res.status(200).json(new apiResponse(user, "password changed Sucessfully"));
+  };
+
+  verifyToken = (req, res) => {
+    return res.status(200).json({ message: "Token is valid", user: req.user });
   };
 }
 
