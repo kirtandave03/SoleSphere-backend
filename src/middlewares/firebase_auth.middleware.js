@@ -20,7 +20,6 @@ const verifyToken = asyncHandler(async (req, _, next) => {
     }
 
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    console.log("Token is valid:", decodedToken);
 
     const user = await User.findOne({ UID: decodedToken.uid });
 

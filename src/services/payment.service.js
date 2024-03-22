@@ -14,30 +14,23 @@ class PaymentService {
     // console.log("Cart Item", cartItems);
 
     for (let item of cartItems) {
-      // try {
       const product = await Product.findById(item.product_id);
 
       const indexOfVariant = product.variants.findIndex(
-        (variant) => (variant.color = item.color)
+        (variant) => variant.color === item.color
       );
 
-      console.log("Index of varinat : ", indexOfVariant);
       // Check if variant and size exist
       if (!indexOfVariant === -1) {
-        console.log(
-          `Variant for product ${product.productName} with color ${item.color} not found.`
-        );
+        throw new apiError(404, "Variant Not Found");
       }
 
       const indexOfSize = product.variants[indexOfVariant].sizes.findIndex(
         (size) => size.size == item.size
       );
 
-      console.log("Index of size", indexOfSize);
-      if (!indexOfVariant === -1) {
-        console.log(
-          `Variant for product ${product.productName} with color ${item.color} not found.`
-        );
+      if (!indexOfSize === -1) {
+        throw new apiError(404, "Size Not Found");
       }
 
       const { actual_price, discounted_price, stock } =
