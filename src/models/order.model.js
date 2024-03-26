@@ -13,29 +13,16 @@ const orderSchema = new mongoose.Schema(
 
     products: [
       {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
-        },
-
-        quantity: {
-          type: Number,
-          required: true,
-          default: 1,
-        },
+        product_id: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        productName: { type: String, lowercase: true },
+        image_url: { type: String, lowercase: true },
+        color: { type: String },
+        size: Number,
+        quantity: Number,
+        actual_price: Number,
+        discounted_price: Number,
       },
     ],
-
-    deliveryCharge: {
-      chargeAmount: {
-        type: Number,
-        default: 0,
-      },
-      charge: {
-        type: Boolean,
-        default: false,
-      },
-    },
 
     totalAmount: {
       type: String,
@@ -45,16 +32,18 @@ const orderSchema = new mongoose.Schema(
     orderStatus: {
       type: String,
       required: true,
+      enum: ["Delivered", "Pending", "Cancelled"],
     },
 
     paymentMethod: {
-      type: String,
+      type: Boolean,
       required: true,
     },
 
     paymentStatus: {
       type: String,
       required: true,
+      enum: ["Pending", "Captured", "Refunded", "Failed"],
     },
   },
   { timestamps: true }

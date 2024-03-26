@@ -291,7 +291,7 @@ class AuthService {
     }
 
     user.password = password;
-    await user.save({ validateBeforeSave: true });
+    await user.save();
 
     const deleted = await Otp.deleteOne({ email });
     console.log(deleted, email);
