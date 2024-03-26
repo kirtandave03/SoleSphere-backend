@@ -1,4 +1,5 @@
 const Router = require("express").Router;
+const adminRouter = require("./admin.routes");
 const authRouter = require("./auth.routes");
 const userRouter = require("./user.routes");
 const productRouter = require("./product.routes");
@@ -22,6 +23,7 @@ router.get("/", verifyToken, async (req, res) => {
 
 router.post("/file-upload", upload.array("images"), uploadFile);
 
+router.use("/admin", adminRouter);
 router.use("/auth", authRouter);
 router.use("/users", userRouter);
 router.use("/products", productRouter);
