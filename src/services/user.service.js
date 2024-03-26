@@ -259,6 +259,8 @@ class UserService {
       .status(200)
       .json(new apiResponse(responseData, "wishlist fetched successfully"));
   };
+
+  removeItemFromWishList = async (req, res) => {};
 }
 
 module.exports = UserService;
