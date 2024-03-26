@@ -4,5 +4,6 @@ const adminService = new AdminService();
 
 const getAllUsers = asyncHandler(adminService.getAllUsers);
 const deleteUser = asyncHandler(adminService.deleteUser);
+const restoreUser = asyncHandler(adminService.restoreUser);
 
-module.exports = { getAllUsers, deleteUser };
+module.exports = { getAllUsers, deleteUser, restoreUser };
