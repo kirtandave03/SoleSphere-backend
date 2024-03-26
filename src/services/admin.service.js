@@ -70,5 +70,18 @@ class AdminService {
       .status(200)
       .json(new apiResponse(response, "User Deleted successfully"));
   };
+
+  restoreUser = async (req, res) => {
+    const { _id } = req.params;
+    const restoredUser = await User.restore({ _id: _id });
+
+    if (!restoredUser) {
+      throw new apiError(404, "User Not Found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(restoredUser, "User Restored Successfully"));
+  };
 }
 module.exports = AdminService;
