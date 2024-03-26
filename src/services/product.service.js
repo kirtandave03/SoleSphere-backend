@@ -354,6 +354,7 @@ class ProductService {
       sizeType,
       category,
       brand,
+      variant,
     } = req.body;
 
     const updateObject = {};
@@ -395,6 +396,9 @@ class ProductService {
       } else {
         throw new apiError(404, "Brand not found");
       }
+    }
+    if (variant) {
+      updateObject.variants = variant;
     }
 
     const product = await Product.findOneAndUpdate(
@@ -501,26 +505,6 @@ class ProductService {
         .json(new apiResponse(cartItems, "Not Enough stock available"));
     }
   };
-
-  // productDetail = async (req, res) => {
-  //   const product_id = req.query?.product_id;
-
-  //   const product = await Product.findById(product_id)
-  //     .populate({
-  //       path: "review",
-  //       select: "user rating review images",
-  //     })
-  //     .populate({ path: "brand", select: "brand brandIcon" })
-  //     .populate({ path: "category", select: "category" });
-
-  //   if (!product) {
-  //     throw new apiError(404, "Product not found");
-  //   }
-
-  //   return res
-  //     .status(200)
-  //     .json(new apiResponse(product, "Product fetched successfully"));
-  // };
 
   productDetail = async (req, res) => {
     const product_id = req.query?.product_id;

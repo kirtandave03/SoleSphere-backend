@@ -10,7 +10,7 @@ const {
   getAllProducts,
   getOrderSummary,
   editProduct,
-} = require("../controllers/product.controller.model");
+} = require("../controllers/product.controller");
 
 const verifyJWT = require("../middlewares/auth.middleware");
 const verifyToken = require("../middlewares/firebase_auth.middleware");
