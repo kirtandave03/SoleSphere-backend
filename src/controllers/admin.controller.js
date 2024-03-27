@@ -5,5 +5,19 @@ const adminService = new AdminService();
 const getAllUsers = asyncHandler(adminService.getAllUsers);
 const deleteUser = asyncHandler(adminService.deleteUser);
 const restoreUser = asyncHandler(adminService.restoreUser);
+const deletedProduct = asyncHandler(adminService.deleteProduct);
+const restoreProduct = asyncHandler(adminService.restoreProduct);
+const addProduct = asyncHandler(adminService.addProduct);
+const addVariant = asyncHandler(adminService.addVariant);
+const editProduct = asyncHandler(adminService.editProduct);
 
-module.exports = { getAllUsers, deleteUser, restoreUser };
+module.exports = {
+  getAllUsers,
+  deleteUser,
+  restoreUser,
+  deletedProduct,
+  restoreProduct,
+  addProduct,
+  addVariant,
+  editProduct,
+};
