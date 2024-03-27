@@ -313,15 +313,56 @@ class ProductService {
   };
 
   getAllProducts = async (req, res) => {
+    const page = Number(req.query.page) || 0;
+    const limit = Number(req.query.limit) || 5;
+    const deleted = Boolean(req.query.deleted) || false;
     const product = await Product.find().select("productName");
 
-    if (!product) {
-      throw new apiError(500, "Error while fetching products");
+    const { q } = req.query;
+
+    const totalCount = (await Product.find()).length;
+
+    if (deleted) {
+      const deletedProducts = await Product.findDeleted({ deleted: true });
+      return res
+        .status(200)
+        .json(new apiResponse(deletedProducts, "Deleted Products"));
+    }
+    if (!q) {
+      const products = await Product.find()
+        .skip(page * limit)
+        .limit(limit);
+
+      res
+        .status(200)
+        .json(
+          new apiResponse(
+            { products, totalCount },
+            "All products fetched successfully"
+          )
+        );
     }
 
-    return res
+    const products = await Product.find({
+      $or: [
+        { productName: { $regex: q, $options: "i" } },
+        { category: { $regex: q, $options: "i" } },
+        { brand: { $regex: q, $options: "i" } },
+        { price: { $regex: q, $options: "i" } },
+        { rating: { $regex: q, $options: "i" } },
+      ],
+    })
+      .skip(page * limit)
+      .limit(limit);
+
+    res
       .status(200)
-      .json(new apiResponse(product, "Products fetched successfully"));
+      .json(
+        new apiResponse(
+          { products, totalCount },
+          "All products fetched successfully based in the query"
+        )
+      );
   };
 
   deleteProduct = async (req, res) => {
@@ -337,9 +378,12 @@ class ProductService {
 
     await product.delete();
 
+    const deletedProducts = await Product.find({ deleted: true });
+    const response = { deletedProducts, deletedProduct: product };
+
     return res
       .status(200)
-      .json(new apiResponse(product, "Product deleted successfully"));
+      .json(new apiResponse(response, "Product deleted successfully"));
   };
 
   editProduct = async (req, res) => {
