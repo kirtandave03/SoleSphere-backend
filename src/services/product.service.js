@@ -316,50 +316,95 @@ class ProductService {
     const page = Number(req.query.page) || 0;
     const limit = Number(req.query.limit) || 5;
     const deleted = Boolean(req.query.deleted) || false;
-    const product = await Product.find().select("productName");
 
     const { q } = req.query;
 
     const totalCount = (await Product.find()).length;
 
+    const pipeline = [
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "review",
+          foreignField: "_id",
+          as: "reviews",
+        },
+      },
+      {
+        $addFields: {
+          averageRating: { $avg: "$reviews.rating" },
+        },
+      },
+    ];
+
     if (deleted) {
-      const deletedProducts = await Product.findDeleted({ deleted: true });
-      return res
-        .status(200)
-        .json(new apiResponse(deletedProducts, "Deleted Products"));
+      const deletedProducts = await Product.findDeleted({
+        deleted: true,
+      }).populate("category brand");
+      const totalDeletedCount = deletedProducts.length;
+
+      if (!q) {
+        return res
+          .status(200)
+          .json(
+            new apiResponse(
+              { deletedProducts, totalCount: totalDeletedCount },
+              "Deleted Products"
+            )
+          );
+      }
+
+      const filteredDeletedProducts = deletedProducts.filter((product) =>
+        new RegExp(q, "i").test(product.productName)
+      );
+      return res.status(200).json(
+        new apiResponse({
+          deletedProducts: filteredDeletedProducts,
+          totalCount: filteredDeletedProducts.count,
+        })
+      );
     }
+
     if (!q) {
-      const products = await Product.find()
+      const products = await Product.aggregate(pipeline)
         .skip(page * limit)
         .limit(limit);
+
+      const populatedProducts = await Product.populate(products, {
+        path: "category brand",
+      });
 
       res
         .status(200)
         .json(
           new apiResponse(
-            { products, totalCount },
+            { products: populatedProducts, totalCount },
             "All products fetched successfully"
           )
         );
     }
 
-    const products = await Product.find({
-      $or: [
-        { productName: { $regex: q, $options: "i" } },
-        { category: { $regex: q, $options: "i" } },
-        { brand: { $regex: q, $options: "i" } },
-        { price: { $regex: q, $options: "i" } },
-        { rating: { $regex: q, $options: "i" } },
-      ],
-    })
+    const foundProducts = await Product.find({
+      productName: { $regex: q, $options: "i" },
+    }).exec();
+
+    const products = await Product.aggregate([
+      { $match: { _id: { $in: foundProducts.map((product) => product._id) } } },
+      ...pipeline,
+    ])
       .skip(page * limit)
       .limit(limit);
 
+    const populatedProducts = await Product.populate(products, {
+      path: "category brand",
+    });
+
+    const queryProductCount = products.length;
     res
       .status(200)
       .json(
         new apiResponse(
-          { products, totalCount },
+          { products: populatedProducts, totalCount: queryProductCount },
           "All products fetched successfully based in the query"
         )
       );
@@ -384,6 +429,19 @@ class ProductService {
     return res
       .status(200)
       .json(new apiResponse(response, "Product deleted successfully"));
+  };
+
+  restoreProduct = async (req, res) => {
+    const { productName } = req.body;
+    const restoredProduct = await Product.restore({ productName });
+
+    if (!restoredProduct) {
+      throw new apiError(404, "Product not found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(restoredProduct, "Product restored successfully"));
   };
 
   editProduct = async (req, res) => {
