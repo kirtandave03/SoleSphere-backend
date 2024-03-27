@@ -66,6 +66,7 @@ class PaymentService {
       totalAmount += 40;
     }
 
+    console.log(totalAmount);
     const instance = new Razorpay({
       key_id: process.env.RAZORPAY_ID_KEY,
       key_secret: process.env.RAZORPAY_SECRET_KEY,
