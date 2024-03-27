@@ -149,9 +149,9 @@ class AdminService {
   };
 
   restoreProduct = async (req, res) => {
-    const { productName } = req.body;
+    const { _id } = req.params;
     const deletedProduct = await Product.findDeleted({
-      $and: [{ deleted: true }, { productName }],
+      $and: [{ deleted: true }, { _id: _id }],
     });
 
     if (!deletedProduct.length) {

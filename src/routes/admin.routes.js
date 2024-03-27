@@ -21,6 +21,6 @@ router.post("/products", verifyJWT, addProduct);
 router.post("/products/add-variant", verifyJWT, addVariant);
 router.delete("/products", verifyJWT, deletedProduct);
 router.post("/products/edit-product", verifyJWT, editProduct);
-router.put("/products/", verifyJWT, restoreProduct);
+router.put("/products/:_id", verifyJWT, restoreProduct);
 
 module.exports = router;
