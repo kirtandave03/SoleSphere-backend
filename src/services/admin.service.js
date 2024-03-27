@@ -2,6 +2,8 @@ const User = require("../models/user.model");
 const apiError = require("../interfaces/apiError");
 const apiResponse = require("../interfaces/apiResponse");
 const Product = require("../models/product.model");
+const Category = require("../models/category.model");
+const Brand = require("../models/brand.model");
 
 class AdminService {
   constructor() {}
