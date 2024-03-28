@@ -11,7 +11,7 @@ class UserService {
   constructor() {}
 
   userDetails = async (req, res) => {
-    const { phone, address } = req.body;
+    const { phone, address, profilePic } = req.body;
 
     // console.log("Request Body :",req.body);
 
@@ -21,30 +21,29 @@ class UserService {
       throw new apiError(404, "User not found");
     }
 
-    var profilePicLocalPath;
+    // var profilePicLocalPath;
 
-    if (
-      req.files &&
-      Array.isArray(req.files.profilePic) &&
-      req.files.profilePic.length > 0
-    ) {
-      profilePicLocalPath = req.files.profilePic[0].path;
-    }
+    // if (
+    //   req.files &&
+    //   Array.isArray(req.files.profilePic) &&
+    //   req.files.profilePic.length > 0
+    // ) {
+    //   profilePicLocalPath = req.files.profilePic[0].path;
+    // }
 
-    console.log("Request Files : ", req.files);
+    // console.log("Request Files : ", req.files);
 
-    const profilePic = profilePicLocalPath
-      ? await uploadOnCloudinary(profilePicLocalPath)
-      : null;
+    // const profilePic = profilePicLocalPath
+    // ? await uploadOnCloudinary(profilePicLocalPath)
+    //   : null;
 
     const user = await User.findByIdAndUpdate(existingUser._id, {
       $set: {
         phone: phone || "",
         address: address || "",
         profilePic:
-          profilePic === null
-            ? "https://res.cloudinary.com/dz9ga1vmp/image/upload/v1709285608/y2qgtgbukd0qosbxiub4.jpg"
-            : profilePic.url,
+          profilePic ||
+          "https://res.cloudinary.com/dz9ga1vmp/image/upload/v1709285608/y2qgtgbukd0qosbxiub4.jpg",
       },
     });
 
@@ -204,9 +203,9 @@ class UserService {
       throw new apiError(400, "Product id is required");
     }
 
-    const existedProduct = await Product.findById(product_id);
+    const product = await Product.findById(product_id);
 
-    if (!existedProduct) {
+    if (!product) {
       throw new apiError(404, "Product Not Found");
     }
 

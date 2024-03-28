@@ -22,12 +22,12 @@ router.get("/", verifyToken, getCurrentUser);
 router.post(
   "/",
   verifyToken,
-  upload.fields([
-    {
-      name: "profilePic",
-      maxCount: 1,
-    },
-  ]),
+  // upload.fields([
+  //   {
+  //     name: "profilePic",
+  //     maxCount: 1,
+  //   },
+  // ]),
   userDetail
 );
 router.delete("/", verifyToken, deleteUser);

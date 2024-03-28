@@ -1,9 +1,15 @@
 const apiResponse = require("../interfaces/apiResponse");
 const asyncHandler = require("../utils/asyncHandler");
 const { uploadOnCloudinary } = require("../services/cloudinary");
+const apiError = require("../interfaces/apiError");
 
 const uploadFile = asyncHandler(async (req, res) => {
+  if (!req.files) {
+    throw new apiError(400, "File is required");
+  }
+
   const images = req.files.map((image) => image.path);
+
   const urls = [];
 
   const imageToUpload = images.map((image) => {
