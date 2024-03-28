@@ -140,11 +140,15 @@ class AdminService {
       throw new apiError(404, "Product not found");
     }
 
-    const deletedProduct = await product.delete();
+    const deletedProducts = await product.delete();
+
+    if (!deletedProducts) {
+      throw new apiError(500, "Internal Server Error");
+    }
 
     return res
       .status(200)
-      .json(new apiResponse(deletedProduct, "Product deleted successfully"));
+      .json(new apiResponse(deletedProducts, "Product deleted successfully"));
   };
 
   restoreProduct = async (req, res) => {
@@ -159,6 +163,10 @@ class AdminService {
 
     deletedProduct[0].deleted = false;
     const restoredProduct = await deletedProduct[0].save();
+
+    if (!deletedProduct) {
+      throw new apiError(500, "Internal Server Error");
+    }
 
     return res
       .status(200)
@@ -182,9 +190,13 @@ class AdminService {
       qr,
     } = req.body;
 
+    const isProduct = await Product.findOne(productName);
     const iscategory = await Category.findById(category);
     const isBrand = await Brand.findById(brand);
 
+    if (isProduct) {
+      throw new apiError(400, "Product Already Exists");
+    }
     if (!iscategory) {
       throw new apiError(404, "Category not found");
     }
