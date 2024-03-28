@@ -247,7 +247,25 @@ class ProductService {
     if (deleted) {
       const deletedProducts = await Product.findDeleted({
         deleted: true,
-      }).populate("category brand");
+      }).populate("category brand review");
+
+      let totalRating = deletedProducts.map((product) => {
+        const total = product.review.reduce(
+          (acc, curr) => acc + curr.rating,
+          0
+        );
+        const avgRating = total / product.review.length;
+
+        return avgRating;
+      });
+
+      const resp = [];
+
+      for (let i = 0; i < deletedProducts.length; i++) {
+        let op = { ...deletedProducts[i]._doc, averageRating: totalRating[i] };
+        resp.push(op);
+      }
+
       const totalDeletedCount = deletedProducts.length;
 
       if (!q) {
@@ -255,13 +273,13 @@ class ProductService {
           .status(200)
           .json(
             new apiResponse(
-              { deletedProducts, totalCount: totalDeletedCount },
+              { deletedProducts: resp, totalCount: totalDeletedCount },
               "Deleted Products"
             )
           );
       }
 
-      const filteredDeletedProducts = deletedProducts.filter((product) =>
+      const filteredDeletedProducts = resp.filter((product) =>
         new RegExp(q, "i").test(product.productName)
       );
       return res.status(200).json(

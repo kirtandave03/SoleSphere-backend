@@ -22,15 +22,13 @@ class CategoryService {
   deleteCategory = async (req, res) => {
     const { category } = req.body;
 
-    const existedCategory = await Category.findOne({
-      category: category.toLowerCase(),
-    });
-
-    if (!existedCategory) {
+    if (!category) {
       throw new apiError(404, "Category not found");
     }
 
-    await existedCategory.delete();
+    const existedCategory = await Category.findOneAndDelete({
+      category: category.toLowerCase(),
+    });
 
     return res
       .status(200)

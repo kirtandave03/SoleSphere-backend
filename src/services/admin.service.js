@@ -130,7 +130,7 @@ class AdminService {
   };
 
   deleteProduct = async (req, res) => {
-    const { productName } = req.body;
+    const { productName } = req.params;
 
     const product = await Product.findOne({
       productName: productName.toLowerCase(),

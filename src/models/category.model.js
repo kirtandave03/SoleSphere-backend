@@ -8,13 +8,10 @@ const categorySchema = new mongoose.Schema(
       required: true,
       lowercase: true,
       trim: true,
-      unique: true,
     },
   },
   { timestamps: true }
 );
-
-categorySchema.plugin(mongoose_delete, { overrideMethods: "all" });
 
 const Category = mongoose.model("Category", categorySchema);
 module.exports = Category;
