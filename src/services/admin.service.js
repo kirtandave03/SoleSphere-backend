@@ -128,7 +128,7 @@ class AdminService {
   };
 
   deleteProduct = async (req, res) => {
-    const { productName } = req.body;
+    const { productName } = req.params;
 
     const product = await Product.findOne({
       productName: productName.toLowerCase(),
@@ -138,14 +138,11 @@ class AdminService {
       throw new apiError(404, "Product not found");
     }
 
-    await product.delete();
-
-    const deletedProducts = await Product.find({ deleted: true });
-    const response = { deletedProducts, deletedProduct: product };
+    const deletedProduct = await product.delete();
 
     return res
       .status(200)
-      .json(new apiResponse(response, "Product deleted successfully"));
+      .json(new apiResponse(deletedProduct, "Product deleted successfully"));
   };
 
   restoreProduct = async (req, res) => {
