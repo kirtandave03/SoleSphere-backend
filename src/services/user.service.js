@@ -270,16 +270,15 @@ class UserService {
     }
 
     product_id = new mongoose.Types.ObjectId(product_id);
+    console.log(product_id);
     const user = await User.findOne({ UID: req.user.UID }).select("wishlist");
 
     const wishlist = user.wishlist;
 
-    console.log(wishlist);
     const indexOfProduct = wishlist.findIndex(
-      (item) => item._id === product_id
+      (item) => item._id.toString() === product_id.toString()
     );
 
-    console.log(indexOfProduct);
     if (indexOfProduct === -1) {
       throw new apiError(404, "Product Not found on wishlist");
     }
