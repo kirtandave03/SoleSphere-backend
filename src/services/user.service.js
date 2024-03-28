@@ -264,7 +264,16 @@ class UserService {
   removeItemFromWishList = async (req, res) => {
     const { product_id } = req.body;
 
+    if (!product_id) {
+      throw new apiError(400, "Product ID is required");
+    }
+
     const user = await User.findOne({ UID: req.user.UID }).select("wishlist");
+
+    if (user.wishlist.includes(product_id)) {
+      throw new apiError(404, "Product not found in wishlist");
+    }
+
     res.send(user);
   };
 }

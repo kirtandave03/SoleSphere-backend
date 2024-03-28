@@ -21,15 +21,16 @@ class PaymentService {
       );
 
       // Check if variant and size exist
-      if (!indexOfVariant === -1) {
+      if (indexOfVariant === -1) {
         throw new apiError(404, "Variant Not Found");
       }
 
+      console.log(indexOfVariant);
       const indexOfSize = product.variants[indexOfVariant].sizes.findIndex(
         (size) => size.size == item.size
       );
 
-      if (!indexOfSize === -1) {
+      if (indexOfSize === -1) {
         throw new apiError(404, "Size Not Found");
       }
 
