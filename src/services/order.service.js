@@ -8,6 +8,19 @@ const crypto = require("crypto");
 class OrderService {
   constructor() {}
 
+  getUserOrders = async (req, res) => {
+    const user = await User.findOne({ UID: req.user.UID });
+
+    const orders = await Order.find({ user: user._id });
+    if (!orders) {
+      throw new apiError(500, "Internal Server Error");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(orders, "Orders Fetched Successfully"));
+  };
+
   purchase = async (req, res) => {
     const { paymentMethod, paymentStatus, transaction_id, totalAmount } =
       req.body;

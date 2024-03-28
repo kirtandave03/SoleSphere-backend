@@ -204,11 +204,13 @@ class UserService {
       throw new apiError(400, "Product id is required");
     }
 
-    const user = await User.findOne({ UID: req.user.UID });
+    const existedProduct = await Product.findById(product_id);
 
-    if (!user) {
-      throw new apiError(404, "User not exists");
+    if (!existedProduct) {
+      throw new apiError(404, "Product Not Found");
     }
+
+    const user = await User.findOne({ UID: req.user.UID });
 
     if (user.wishlist.includes(product_id)) {
       return res
@@ -260,7 +262,12 @@ class UserService {
       .json(new apiResponse(responseData, "wishlist fetched successfully"));
   };
 
-  removeItemFromWishList = async (req, res) => {};
+  removeItemFromWishList = async (req, res) => {
+    const { product_id } = req.body;
+
+    const user = await User.findOne({ UID: req.user.UID }).select("wishlist");
+    res.send(user);
+  };
 }
 
 module.exports = UserService;

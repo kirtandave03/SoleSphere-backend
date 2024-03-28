@@ -13,6 +13,7 @@ const {
   updateUserAddress,
   addToWishList,
   getWishList,
+  removeItemFromWishList,
 } = require("../controllers/user.controller");
 
 // Secure Routes
@@ -39,6 +40,7 @@ router.put(
 router.put("/update-user-phone-number", verifyToken, updateUserPhone);
 router.put("/update-address", verifyToken, updateUserAddress);
 router.post("/add-to-wishlist", verifyToken, addToWishList);
+router.put("/wishlist", verifyToken, removeItemFromWishList);
 router.get("/wishlist", verifyToken, getWishList);
 
 module.exports = router;
