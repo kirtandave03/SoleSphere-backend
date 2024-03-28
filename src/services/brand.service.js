@@ -61,6 +61,16 @@ class BrandService {
     const { oldBrand, brand } = req.body;
     const brandIconLocalPath = req.file?.path;
 
+    if (!oldBrand || !brand) {
+      throw new apiError(400, "old Brand name or updated brand name missing");
+    }
+
+    const existingBrand = await Brand.findOne({ brand });
+
+    if (existingBrand) {
+      throw new apiError(400, "updated brand already exixts");
+    }
+
     if (!brandIconLocalPath) {
       const brandData = await Brand.findOneAndUpdate(
         { brand: oldBrand.toLowerCase() },
@@ -71,7 +81,7 @@ class BrandService {
       );
 
       if (!brandData) {
-        throw new apiError(400, "Brand not found");
+        throw new apiError(404, "Brand not found");
       }
 
       return res
