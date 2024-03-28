@@ -4,7 +4,7 @@ const apiResponse = require("../interfaces/apiResponse");
 const Product = require("../models/product.model");
 const Category = require("../models/category.model");
 const Brand = require("../models/brand.model");
-
+const Order = require("../models/order.model");
 class AdminService {
   constructor() {}
 
@@ -344,6 +344,23 @@ class AdminService {
     return res
       .status(200)
       .json(new apiResponse(product, "Product Updated Successfully"));
+  };
+
+  getAllOrders = async (req, res) => {
+    const page = Number(req.query.page) || 0;
+    const limit = Number(req.query.limit) || 10;
+
+    const orders = await Order.find()
+      .skip(page * limit)
+      .limit(limit);
+
+    if (!orders) {
+      throw new apiError(500, "Internal Server Error");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(orders, "All Orders Fetched Successfully"));
   };
 }
 module.exports = AdminService;

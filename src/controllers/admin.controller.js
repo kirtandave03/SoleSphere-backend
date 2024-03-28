@@ -10,6 +10,7 @@ const restoreProduct = asyncHandler(adminService.restoreProduct);
 const addProduct = asyncHandler(adminService.addProduct);
 const addVariant = asyncHandler(adminService.addVariant);
 const editProduct = asyncHandler(adminService.editProduct);
+const getAllOrders = asyncHandler(adminService.getAllOrders);
 
 module.exports = {
   getAllUsers,
@@ -20,4 +21,5 @@ module.exports = {
   addProduct,
   addVariant,
   editProduct,
+  getAllOrders,
 };
