@@ -11,6 +11,12 @@ class CategoryService {
       throw new apiError(400, "category is required");
     }
 
+    const existingCat = await Category.findOne({ category });
+
+    if (existingCat) {
+      throw new apiError(400, "duplicate category");
+    }
+
     // console.log(category);
     const catData = await Category.create({ category });
 
@@ -37,6 +43,16 @@ class CategoryService {
 
   updateCategory = async (req, res) => {
     const { oldCategory, category } = req.body;
+
+    if (!oldCategory || !category) {
+      throw new apiError(400, "OldCategory or the updated category required");
+    }
+
+    const existingCat = await Category.findOne({ category });
+
+    if (existingCat) {
+      throw new apiError(400, "the new category entered already exists");
+    }
 
     const catData = await Category.findOneAndUpdate(
       { category: oldCategory },
