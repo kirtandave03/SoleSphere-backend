@@ -25,6 +25,10 @@ const uploadFile = asyncHandler(async (req, res) => {
     });
   });
   try {
+    if (!imageToUpload) {
+      throw new apiError(500, "Can not get the file");
+    }
+
     // Wait for all uploads to finish
     await Promise.all(imageToUpload);
     res.status(200).json(new apiResponse(urls, "Files uploaded successfully"));
