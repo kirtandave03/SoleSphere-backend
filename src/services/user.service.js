@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const apiError = require("../interfaces/apiError");
+const mongoose = require("mongoose");
 const apiResponse = require("../interfaces/apiResponse");
 const {
   uploadOnCloudinary,
@@ -262,19 +263,44 @@ class UserService {
   };
 
   removeItemFromWishList = async (req, res) => {
-    const { product_id } = req.body;
+    let { product_id } = req.body;
 
     if (!product_id) {
       throw new apiError(400, "Product ID is required");
     }
 
+    product_id = new mongoose.Types.ObjectId(product_id);
     const user = await User.findOne({ UID: req.user.UID }).select("wishlist");
 
-    if (user.wishlist.includes(product_id)) {
-      throw new apiError(404, "Product not found in wishlist");
+    const wishlist = user.wishlist;
+
+    console.log(wishlist);
+    const indexOfProduct = wishlist.findIndex(
+      (item) => item._id === product_id
+    );
+
+    console.log(indexOfProduct);
+    if (indexOfProduct === -1) {
+      throw new apiError(404, "Product Not found on wishlist");
     }
 
-    res.send(user);
+    wishlist.splice(indexOfProduct, 1);
+
+    user.wishlist = wishlist;
+    const updatedUser = await user.save();
+
+    if (!updatedUser) {
+      throw new apiError(500, "Internal Server Error");
+    }
+
+    return res
+      .status(200)
+      .json(
+        new apiResponse(
+          updatedUser,
+          "Product removed from wishlist successfully"
+        )
+      );
   };
 }
 

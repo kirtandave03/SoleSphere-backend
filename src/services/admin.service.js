@@ -190,7 +190,7 @@ class AdminService {
       qr,
     } = req.body;
 
-    const isProduct = await Product.findOne(productName);
+    const isProduct = await Product.findOne({ productName });
     const iscategory = await Category.findById(category);
     const isBrand = await Brand.findById(brand);
 

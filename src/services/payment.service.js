@@ -25,7 +25,6 @@ class PaymentService {
         throw new apiError(404, "Variant Not Found");
       }
 
-      console.log(indexOfVariant);
       const indexOfSize = product.variants[indexOfVariant].sizes.findIndex(
         (size) => size.size == item.size
       );
