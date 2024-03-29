@@ -110,7 +110,7 @@ class PaymentService {
     //     throw new apiError(400, "Invalid signature sent!");
     //   }
 
-    console.log("Req Body by RazorPay", req.body);
+    console.log("Req Body by RazorPay", req.body.payload.payment.entity);
     const shasum = crypto.createHmac(
       "sha256",
       process.env.RAZORPAY_WEBHOOK_SECRET
