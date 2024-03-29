@@ -11,7 +11,7 @@ const router = Router();
 
 // Secure Routes
 router.post("/razorpay-orders", verifyToken, razorpayOrder);
-router.post("/razorpay-verify", verifyToken, razorpayVerify);
+router.post("/razorpay-verify", razorpayVerify);
 
 router.post("/order", verifyJWT, order);
 
