@@ -111,8 +111,20 @@ class PaymentService {
     //   }
 
     console.log(req.body);
+    const shasum = crypto.createHmac(
+      "sha256",
+      process.env.RAZORPAY_WEBHOOK_SECRET
+    );
+    shasum.update(JSON.stringify(req.body));
+    const digest = shasum.digest("hex");
 
-    res.status(200).json({ success: true });
+    console.log(digest, req.headers["x-razorpay-signature"]);
+
+    if (!(digest === req.headers["x-razorpay-signature"])) {
+      throw new apiError(400, "Invalid Transaction");
+    }
+
+    return res.status(200).json(new apiResponse(true, "Valid Transaction"));
   };
 
   order = async (req, res) => {};
