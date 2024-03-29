@@ -12,7 +12,7 @@ class UserService {
   constructor() {}
 
   userDetails = async (req, res) => {
-    const { phone, address, profilePic } = req.body;
+    const { phone, address } = req.body;
 
     // console.log("Request Body :",req.body);
 
@@ -41,10 +41,7 @@ class UserService {
     const user = await User.findByIdAndUpdate(existingUser._id, {
       $set: {
         phone: phone || "",
-        address: address || "",
-        profilePic:
-          profilePic ||
-          "https://res.cloudinary.com/dz9ga1vmp/image/upload/v1709285608/y2qgtgbukd0qosbxiub4.jpg",
+        address: address || [],
       },
     });
 
@@ -77,11 +74,13 @@ class UserService {
       .json(new apiResponse(user, "User deleted successfully"));
   };
 
-  updateUserProfilePic = async (req, res) => {
+  userProfile = async (req, res) => {
     const ProfilePicLocalPath = req.file?.path;
 
     const userDocument = await User.findOne({ UID: req.user.UID });
     const oldProfileLink = userDocument.profilePic;
+    const defaultProfile =
+      "https://res.cloudinary.com/dz9ga1vmp/image/upload/v1710502194/e5dz1wrcshp0xyjknope.jpg";
 
     if (!ProfilePicLocalPath) {
       throw new apiError(400, "Profile Picture file is missing");
@@ -89,10 +88,12 @@ class UserService {
 
     const ProfilePic = await uploadOnCloudinary(ProfilePicLocalPath);
 
-    const isDeleted = await deleteOnCloudinary(oldProfileLink);
+    if (oldProfileLink != defaultProfile) {
+      const isDeleted = await deleteOnCloudinary(oldProfileLink);
 
-    if (!isDeleted) {
-      throw new apiError(500, "error while deleting old profile");
+      if (!isDeleted) {
+        throw new apiError(500, "error while deleting old profile");
+      }
     }
 
     if (!ProfilePic.url) {
@@ -100,10 +101,10 @@ class UserService {
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      req.user?._id,
+      userDocument._id,
       {
         $set: {
-          profilePic: ProfilePic.url,
+          profilePic: ProfilePic.url || defaultProfile,
         },
       },
       { new: true }

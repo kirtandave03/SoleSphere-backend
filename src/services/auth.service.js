@@ -74,10 +74,14 @@ class AuthService {
       return res.status(409).json({ message: "User exists" });
     }
 
+    const profilePic =
+      "https://res.cloudinary.com/dz9ga1vmp/image/upload/v1710502194/e5dz1wrcshp0xyjknope.jpg";
+
     const user = await User.create({
       UID,
       username,
       email,
+      profilePic,
     });
 
     if (!user) {

@@ -7,7 +7,7 @@ const router = Router();
 const {
   userDetail,
   deleteUser,
-  updateUserProfilePic,
+  userProfilePic,
   getCurrentUser,
   updateUserPhone,
   updateUserAddress,
@@ -32,10 +32,10 @@ router.post(
 );
 router.delete("/", verifyToken, deleteUser);
 router.put(
-  "/update-profile-pic",
+  "/profile",
   verifyToken,
   upload.single("profilePic"),
-  updateUserProfilePic
+  userProfilePic
 );
 router.put("/update-user-phone-number", verifyToken, updateUserPhone);
 router.put("/update-address", verifyToken, updateUserAddress);
