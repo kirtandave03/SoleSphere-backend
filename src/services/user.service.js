@@ -108,7 +108,7 @@ class UserService {
         },
       },
       { new: true }
-    ).select("-password");
+    ).select("profilePic");
 
     return res
       .status(200)
