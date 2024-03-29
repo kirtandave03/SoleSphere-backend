@@ -91,24 +91,26 @@ class PaymentService {
   };
 
   razorpayVerify = async (req, res) => {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-      req.body;
+    //   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    //     req.body;
 
-    const sign = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSign = crypto
-      .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
-      .update(sign.toString())
-      .digest("hex");
+    //   const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    //   const expectedSign = crypto
+    //     .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
+    //     .update(sign.toString())
+    //     .digest("hex");
 
-    if (razorpay_signature === expectedSign) {
-      return res
-        .status(200)
-        .json(
-          new apiResponse({ success: true }, "Payment verified Successfully")
-        );
-    } else {
-      throw new apiError(400, "Invalid signature sent!");
-    }
+    //   if (razorpay_signature === expectedSign) {
+    //     return res
+    //       .status(200)
+    //       .json(
+    //         new apiResponse({ success: true }, "Payment verified Successfully")
+    //       );
+    //   } else {
+    //     throw new apiError(400, "Invalid signature sent!");
+    //   }
+
+    res.send("Hello");
   };
 
   order = async (req, res) => {};
