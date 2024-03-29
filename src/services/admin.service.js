@@ -351,6 +351,10 @@ class AdminService {
     const limit = Number(req.query.limit) || 10;
 
     const orders = await Order.find()
+      .populate({
+        path: "user",
+        select: "email",
+      })
       .skip(page * limit)
       .limit(limit);
 
