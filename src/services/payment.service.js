@@ -110,7 +110,7 @@ class PaymentService {
     //     throw new apiError(400, "Invalid signature sent!");
     //   }
 
-    res.send("Hello");
+    res.status(200).json({ success: true });
   };
 
   order = async (req, res) => {};
