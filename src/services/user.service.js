@@ -113,7 +113,7 @@ class UserService {
     return res
       .status(200)
       .json(
-        new apiResponse(updatedUser, "ProfilePic image updated successfully")
+        new apiResponse(ProfilePic.url, "ProfilePic image updated successfully")
       );
   };
 
