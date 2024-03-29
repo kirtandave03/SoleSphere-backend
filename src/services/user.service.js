@@ -108,16 +108,12 @@ class UserService {
         },
       },
       { new: true }
-    ).select("profilePic");
+    ).select("profilePic -_id");
 
     return res
       .status(200)
       .json(
-        new apiResponse(
-          200,
-          updatedUser,
-          "ProfilePic image updated successfully"
-        )
+        new apiResponse(updatedUser, "ProfilePic image updated successfully")
       );
   };
 
