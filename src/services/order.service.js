@@ -138,7 +138,7 @@ class OrderService {
 
         // console.log(actual_price, discounted_price, stock);
 
-        if (!(stock > item.quantity)) {
+        if (!(stock >= item.quantity)) {
           throw new apiError(400, "Not Enough Stock");
         }
 

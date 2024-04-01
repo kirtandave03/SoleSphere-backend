@@ -386,7 +386,34 @@ class AdminService {
   };
 
   getDashboard = async (req, res) => {
-    res.send("Hello");
+    const totalActiveUsers = (await User.find()).length;
+    const totalOrders = await Order.find();
+    const totalPendingOrders = (await Order.find({ orderStatus: "Pending" }))
+      .length;
+
+    // console.log("Pending : ", totalPendingOrders);
+    // console.log("Order : ", totalOrders);
+    // console.log("Total users : ", totalUsers);
+
+    const totalAmount = totalOrders.reduce((acc, curr) => {
+      return acc + Number(curr.totalAmount);
+    }, 0);
+
+    const totalDiscount = totalOrders.reduce((acc, curr) => {
+      return acc + Number(curr.totalDiscount);
+    }, 0);
+
+    const totalSales = totalAmount - totalDiscount;
+
+    return res.status(200).json(
+      new apiResponse({
+        totalActiveUsers,
+        totalOrders: totalOrders.length,
+        totalPendingOrders,
+        totalSales,
+      })
+    );
+    // return res.send("hello");
   };
 }
 module.exports = AdminService;
