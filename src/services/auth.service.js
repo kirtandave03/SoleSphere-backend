@@ -29,19 +29,41 @@ class AuthService {
   constructor() {}
 
   isUser = async (req, res) => {
-    const { UID } = req.body;
+    const { UID, email } = req.body;
+    const userName = req.body.username || "unknown";
 
-    if (!UID) {
-      return res.status(400).json({ message: "UID is required" });
+    if (!UID || !email) {
+      return res.status(400).json({ message: "UID & email is required" });
     }
 
     const user = await User.findOne({ UID });
+    // console.log(user);
 
-    if (user) {
-      return res.status(200).json(new apiResponse({ user }, "User Exists"));
+    if (!user) {
+      const deletedUser = await User.findDeleted({
+        $and: [{ deleted: true }, { UID: UID }],
+      });
+
+      // console.log("Delted:", deletedUser);
+
+      if (!deletedUser.length) {
+        console.log("inside the deleted user");
+        const newUser = await User.create({ UID, email, username: userName });
+        return res
+          .status(201)
+          .json(new apiResponse(newUser, "User created successfully"));
+      } else {
+        return res
+          .status(401)
+          .json(
+            new apiResponse(
+              deletedUser[0],
+              "Access Denied: Your account has been blocked by the administrator."
+            )
+          );
+      }
     }
-
-    return res.status(404).json(new apiResponse({}, "User doesn't exists"));
+    return res.status(200).json(new apiResponse({}, "User Exists"));
   };
 
   deleteUser = async (req, res) => {
@@ -201,7 +223,7 @@ class AuthService {
     const user = await Admin.findOne({ email });
 
     if (!user) {
-      throw new apiError(404, "User not found");
+      throw new apiError(404, "Admin not found");
     }
 
     const otp = await generateOtp();
