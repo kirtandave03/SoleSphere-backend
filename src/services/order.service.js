@@ -22,8 +22,13 @@ class OrderService {
   };
 
   purchase = async (req, res) => {
-    const { paymentMethod, paymentStatus, transaction_id, totalAmount } =
-      req.body;
+    const {
+      paymentMethod,
+      paymentStatus,
+      transaction_id,
+      totalAmount,
+      totalDiscount,
+    } = req.body;
 
     if (!paymentMethod) {
       throw new apiError(400, "Payment method is required");
@@ -37,11 +42,18 @@ class OrderService {
 
     const cartItems = user.cart.cartItems;
 
-    console.log(cartItems);
+    if (!cartItems.length) {
+      throw new apiError(400, "Please Add Something in Cart before checkout");
+    }
+
+    // console.log(cartItems);
 
     if (paymentMethod == 0 && paymentStatus) {
-      if (!totalAmount || !transaction_id) {
-        throw new apiError(400, "Total Amount and Transaction Id are required");
+      if (!totalAmount || !transaction_id || !totalDiscount) {
+        throw new apiError(
+          400,
+          "Total Amount , Total Discount and Transaction Id are required"
+        );
       }
 
       for (const item of cartItems) {
@@ -86,6 +98,7 @@ class OrderService {
         user: user._id,
         products: cartItems,
         totalAmount,
+        totalDiscount,
         orderStatus: "Pending",
         paymentMethod: true,
         paymentStatus: "Captured",
@@ -156,11 +169,18 @@ class OrderService {
       await user.save();
 
       let totalAmount = cartItems.reduce(
+        (acc, cur) => acc + cur.quantity * cur.actual_price,
+        0
+      );
+
+      let totalDiscountedAmount = cartItems.reduce(
         (acc, cur) => acc + cur.quantity * cur.discounted_price,
         0
       );
 
-      if (totalAmount < 500) {
+      const totalDiscount = totalAmount - totalDiscountedAmount;
+
+      if (totalDiscountedAmount < 500) {
         totalAmount += 40;
       }
 
@@ -171,6 +191,7 @@ class OrderService {
         user: user._id,
         products: cartItems,
         totalAmount,
+        totalDiscount,
         orderStatus: "Pending",
         paymentMethod: false,
         paymentStatus: "Pending",

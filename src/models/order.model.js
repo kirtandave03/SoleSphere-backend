@@ -29,6 +29,11 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
+    totalDiscount: {
+      type: String,
+      required: true,
+    },
+
     orderStatus: {
       type: String,
       required: true,

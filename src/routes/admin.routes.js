@@ -11,9 +11,13 @@ const {
   editProduct,
   getAllOrders,
   orderDetails,
+  getDashboard,
 } = require("../controllers/admin.controller");
 
 const verifyJWT = require("../middlewares/auth.middleware");
+
+//Dashboard
+router.get("/dashboard", verifyJWT, getDashboard);
 
 // Users
 router.get("/users", verifyJWT, getAllUsers);
