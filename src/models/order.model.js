@@ -25,12 +25,12 @@ const orderSchema = new mongoose.Schema(
     ],
 
     totalAmount: {
-      type: Number,
+      type: String,
       required: true,
     },
 
     totalDiscount: {
-      type: Number,
+      type: String,
       required: true,
     },
 

@@ -42,6 +42,10 @@ class OrderService {
 
     const cartItems = user.cart.cartItems;
 
+    if (!cartItems.length) {
+      throw new apiError(400, "Please Add Something in Cart before checkout");
+    }
+
     // console.log(cartItems);
 
     if (paymentMethod == 0 && paymentStatus) {
