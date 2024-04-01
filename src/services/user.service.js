@@ -161,18 +161,18 @@ class UserService {
   updateUserAddress = async (req, res) => {
     const { newAddress, index } = req.body;
 
-    const existingUser = await User.findOne({ UID: req.user.UID });
-
-    if (!existingUser) {
-      throw new apiError(404, "User not found");
-    }
-
     if (!index) {
       throw new apiError(404, "index not provided");
     }
 
     if (index >= 3) {
       throw new apiError(400, "Can not add more than 3 address");
+    }
+
+    const existingUser = await User.findOne({ UID: req.user.UID });
+
+    if (!existingUser) {
+      throw new apiError(404, "User not found");
     }
 
     // const toUpdateAddress = existingUser.address[index];
