@@ -36,6 +36,6 @@ authRouter.get("/verify-token", verifyJWT, verifyAdmin);
 
 authRouter.delete("/", deleteUser);
 
-authRouter.get("/user-exists", isUser);
+authRouter.post("/isuser", isUser);
 
 module.exports = authRouter;
