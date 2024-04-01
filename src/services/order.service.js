@@ -174,7 +174,7 @@ class OrderService {
         0
       );
 
-      if (totalDiscount < 500) {
+      if (totalDiscountedAmount < 500) {
         totalAmount += 40;
       }
 

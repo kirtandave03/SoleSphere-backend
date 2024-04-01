@@ -384,5 +384,9 @@ class AdminService {
       .status(200)
       .json(new apiResponse(order, "Order fetched successfully"));
   };
+
+  getDashboard = async (req, res) => {
+    res.send("Hello");
+  };
 }
 module.exports = AdminService;
