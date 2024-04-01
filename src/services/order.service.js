@@ -42,7 +42,7 @@ class OrderService {
 
     const cartItems = user.cart.cartItems;
 
-    console.log(cartItems);
+    // console.log(cartItems);
 
     if (paymentMethod == 0 && paymentStatus) {
       if (!totalAmount || !transaction_id || !totalDiscount) {
@@ -174,11 +174,11 @@ class OrderService {
         0
       );
 
+      const totalDiscount = totalAmount - totalDiscountedAmount;
+
       if (totalDiscountedAmount < 500) {
         totalAmount += 40;
       }
-
-      const totalDiscount = totalAmount - totalDiscountedAmount;
 
       const transaction_id = crypto.randomBytes(10).toString("hex");
 
