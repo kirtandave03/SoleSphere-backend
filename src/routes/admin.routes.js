@@ -29,6 +29,6 @@ router.put("/products/:_id", verifyJWT, restoreProduct);
 
 // Orders
 router.get("/orders", verifyJWT, getAllOrders);
-router.get("/:orderId", verifyJWT, orderDetails);
+router.get("/orders/:orderId", verifyJWT, orderDetails);
 
 module.exports = router;
