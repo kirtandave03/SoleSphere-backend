@@ -10,6 +10,7 @@ const {
   addVariant,
   editProduct,
   getAllOrders,
+  orderDetails,
 } = require("../controllers/admin.controller");
 
 const verifyJWT = require("../middlewares/auth.middleware");
@@ -28,5 +29,6 @@ router.put("/products/:_id", verifyJWT, restoreProduct);
 
 // Orders
 router.get("/orders", verifyJWT, getAllOrders);
+router.get("/:orderId", verifyJWT, orderDetails);
 
 module.exports = router;

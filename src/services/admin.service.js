@@ -366,5 +366,23 @@ class AdminService {
       .status(200)
       .json(new apiResponse(orders, "All Orders Fetched Successfully"));
   };
+
+  orderDetails = async (req, res) => {
+    const { orderId } = req.params;
+
+    if (!orderId) {
+      throw new apiError(400, "orderId in params is required");
+    }
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      throw new apiError(404, "Order not found");
+    }
+
+    return res
+      .status(200)
+      .json(new apiResponse(order, "Order fetched successfully"));
+  };
 }
 module.exports = AdminService;
