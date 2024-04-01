@@ -374,7 +374,10 @@ class AdminService {
       throw new apiError(400, "orderId in params is required");
     }
 
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate({
+      path: "user",
+      select: "email",
+    });
 
     if (!order) {
       throw new apiError(404, "Order not found");
