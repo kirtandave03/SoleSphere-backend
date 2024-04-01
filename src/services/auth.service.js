@@ -37,14 +37,11 @@ class AuthService {
     }
 
     const user = await User.findOne({ UID });
-    // console.log(user);
 
     if (!user) {
       const deletedUser = await User.findDeleted({
         $and: [{ deleted: true }, { UID: UID }],
       });
-
-      // console.log("Delted:", deletedUser);
 
       if (!deletedUser.length) {
         console.log("inside the deleted user");
@@ -57,7 +54,7 @@ class AuthService {
           .status(401)
           .json(
             new apiResponse(
-              deletedUser[0],
+              {},
               "Access Denied: Your account has been blocked by the administrator."
             )
           );
