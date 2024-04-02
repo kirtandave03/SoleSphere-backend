@@ -411,7 +411,7 @@ class AdminService {
         },
 
         {
-          $limit: 10, // Take only the top document which represents the maximum sold product
+          $limit: 10, // Take the top 10 documents which represents the maximum sold product
         },
         {
           $lookup: {
@@ -420,9 +420,6 @@ class AdminService {
             foreignField: "_id",
             as: "product",
           },
-        },
-        {
-          $unwind: "$product",
         },
         {
           $project: {
