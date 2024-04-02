@@ -394,6 +394,7 @@ class AdminService {
     const totalPendingOrders = (await Order.find({ orderStatus: "Pending" }))
       .length;
 
+    // Most Sold Product
     const mostSoldProducts = await Order.aggregate([
       { $unwind: "$products" },
       {
@@ -413,6 +414,48 @@ class AdminService {
       },
     ]);
 
+    // FInding Revenue based on year and month
+
+    const totalRevenue = await Order.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          }, // Group by year and month
+          totalRevenue: { $sum: { $toDouble: "$totalAmount" } }, // Calculate total revenue for each year and month
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Exclude the default MongoDB ID
+          year: "$_id.year", // Extract year from _id
+          month: "$_id.month", // Extract month from _id
+          totalRevenue: 1, // Include totalRevenue field
+        },
+      },
+      {
+        $sort: {
+          year: -1, // Sort by year in ascending order
+          month: 1, // Then sort by month in ascending order
+        },
+      },
+      {
+        $group: {
+          _id: "$year", // Group by year
+          monthlyRevenue: {
+            $push: { month: "$month", totalRevenue: "$totalRevenue" },
+          }, // Push monthly revenue data into an array
+          totalYearlyRevenue: { $sum: "$totalRevenue" }, // Calculate total yearly revenue
+        },
+      },
+      {
+        $sort: {
+          _id: -1, // Sort by year in ascending order
+        },
+      },
+    ]);
+
     const totalAmount = totalOrders.reduce((acc, curr) => {
       return acc + Number(curr.totalAmount);
     }, 0);
@@ -428,8 +471,9 @@ class AdminService {
         totalActiveUsers,
         totalOrders: totalOrders.length,
         totalPendingOrders,
-        mostSoldProducts,
+        totalRevenue,
         totalSales,
+        mostSoldProducts,
       })
     );
     // return res.send("hello");
