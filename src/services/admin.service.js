@@ -394,9 +394,24 @@ class AdminService {
     const totalPendingOrders = (await Order.find({ orderStatus: "Pending" }))
       .length;
 
-    // console.log("Pending : ", totalPendingOrders);
-    // console.log("Order : ", totalOrders);
-    // console.log("Total users : ", totalUsers);
+    const mostSoldProducts = await Order.aggregate([
+      { $unwind: "$products" },
+      {
+        $group: {
+          _id: "$products.product_id", // Group by product ID
+          productName: { $first: "$products.productName" }, // Get the product name
+          totalQuantity: { $sum: "$products.quantity" }, // Calculate total quantity sold
+        },
+      },
+      {
+        $sort: {
+          totalQuantity: -1, // Sort by total quantity in descending order
+        },
+      },
+      {
+        $limit: 10, // Take only the top document which represents the maximum sold product
+      },
+    ]);
 
     const totalAmount = totalOrders.reduce((acc, curr) => {
       return acc + Number(curr.totalAmount);
@@ -413,6 +428,7 @@ class AdminService {
         totalActiveUsers,
         totalOrders: totalOrders.length,
         totalPendingOrders,
+        mostSoldProducts,
         totalSales,
       })
     );
