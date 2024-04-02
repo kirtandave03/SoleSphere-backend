@@ -396,22 +396,78 @@ class AdminService {
 
     // Most Sold Product
     const mostSoldProducts = await Order.aggregate([
-      { $unwind: "$products" },
-      {
-        $group: {
-          _id: "$products.product_id", // Group by product ID
-          productName: { $first: "$products.productName" }, // Get the product name
-          totalQuantity: { $sum: "$products.quantity" }, // Calculate total quantity sold
+      [
+        { $unwind: "$products" },
+        {
+          $group: {
+            _id: "$products.product_id", // Group by product ID
+            productName: {
+              $first: "$products.productName",
+            }, // Get the product name
+            totalQuantity: {
+              $sum: "$products.quantity",
+            }, // Calculate total quantity sold
+          },
         },
-      },
-      {
-        $sort: {
-          totalQuantity: -1, // Sort by total quantity in descending order
+
+        {
+          $limit: 10, // Take only the top document which represents the maximum sold product
         },
-      },
-      {
-        $limit: 10, // Take only the top document which represents the maximum sold product
-      },
+        {
+          $lookup: {
+            from: "products", // Assuming your products collection name is "products"
+            localField: "_id",
+            foreignField: "_id",
+            as: "product",
+          },
+        },
+        {
+          $unwind: "$product",
+        },
+        {
+          $project: {
+            _id: 1,
+            productName: 1,
+            totalQuantity: 1,
+            category: "$product.category",
+            brand: "$product.brand",
+            image_url: {
+              $arrayElemAt: ["$product.variants.image_urls", 0],
+            },
+          },
+        },
+        {
+          $sort: {
+            totalQuantity: -1, // Sort by total quantity in descending order
+          },
+        },
+        {
+          $lookup: {
+            from: "categories",
+            localField: "category",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $addFields: {
+            category: "$category.category",
+          },
+        },
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brand",
+            foreignField: "_id",
+            as: "brand",
+          },
+        },
+        {
+          $addFields: {
+            brand: "$brand.brand",
+          },
+        },
+      ],
     ]);
 
     // FInding Revenue based on year and month
