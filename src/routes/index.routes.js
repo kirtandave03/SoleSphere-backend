@@ -10,6 +10,7 @@ const splashScreenRouter = require("./onBoardScreen.route");
 const uploadFile = require("../controllers/fileupload.controller");
 const reviewRouter = require("../routes/review.routes");
 const orderRouter = require("./order.routes");
+const enumsRouter = require("./enums.routes");
 const paymentRouter = require("./payment.routes");
 const upload = require("../middlewares/multer.middleware");
 const verifyToken = require("../middlewares/firebase_auth.middleware");
@@ -34,5 +35,6 @@ router.use("/products/reviews", reviewRouter);
 router.use("/onboard", splashScreenRouter);
 router.use("/orders", orderRouter);
 router.use("/payments", paymentRouter);
+router.use("/enums", enumsRouter);
 
 module.exports = router;
