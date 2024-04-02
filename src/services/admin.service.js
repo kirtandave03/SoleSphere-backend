@@ -236,11 +236,11 @@ class AdminService {
     const { product_id, variants } = req.body;
     const { color } = variants;
 
-    const existedProduct = await Product.findById(product_id);
-
-    if (!existedProduct) {
-      throw new apiError(404, "Product not found");
+    if (!product_id) {
+      throw new apiError(404, "Product Not Found");
     }
+
+    const existedProduct = await Product.findById(product_id);
 
     const index = existedProduct.variants.findIndex(
       (item) => item.color === color
