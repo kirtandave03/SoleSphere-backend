@@ -233,18 +233,20 @@ class AdminService {
   };
 
   addVariant = async (req, res) => {
-    const { product_id, variants } = req.body;
+    const { productName, variants } = req.body;
     const { color } = variants;
 
-    if (!product_id) {
+    const existedProduct = await Product.findOne({ productName });
+
+    if (!existedProduct) {
       throw new apiError(404, "Product Not Found");
     }
-
-    const existedProduct = await Product.findById(product_id);
 
     const index = existedProduct.variants.findIndex(
       (item) => item.color === color
     );
+
+    console.log(index);
 
     if (index !== -1) {
       throw new apiError(400, "Variant already exists");
@@ -253,8 +255,8 @@ class AdminService {
     const newVariant = [...existedProduct.variants];
     newVariant.push(variants);
 
-    const updatedProduct = await Product.findByIdAndUpdate(
-      product_id,
+    const updatedProduct = await Product.findOneAndUpdate(
+      { productName },
       {
         variants: newVariant,
       },
