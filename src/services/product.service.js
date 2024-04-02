@@ -582,6 +582,117 @@ class ProductService {
       })
     );
   };
+
+  searchProduct = async (req, res) => {
+    const page = Number(req.query.page) || 0;
+    const limit = Number(req.query.limit) || 6;
+    const { q } = req.query;
+
+    let pipeline = [
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+          pipeline: [
+            {
+              $project: {
+                _id: 0,
+                category: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          category: {
+            $arrayElemAt: ["$category.category", 0],
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+          pipeline: [
+            {
+              $project: {
+                _id: 0,
+                brand: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          brand: { $arrayElemAt: ["$brand.brand", 0] },
+        },
+      },
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "review",
+          foreignField: "_id",
+          as: "review",
+          pipeline: [
+            {
+              $project: {
+                rating: 1,
+                review: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          avgReview: { $avg: "$review.rating" },
+        },
+      },
+    ];
+
+    if (q) {
+      const matchStage = {
+        $or: [
+          { productName: { $regex: q, $options: "i" } },
+          { closureType: { $regex: q, $options: "i" } },
+          { material: { $regex: q, $options: "i" } },
+          { gender: { $regex: q, $options: "i" } },
+          { category: { $regex: q, $options: "i" } },
+          { brand: { $regex: q, $options: "i" } },
+        ],
+      };
+
+      pipeline.push({ $match: matchStage });
+    }
+
+    const products = await Product.aggregate(pipeline);
+
+    const responseData = products.map((item) => {
+      return {
+        _id: item._id,
+        productName: item.productName,
+        actual_price: item.variants[0].sizes[0].actual_price,
+        discounted_price: item.variants[0].sizes[0].discounted_price,
+        colors: item.variants.length,
+        category: item.category,
+        brand: item.brand,
+        shortDescription: item.shortDescription,
+        avgRating: item.avgReview,
+        image: item.variants[0].image_urls[0],
+        totalReview: item.review.length,
+      };
+    });
+
+    return res
+      .status(200)
+      .json(new apiResponse(responseData, "Products fetched successfully"));
+  };
 }
 
 module.exports = ProductService;

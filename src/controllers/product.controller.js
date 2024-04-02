@@ -10,6 +10,7 @@ const getCart = asyncHandler(productService.getCart);
 const productDetail = asyncHandler(productService.productDetail);
 const deleteCartItem = asyncHandler(productService.deleteCartItem);
 const getOrderSummary = asyncHandler(productService.getOrderSummary);
+const searchProduct = asyncHandler(productService.searchProduct);
 
 module.exports = {
   getProducts,
@@ -19,4 +20,5 @@ module.exports = {
   deleteCartItem,
   getOrderSummary,
   getAllProducts,
+  searchProduct,
 };

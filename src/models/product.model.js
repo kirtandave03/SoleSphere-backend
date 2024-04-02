@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const mongoose_delete = require("mongoose-delete");
-const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const productSchema = new mongoose.Schema(
   {
@@ -99,7 +98,6 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-productSchema.plugin(mongooseAggregatePaginate);
 productSchema.plugin(mongoose_delete, { overrideMethods: "all" });
 
 const Product = mongoose.model("Product", productSchema);

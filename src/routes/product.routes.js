@@ -6,6 +6,7 @@ const {
   deleteCartItem,
   getAllProducts,
   getOrderSummary,
+  searchProduct,
 } = require("../controllers/product.controller");
 
 const verifyToken = require("../middlewares/firebase_auth.middleware");
@@ -17,6 +18,7 @@ const router = Router();
 router.get("/", getProducts);
 router.get("/all-products", getAllProducts);
 router.get("/product-detail", productDetail);
+router.get("/search", searchProduct);
 
 // Secure Routes
 router.post("/add-to-cart", verifyToken, addToCart);
