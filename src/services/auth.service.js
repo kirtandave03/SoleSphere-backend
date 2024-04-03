@@ -44,14 +44,14 @@ class AuthService {
       });
 
       if (!deletedUser.length) {
-        console.log("inside the deleted user");
+        // console.log("inside the deleted user");
         const newUser = await User.create({ UID, email, username: userName });
         return res
           .status(201)
           .json(new apiResponse(newUser, "User created successfully"));
       } else {
         return res
-          .status(401)
+          .status(203)
           .json(
             new apiResponse(
               {},
