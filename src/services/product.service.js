@@ -680,6 +680,7 @@ class ProductService {
         _id: item._id,
         productName: item.productName,
         actual_price: item.variants[0].sizes[0].actual_price,
+        size: item.variants[0].sizes[0].size,
         discounted_price: item.variants[0].sizes[0].discounted_price,
         colors: item.variants.length,
         category: item.category,
