@@ -585,7 +585,7 @@ class ProductService {
   };
 
   searchProduct = async (req, res) => {
-    const page = Number(req.query.page) || Infinity;
+    const page = Number(req.query.page) || 10;
     const limit = Number(req.query.limit) || 6;
     const { q } = req.query;
 
@@ -672,9 +672,7 @@ class ProductService {
       pipeline.push({ $match: matchStage });
     }
 
-    const products = await Product.aggregate(pipeline)
-      .skip(page * limit)
-      .limit(limit);
+    const products = await Product.aggregate(pipeline).skip(page).limit(limit);
 
     const totalProducts = await Product.find();
 
@@ -699,7 +697,7 @@ class ProductService {
       .status(200)
       .json(
         new apiResponse(
-          { responseData, totalProducts: totalProducts.length },
+          { responseData, totalProduct: totalProducts.length },
           "Products fetched successfully"
         )
       );
