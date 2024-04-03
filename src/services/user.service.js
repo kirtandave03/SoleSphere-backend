@@ -198,14 +198,20 @@ class UserService {
     const { index } = req.body;
 
     if (!index) {
-      throw new apiError();
+      throw new apiError(400, "Index Required");
     }
 
     const user = await User.findOne({ UID: req.user.UID }).select("address");
 
     const address = user.address;
-    console.log("Address Of User", address);
-    res.send("Hello Delete");
+    address.splice(index, 1);
+
+    user.address = address;
+    const updatedUser = await user.save();
+
+    return res
+      .status(200)
+      .json(new apiResponse(updatedUser, "Address Deleted Successfully"));
   };
 
   addToWishList = async (req, res) => {
