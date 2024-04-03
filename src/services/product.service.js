@@ -673,6 +673,8 @@ class ProductService {
       .skip(page * limit)
       .limit(limit);
 
+    const totalProducts = await Product.find();
+
     const responseData = products.map((item) => {
       return {
         _id: item._id,
@@ -691,7 +693,12 @@ class ProductService {
 
     return res
       .status(200)
-      .json(new apiResponse(responseData, "Products fetched successfully"));
+      .json(
+        new apiResponse(
+          { responseData, totalProducts: totalProducts.length },
+          "Products fetched successfully"
+        )
+      );
   };
 }
 
