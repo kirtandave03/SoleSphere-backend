@@ -194,6 +194,20 @@ class UserService {
       );
   };
 
+  deleteUserAddress = async (req, res) => {
+    const { index } = req.body;
+
+    if (!index) {
+      throw new apiError();
+    }
+
+    const user = await User.findOne({ UID: req.user.UID }).select("address");
+
+    const address = user.address;
+    console.log("Address Of User", address);
+    res.send("Hello Delete");
+  };
+
   addToWishList = async (req, res) => {
     const { product_id } = req.body;
 

@@ -2,8 +2,6 @@ const apiError = require("../interfaces/apiError");
 const Product = require("../models/product.model");
 const apiResponse = require("../interfaces/apiResponse");
 const User = require("../models/user.model");
-const Category = require("../models/category.model");
-const Brand = require("../models/brand.model");
 class ProductService {
   constructor() {}
 
@@ -671,7 +669,9 @@ class ProductService {
       pipeline.push({ $match: matchStage });
     }
 
-    const products = await Product.aggregate(pipeline);
+    const products = await Product.aggregate(pipeline)
+      .skip(page * limit)
+      .limit(limit);
 
     const responseData = products.map((item) => {
       return {

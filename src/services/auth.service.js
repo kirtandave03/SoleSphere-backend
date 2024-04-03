@@ -115,7 +115,7 @@ class AuthService {
   };
 
   signupUser = async (req, res) => {
-    const { username, email, password } = signupUserValidator.parse(req.body);
+    const { username, email } = signupUserValidator.parse(req.body);
 
     if ([username, email].some((field) => field?.trim() === "")) {
       throw new apiError(400, "All fields are required");
@@ -172,6 +172,7 @@ class AuthService {
   loginUser = async (req, res) => {
     const { email, password } = req.body;
     console.log("password : ", password);
+
     if (!email || !password) {
       throw new apiError(400, "Email and password are required");
     }
@@ -183,7 +184,7 @@ class AuthService {
     }
 
     const isPassValid = await user.isPasswordCorrect(password);
-    console.log(isPassValid);
+    // console.log(isPassValid);
 
     if (!isPassValid) {
       throw new apiError(401, "Invalid credentials");
@@ -337,18 +338,6 @@ class AuthService {
 
     if (!email) {
       throw new apiError(400, "Email is required");
-    }
-
-    const user = await Admin.findOne({ email });
-
-    if (!user) {
-      throw new apiError(404, "Admin not exist");
-    }
-
-    const isOtpThere = await Otp.findOne({ email });
-
-    if (!isOtpThere) {
-      throw new apiError(404, "Otp was not even sent earlier");
     }
 
     const otp = await generateOtp();

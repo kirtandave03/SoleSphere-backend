@@ -9,6 +9,7 @@ const deleteUser = asyncHandler(userService.deleteUser);
 const userProfilePic = asyncHandler(userService.userProfile);
 const updateUserPhone = asyncHandler(userService.updateUserPhone);
 const updateUserAddress = asyncHandler(userService.updateUserAddress);
+const deleteUserAddress = asyncHandler(userService.deleteUserAddress);
 
 const getCurrentUser = asyncHandler(userService.getCurrentUser);
 
@@ -26,4 +27,5 @@ module.exports = {
   addToWishList,
   getWishList,
   removeItemFromWishList,
+  deleteUserAddress,
 };
