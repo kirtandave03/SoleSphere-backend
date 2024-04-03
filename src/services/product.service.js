@@ -245,7 +245,10 @@ class ProductService {
     if (deleted) {
       const deletedProducts = await Product.findDeleted({
         deleted: true,
-      }).populate("category brand review");
+      })
+        .populate("category brand review")
+        .skip(page * limit)
+        .limit(limit);
 
       let totalRating = deletedProducts.map((product) => {
         const total = product.review.reduce(
