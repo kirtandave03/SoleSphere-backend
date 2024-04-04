@@ -23,6 +23,7 @@
     "fs": "^0.0.1-security",
     "inquirer": "^9.2.14",
     "jsonwebtoken": "^9.0.2",
+    "lottie-react-web": "^2.2.2",
     "mongoose": "^8.1.1",
     "mongoose-aggregate-paginate-v2": "^1.0.7",
     "mongoose-delete": "^1.0.2",

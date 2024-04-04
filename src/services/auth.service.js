@@ -31,6 +31,8 @@ class AuthService {
   isUser = async (req, res) => {
     const { UID, email } = req.body;
     const userName = req.body.username || "unknown";
+    const profilePic =
+      "https://res.cloudinary.com/dz9ga1vmp/image/upload/v1710502194/e5dz1wrcshp0xyjknope.jpg";
 
     if (!UID || !email) {
       return res.status(400).json({ message: "UID & email is required" });
@@ -44,17 +46,22 @@ class AuthService {
       });
 
       if (!deletedUser.length) {
-        console.log("inside the deleted user");
-        const newUser = await User.create({ UID, email, username: userName });
+        // console.log("inside the deleted user");
+        const newUser = await User.create({
+          UID,
+          email,
+          username: userName,
+          profilePic,
+        });
         return res
           .status(201)
           .json(new apiResponse(newUser, "User created successfully"));
       } else {
         return res
-          .status(401)
+          .status(203)
           .json(
             new apiResponse(
-              {},
+              user,
               "Access Denied: Your account has been blocked by the administrator."
             )
           );

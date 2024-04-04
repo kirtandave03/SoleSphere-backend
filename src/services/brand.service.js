@@ -1,7 +1,7 @@
 const apiError = require("../interfaces/apiError");
 const apiResponse = require("../interfaces/apiResponse");
 const Brand = require("../models/brand.model");
-const { uploadOnCloudinary } = require("./cloudinary");
+const { uploadOnCloudinary, deleteOnCloudinary } = require("./cloudinary");
 const fs = require("fs");
 class BrandService {
   constructor() {}
@@ -47,10 +47,22 @@ class BrandService {
     const { brand } = req.body;
 
     if (!brand) {
-      throw new apiError(404, "Brand not found");
+      throw new apiError(400, "Brand Is Required");
     }
 
     const existingBrand = await Brand.findOneAndDelete({ brand });
+
+    if (!existingBrand) {
+      throw new apiError(404, "Brand not found");
+    }
+
+    const url = existingBrand.brandIcon;
+
+    const isDeleted = await deleteOnCloudinary(url);
+
+    if (!isDeleted) {
+      throw new apiError(500, "error while deleting old brand icon");
+    }
 
     return res
       .status(200)
@@ -65,10 +77,16 @@ class BrandService {
       throw new apiError(400, "old Brand name or updated brand name missing");
     }
 
-    const existingBrand = await Brand.findOne({ brand });
+    const existingBrand = await Brand.findOne({ brand: oldBrand });
 
-    if (existingBrand) {
-      throw new apiError(400, "updated brand already exixts");
+    if (!existingBrand) {
+      throw new apiError(404, "brand not exits");
+    }
+
+    const newBrand = await Brand.findOne({ brand: brand });
+
+    if (newBrand) {
+      throw new apiError(409, "brand already exists");
     }
 
     if (!brandIconLocalPath) {
@@ -79,10 +97,6 @@ class BrandService {
           new: true,
         }
       );
-
-      if (!brandData) {
-        throw new apiError(404, "Brand not found");
-      }
 
       return res
         .status(200)
@@ -96,11 +110,16 @@ class BrandService {
 
       const brandData = await Brand.findOneAndUpdate(
         { brand: oldBrand.toLowerCase() },
-        { brand: brand.toLowerCase(), brandIcon: brandIcon.url }
+        { brand: brand.toLowerCase(), brandIcon: brandIcon.url },
+        { new: true }
       );
 
-      if (!brandData) {
-        throw new apiError(400, "Brand not found");
+      const url = existingBrand.brandIcon;
+
+      const isDeleted = await deleteOnCloudinary(url);
+
+      if (!isDeleted) {
+        throw new apiError(500, "error while deleting old brand icon");
       }
 
       return res
