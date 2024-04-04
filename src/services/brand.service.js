@@ -1,7 +1,7 @@
 const apiError = require("../interfaces/apiError");
 const apiResponse = require("../interfaces/apiResponse");
 const Brand = require("../models/brand.model");
-const { uploadOnCloudinary } = require("./cloudinary");
+const { uploadOnCloudinary, deleteOnCloudinary } = require("./cloudinary");
 const fs = require("fs");
 class BrandService {
   constructor() {}
@@ -47,10 +47,22 @@ class BrandService {
     const { brand } = req.body;
 
     if (!brand) {
-      throw new apiError(404, "Brand not found");
+      throw new apiError(400, "Brand Is Required");
     }
 
     const existingBrand = await Brand.findOneAndDelete({ brand });
+
+    if (!existingBrand) {
+      throw new apiError(404, "Brand not found");
+    }
+
+    const url = existingBrand.brandIcon;
+
+    const isDeleted = await deleteOnCloudinary(url);
+
+    if (!isDeleted) {
+      throw new apiError(500, "error while deleting old brand icon");
+    }
 
     return res
       .status(200)
