@@ -61,7 +61,7 @@ class AuthService {
           .status(203)
           .json(
             new apiResponse(
-              {},
+              user,
               "Access Denied: Your account has been blocked by the administrator."
             )
           );
