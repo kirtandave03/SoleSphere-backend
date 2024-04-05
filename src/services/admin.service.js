@@ -398,6 +398,8 @@ class AdminService {
   };
 
   getDashboard = async (req, res) => {
+    const page = Number(req.query.page) || 0;
+    const limit = Number(req.query.limit) || 5;
     const totalActiveUsers = (await User.find()).length;
     const totalOrders = await Order.find();
     const totalPendingOrders = (await Order.find({ orderStatus: "Pending" }))
@@ -474,7 +476,9 @@ class AdminService {
           },
         },
       ],
-    ]);
+    ])
+      .skip(page * limit)
+      .limit(limit);
 
     // FInding Revenue based on year and month
 
