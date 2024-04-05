@@ -13,6 +13,7 @@ class ProductService {
     const sort = req.query?.sort || "";
     let closureType = req.query?.closureType || "";
     let brand = req.query?.brand || "";
+    let material = req.query?.material || "";
     let gender = req.query?.gender || "";
     let page = Number(req.query?.page) || 0;
     let limit = Number(req.query?.limit) || 12;
@@ -29,6 +30,10 @@ class ProductService {
 
     if (closureType && !Array.isArray(closureType)) {
       closureType = [closureType];
+    }
+
+    if (material && !Array.isArray(material)) {
+      material = [material];
     }
 
     if (gender && !Array.isArray(gender)) {
@@ -138,6 +143,11 @@ class ProductService {
       });
     }
 
+    if (material && material.length > 0) {
+      pipeline.push({
+        $match: { material: { $in: [...material] } },
+      });
+    }
     if (gender && gender.length > 0) {
       pipeline.push({
         $match: { gender: { $in: [...gender] } },
@@ -158,12 +168,12 @@ class ProductService {
 
     // sort based on price
 
-    if (sort === "price_asc") {
+    if (sort === "low-to-high") {
       sortOptions = { "variants.0.sizes.0.discounted_price": 1 };
       pipeline.push({
         $sort: sortOptions,
       });
-    } else if (sort === "price_des") {
+    } else if (sort === "high-to-low") {
       sortOptions = { "variants.0.sizes.0.discounted_price": -1 };
       pipeline.push({
         $sort: sortOptions,
@@ -179,7 +189,7 @@ class ProductService {
       pipeline.push(sortReview);
     }
 
-    if (sort === "timestamp") {
+    if (sort === "latest arrivals") {
       pipeline.push({
         $sort: {
           createdAt: -1,
