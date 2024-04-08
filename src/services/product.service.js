@@ -2,6 +2,7 @@ const apiError = require("../interfaces/apiError");
 const Product = require("../models/product.model");
 const apiResponse = require("../interfaces/apiResponse");
 const User = require("../models/user.model");
+
 class ProductService {
   constructor() {}
 
@@ -643,9 +644,27 @@ class ProductService {
           as: "review",
           pipeline: [
             {
+              $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "user",
+                pipeline: [
+                  {
+                    $project: {
+                      username: 1,
+                      _id: 0,
+                    },
+                  },
+                ],
+              },
+            },
+
+            {
               $project: {
                 rating: 1,
                 review: 1,
+                user: 1,
               },
             },
           ],
@@ -690,6 +709,7 @@ class ProductService {
         shortDescription: item.shortDescription,
         avgRating: item.avgReview,
         image: item.variants[0].image_urls[0],
+        review: item.review,
         totalReview: item.review.length,
       };
     });

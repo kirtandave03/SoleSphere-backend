@@ -30,7 +30,7 @@ class ReviewService {
     if (!product) {
       throw new apiError(404, "Product not found");
     }
-    // console.log(reviewData._id.toString());
+
     product.review.push(reviewData._id.toString());
 
     const updatedProduct = await product.save();
