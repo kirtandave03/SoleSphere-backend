@@ -228,123 +228,111 @@ class ProductService {
   };
 
   getAllProducts = async (req, res) => {
-    const page = Number(req.query.page) || 0;
-    const limit = Number(req.query.limit) || 5;
-    const deleted = Boolean(req.query.deleted) || false;
+    const { search } = req.query;
 
-    // ! it shouldn't be like this change it ASAP
-    const { q } = req.query;
+    const products = await Product.find({
+      productName: { $regex: search, $options: "i" },
+    }).select("productName");
 
-    const totalCount = (await Product.find()).length;
-
-    const pipeline = [
-      {
-        $lookup: {
-          from: "reviews",
-          localField: "review",
-          foreignField: "_id",
-          as: "reviews",
-        },
-      },
-      {
-        $addFields: {
-          averageRating: { $avg: "$reviews.rating" },
-        },
-      },
-    ];
-
-    if (deleted) {
-      const deletedProducts = await Product.findDeleted({
-        deleted: true,
-      })
-        .populate("category brand review")
-        .skip(page * limit)
-        .limit(limit);
-
-      let totalRating = deletedProducts.map((product) => {
-        const total = product.review.reduce(
-          (acc, curr) => acc + curr.rating,
-          0
-        );
-        const avgRating = total / product.review.length;
-
-        return avgRating;
-      });
-
-      const resp = [];
-
-      for (let i = 0; i < deletedProducts.length; i++) {
-        let op = { ...deletedProducts[i]._doc, averageRating: totalRating[i] };
-        resp.push(op);
-      }
-
-      const totalDeletedCount = deletedProducts.length;
-
-      if (!q) {
-        return res
-          .status(200)
-          .json(
-            new apiResponse(
-              { deletedProducts: resp, totalCount: totalDeletedCount },
-              "Deleted Products"
-            )
-          );
-      }
-
-      const filteredDeletedProducts = resp.filter((product) =>
-        new RegExp(q, "i").test(product.productName)
-      );
-      return res.status(200).json(
-        new apiResponse({
-          deletedProducts: filteredDeletedProducts,
-          totalCount: filteredDeletedProducts.count,
-        })
-      );
-    }
-
-    if (!q) {
-      const products = await Product.aggregate(pipeline)
-        .skip(page * limit)
-        .limit(limit);
-
-      const populatedProducts = await Product.populate(products, {
-        path: "category brand",
-      });
-
-      res
-        .status(200)
-        .json(
-          new apiResponse(
-            { products: populatedProducts, totalCount },
-            "All products fetched successfully"
-          )
-        );
-    }
-
-    const foundProducts = await Product.find({
-      productName: { $regex: q, $options: "i" },
-    }).exec();
-
-    const products = await Product.aggregate([
-      { $match: { _id: { $in: foundProducts.map((product) => product._id) } } },
-      ...pipeline,
-    ])
-      .skip(page * limit)
-      .limit(limit);
-
-    const populatedProducts = await Product.populate(products, {
-      path: "category brand",
-    });
-
-    const queryProductCount = products.length;
-    res
+    return res
       .status(200)
-      .json(
-        new apiResponse(
-          { products: populatedProducts, totalCount: queryProductCount },
-          "All products fetched successfully based in the query"
-        )
-      );
+      .json(new apiResponse(products, "Products fetched successfully"));
+    // miraj :
+    // const page = Number(req.query.page) || 0;
+    // const limit = Number(req.query.limit) || 1;
+    // const deleted = Boolean(req.query.deleted) || false;
+    // // ! it shouldn't be like this change it ASAP
+    // const { search } = req.query;
+    // const totalCount = (await Product.find()).length;
+    // const pipeline = [
+    //   {
+    //     $lookup: {
+    //       from: "reviews",
+    //       localField: "review",
+    //       foreignField: "_id",
+    //       as: "reviews",
+    //     },
+    //   },
+    //   {
+    //     $addFields: {
+    //       averageRating: { $avg: "$reviews.rating" },
+    //     },
+    //   },
+    // ];
+    // if (deleted) {
+    //   const deletedProducts = await Product.findDeleted({
+    //     deleted: true,
+    //   })
+    //     .populate("category brand review")
+    //     .skip(page * limit)
+    //     .limit(limit);
+    //   let totalRating = deletedProducts.map((product) => {
+    //     const total = product.review.reduce(
+    //       (acc, curr) => acc + curr.rating,
+    //       0
+    //     );
+    //     const avgRating = total / product.review.length;
+    //     return avgRating;
+    //   });
+    //   const resp = [];
+    //   for (let i = 0; i < deletedProducts.length; i++) {
+    //     let op = { ...deletedProducts[i]._doc, averageRating: totalRating[i] };
+    //     resp.push(op);
+    //   }
+    //   const totalDeletedCount = deletedProducts.length;
+    //   if (!q) {
+    //     return res
+    //       .status(200)
+    //       .json(
+    //         new apiResponse(
+    //           { deletedProducts: resp, totalCount: totalDeletedCount },
+    //           "Deleted Products"
+    //         )
+    //       );
+    //   }
+    //   const filteredDeletedProducts = resp.filter((product) =>
+    //     new RegExp(search, "i").test(product.productName)
+    //   );
+    //   return res.status(200).json(
+    //     new apiResponse({
+    //       deletedProducts: filteredDeletedProducts,
+    //       totalCount: filteredDeletedProducts.count,
+    //     })
+    //   );
+    // }
+    // if (!search) {
+    //   const products = await Product.find();
+    // const products = await Product.aggregate(pipeline);
+    // .skip(page * limit)
+    // .limit(limit);
+    // const populatedProducts = await Product.populate(products, {
+    //   path: "category brand",
+    // });
+    //   res
+    //     .status(200)
+    //     .json(new apiResponse(products, "All products fetched successfully"));
+    // }
+    // const foundProducts = await Product.find({
+    //   productName: { $regex: search, $options: "i" },
+    // }).exec();
+    // const products = await Product.aggregate([
+    //   { $match: { _id: { $in: foundProducts.map((product) => product._id) } } },
+    //   ...pipeline,
+    // ])
+    //   .skip(page * limit)
+    //   .limit(limit);
+    // const populatedProducts = await Product.populate(products, {
+    //   path: "category brand",
+    // });
+    // const queryProductCount = products.length;
+    // res
+    //   .status(200)
+    //   .json(
+    //     new apiResponse(
+    //       { products: populatedProducts, totalCount: queryProductCount },
+    //       "All products fetched successfully based in the query"
+    //     )
+    //   );
   };
 
   addToCart = async (req, res) => {
