@@ -232,6 +232,7 @@ class ProductService {
     const limit = Number(req.query.limit) || 5;
     const deleted = Boolean(req.query.deleted) || false;
 
+    // ! it shouldn't be like this change it ASAP
     const { q } = req.query;
 
     const totalCount = (await Product.find()).length;
