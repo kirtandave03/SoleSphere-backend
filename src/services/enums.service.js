@@ -1,4 +1,6 @@
 const apiResponse = require("../interfaces/apiResponse");
+const Category = require("../models/category.model");
+const Brand = require("../models/brand.model");
 
 class EnumsService {
   constructor() {}
@@ -27,16 +29,40 @@ class EnumsService {
       "cork",
       "faux leather",
     ];
-    const gender = ["male", "female", "unisex"];
 
-    return res
-      .status(200)
-      .json(
-        new apiResponse(
-          { sizeType, closureType, material, gender },
-          "Enums fetched successfully"
-        )
-      );
+    const gender = ["male", "female", "unisex"];
+    const category = await Category.find().select("category -_id");
+    const categories = category.map((cat) => cat.category);
+    const brand = await Brand.find().select("brand -_id");
+    const brands = brand.map((brand) => brand.brand);
+
+    const colors = [
+      "0xFF000000",
+      "0xFF860909",
+      "0xFF00FF00",
+      "0xFFFF00FF",
+      "0xFFF1EAEA",
+    ];
+
+    const sizes = [5, 6, 7, 8, 9, 10, 11, 12];
+
+    const sort = ["low-to-high", "high-to-low", "review", "latest arrivals"];
+
+    return res.status(200).json(
+      new apiResponse(
+        {
+          closureType,
+          material,
+          gender,
+          categories,
+          brands,
+          sizes,
+          colors,
+          sort,
+        },
+        "Enums fetched successfully"
+      )
+    );
   };
 }
 

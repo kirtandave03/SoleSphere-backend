@@ -2,6 +2,7 @@ const Review = require("../models/review.model");
 const apiError = require("../interfaces/apiError");
 const apiResponse = require("../interfaces/apiResponse");
 const Product = require("../models/product.model");
+const User = require("../models/user.model");
 
 class ReviewService {
   constructor() {}
@@ -9,8 +10,10 @@ class ReviewService {
   addReview = async (req, res) => {
     const { product_id, rating, review, images } = req.body;
 
+    const user = await User.findOne({ UID: req.user.UID }).select("_id");
+
     const reviewObj = new Review({
-      user: req.user.UID,
+      user: user._id,
       rating,
       review,
       images,

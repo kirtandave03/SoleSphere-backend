@@ -261,6 +261,7 @@ class UserService {
 
     const responseData = wishlist.wishlist.map((item) => {
       return {
+        _id: item._id,
         productName: item.productName,
         actual_price: item.variants[0].sizes[0].actual_price,
         discounted_price: item.variants[0].sizes[0].discounted_price,

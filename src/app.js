@@ -10,17 +10,24 @@ app.use(cookieParser());
 
 const whitelist = ["http://localhost:5173"];
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-};
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1 || !origin) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+// };
 
+const corsOptions = {
+  origin: "*",
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+  // Add additional headers if needed
+  // allowedHeaders: ["Content-Type", "Authorization"],
+  // methods: ["GET", "POST", "PUT", "DELETE"],
+};
 app.use(cors(corsOptions));
 
 const route = require("./routes/index.routes");
