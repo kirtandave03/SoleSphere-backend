@@ -242,7 +242,6 @@ class ProductService {
   getAllDeletedProducts = async (req, res) => {
     const page = Number(req.query.page) || 0;
     const limit = Number(req.query.limit) || 5;
-    const q = req.query;
     const { search } = req.query;
     const totalCount = (await Product.find()).length;
     const pipeline = [
@@ -278,7 +277,7 @@ class ProductService {
       resp.push(op);
     }
     const totalDeletedCount = deletedProducts.length;
-    if (!q) {
+    if (!search) {
       return res
         .status(200)
         .json(
@@ -586,7 +585,7 @@ class ProductService {
 
     const page = Number(req.query.page) || 0;
     const limit = Number(req.query.limit) || totalProducts;
-    const { q } = req.query;
+    const { search } = req.query;
 
     let pipeline = [
       {
@@ -656,15 +655,15 @@ class ProductService {
       },
     ];
 
-    if (q) {
+    if (search) {
       const matchStage = {
         $or: [
-          { productName: { $regex: q, $options: "i" } },
-          { closureType: { $regex: q, $options: "i" } },
-          { material: { $regex: q, $options: "i" } },
-          { gender: { $regex: q, $options: "i" } },
-          { category: { $regex: q, $options: "i" } },
-          { brand: { $regex: q, $options: "i" } },
+          { productName: { $regex: search, $options: "i" } },
+          { closureType: { $regex: search, $options: "i" } },
+          { material: { $regex: search, $options: "i" } },
+          { gender: { $regex: search, $options: "i" } },
+          { category: { $regex: search, $options: "i" } },
+          { brand: { $regex: search, $options: "i" } },
         ],
       };
 
