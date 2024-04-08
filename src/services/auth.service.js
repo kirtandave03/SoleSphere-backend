@@ -47,7 +47,9 @@ class AuthService {
 
       if (!deletedUser.length) {
         // console.log("inside the deleted user");
-        const email = user.email;
+        // const email = user.email;
+        // console.log(user);
+
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
@@ -68,13 +70,13 @@ class AuthService {
           .status(203)
           .json(
             new apiResponse(
-              user,
+              {},
               "Access Denied: Your account has been blocked by the administrator."
             )
           );
       }
     }
-    return res.status(200).json(new apiResponse({}, "User Exists"));
+    return res.status(200).json(new apiResponse(user, "User Exists"));
   };
 
   deleteUser = async (req, res) => {
