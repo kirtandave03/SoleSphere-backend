@@ -80,10 +80,8 @@ class OrderService {
         }
 
         if (
-          !(
-            product.variants[indexOfVariant].sizes[indexOfSize].stock >=
-            item.quantity
-          )
+          product.variants[indexOfVariant].sizes[indexOfSize].stock <
+          item.quantity
         ) {
           throw new apiError(400, "Not Enough Stock");
         }
@@ -153,13 +151,12 @@ class OrderService {
         }
 
         if (
-          !(
-            product.variants[indexOfVariant].sizes[indexOfSize].stock >=
-            item.quantity
-          )
+          product.variants[indexOfVariant].sizes[indexOfSize].stock <
+          item.quantity
         ) {
           throw new apiError(400, "Not Enough Stock");
         }
+
         product.variants[indexOfVariant].sizes[indexOfSize].stock -=
           item.quantity;
 
