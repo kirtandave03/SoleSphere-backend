@@ -47,6 +47,13 @@ class AuthService {
 
       if (!deletedUser.length) {
         // console.log("inside the deleted user");
+        const email = user.email;
+        const existingUser = await User.findOne({ email });
+
+        if (existingUser) {
+          throw new apiError(400, "User with this email already exist");
+        }
+
         const newUser = await User.create({
           UID,
           email,
