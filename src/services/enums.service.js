@@ -51,7 +51,7 @@ class EnumsService {
     return res.status(200).json(
       new apiResponse(
         {
-          closureType,
+          "closure type": closureType,
           material,
           gender,
           categories,
