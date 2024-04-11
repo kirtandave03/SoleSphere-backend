@@ -206,6 +206,105 @@ class OrderService {
       throw new apiError(400, "Invalid Payment Method");
     }
   };
+
+  cancelOrder = async (req, res) => {
+    console.log(req.body);
+    const paymentMethod = req.body.paymentMethod;
+    const orderId = req.body.orderId;
+
+    if (!paymentMethod || !orderId) {
+      throw new apiError(400, "Payment method and order id are required");
+    }
+
+    const orderToCancel = await Order.findById(orderId);
+
+    if (!orderToCancel) {
+      throw new apiError(404, "Orders for this orderId not found");
+    }
+
+    if (Date.now() - orderToCancel.createdAt > 24 * 60 * 60 * 1000) {
+      throw new apiError(
+        400,
+        "Cannot cancel the order after 24hrs of placing order"
+      );
+    }
+
+    if (orderToCancel.orderStatus === "Cancelled") {
+      throw new apiError(400, "Order is already cancelled");
+    }
+
+    if (orderToCancel.paymentStatus === "Refunded") {
+      throw new apiError(400, "Already payment is refunded");
+    }
+
+    if (orderToCancel.paymentStatus === "Failed") {
+      throw new apiError(400, "Payment status is failed");
+    }
+
+    const productsPurchased = orderToCancel.products;
+
+    for (const item of productsPurchased) {
+      var product = await Product.findById(item.product_id);
+
+      if (!product) {
+        throw new apiError(404, "Product Not Found");
+      }
+
+      const indexOfVariant = product.variants.findIndex(
+        (variant) => variant.color === item.color
+      );
+
+      if (indexOfVariant === -1) {
+        throw new apiError(404, "Variant Not Found");
+      }
+
+      const indexOfSize = product.variants[indexOfVariant].sizes.findIndex(
+        (size) => size.size == item.size
+      );
+
+      if (indexOfSize === -1) {
+        throw new apiError(404, "Size not Found");
+      }
+
+      product.variants[indexOfVariant].sizes[indexOfSize].stock +=
+        item.quantity;
+
+      await product.save();
+    }
+
+    if (paymentMethod == 0) {
+      const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        {
+          $set: {
+            orderStatus: "Cancelled",
+            paymentStatus: "Refunded",
+          },
+        },
+        { new: true }
+      );
+
+      return res
+        .status(201)
+        .json(new apiResponse(updatedOrder, "Order Cancelled Successfully"));
+    } else if (paymentMethod == 1) {
+      const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        {
+          $set: {
+            orderStatus: "Cancelled",
+          },
+        },
+        { new: true }
+      );
+
+      return res
+        .status(201)
+        .json(new apiResponse(updatedOrder, "Order cancelled Successfully"));
+    } else {
+      throw new apiError(400, "Invalid Payment Method");
+    }
+  };
 }
 
 module.exports = OrderService;
