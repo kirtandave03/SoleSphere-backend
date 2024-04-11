@@ -50,6 +50,11 @@ const orderSchema = new mongoose.Schema(
       required: true,
       enum: ["Pending", "Captured", "Refunded", "Failed"],
     },
+
+    signature: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

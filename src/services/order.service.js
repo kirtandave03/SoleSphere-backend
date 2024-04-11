@@ -28,6 +28,7 @@ class OrderService {
       transaction_id,
       totalAmount,
       totalDiscount,
+      signature,
     } = req.body;
 
     if (!paymentMethod) {
@@ -49,10 +50,10 @@ class OrderService {
     // console.log(cartItems);
 
     if (paymentMethod == 0 && paymentStatus) {
-      if (!totalAmount || !transaction_id || !totalDiscount) {
+      if (!totalAmount || !transaction_id || !totalDiscount || !signature) {
         throw new apiError(
           400,
-          "Total Amount , Total Discount and Transaction Id are required"
+          "Total Amount , Total Discount, signature and Transaction Id are required"
         );
       }
 
@@ -100,6 +101,7 @@ class OrderService {
         orderStatus: "Pending",
         paymentMethod: true,
         paymentStatus: "Captured",
+        signature,
       });
 
       const orderData = await newOrder.save();
@@ -192,6 +194,7 @@ class OrderService {
         orderStatus: "Pending",
         paymentMethod: false,
         paymentStatus: "Pending",
+        signature: "",
       });
 
       const orderData = await newOrder.save();
@@ -208,7 +211,7 @@ class OrderService {
   };
 
   cancelOrder = async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     const paymentMethod = req.body.paymentMethod;
     const orderId = req.body.orderId;
 
@@ -284,9 +287,17 @@ class OrderService {
         { new: true }
       );
 
-      return res
-        .status(201)
-        .json(new apiResponse(updatedOrder, "Order Cancelled Successfully"));
+      return res.status(201).json(
+        new apiResponse(
+          {
+            orderId,
+            transaction_id: orderToCancel.transaction_id,
+            totalAmount: orderToCancel.totalAmount,
+            signature: orderToCancel.signature,
+          },
+          "Order Cancelled Successfully"
+        )
+      );
     } else if (paymentMethod == 1) {
       const updatedOrder = await Order.findByIdAndUpdate(
         orderId,
@@ -298,9 +309,16 @@ class OrderService {
         { new: true }
       );
 
-      return res
-        .status(201)
-        .json(new apiResponse(updatedOrder, "Order cancelled Successfully"));
+      return res.status(201).json(
+        new apiResponse(
+          {
+            orderId,
+            transaction_id: orderToCancel.transaction_id,
+            totalAmount: orderToCancel.totalAmount,
+          },
+          "Order cancelled Successfully"
+        )
+      );
     } else {
       throw new apiError(400, "Invalid Payment Method");
     }
