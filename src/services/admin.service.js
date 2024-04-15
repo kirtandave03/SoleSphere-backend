@@ -5,6 +5,7 @@ const Product = require("../models/product.model");
 const Category = require("../models/category.model");
 const Brand = require("../models/brand.model");
 const Order = require("../models/order.model");
+
 class AdminService {
   constructor() {}
 
@@ -383,10 +384,16 @@ class AdminService {
       throw new apiError(400, "orderId in params is required");
     }
 
-    const order = await Order.findById(orderId).populate({
-      path: "user",
-      select: "email",
-    });
+    const order = await Order.findById(orderId)
+      .populate({
+        path: "products.product_id",
+        select: "sizeType",
+        model: "Product",
+      })
+      .populate({
+        path: "user",
+        select: "email",
+      });
 
     if (!order) {
       throw new apiError(404, "Order not found");

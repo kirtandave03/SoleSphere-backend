@@ -50,6 +50,16 @@ const orderSchema = new mongoose.Schema(
       required: true,
       enum: ["Pending", "Captured", "Refunded", "Failed"],
     },
+
+    signature: {
+      type: String,
+      required: true,
+    },
+
+    refund_id: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

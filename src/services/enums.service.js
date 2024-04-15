@@ -51,13 +51,13 @@ class EnumsService {
     return res.status(200).json(
       new apiResponse(
         {
-          closureType,
+          closuretype: closureType,
           material,
           gender,
-          categories,
-          brands,
-          sizes,
-          colors,
+          category: categories,
+          brand: brands,
+          size: sizes,
+          color: colors,
           sort,
         },
         "Enums fetched successfully"

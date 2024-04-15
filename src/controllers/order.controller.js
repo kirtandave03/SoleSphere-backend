@@ -5,5 +5,6 @@ const orderService = new OrderService();
 
 const getUserOrders = asyncHandler(orderService.getUserOrders);
 const purchase = asyncHandler(orderService.purchase);
+const razorpayRefund = asyncHandler(orderService.razorpayRefund);
 
-module.exports = { purchase, getUserOrders };
+module.exports = { purchase, getUserOrders, razorpayRefund };

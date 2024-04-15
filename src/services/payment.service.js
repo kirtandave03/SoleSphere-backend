@@ -126,7 +126,5 @@ class PaymentService {
 
     return res.status(200).json(new apiResponse(true, "Valid Transaction"));
   };
-
-  order = async (req, res) => {};
 }
 module.exports = PaymentService;
