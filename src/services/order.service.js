@@ -243,7 +243,7 @@ class OrderService {
       throw new apiError(400, "Payment status is failed");
     }
 
-    const amount = orderToCancel.totalAmount;
+    // const amount = orderToCancel.totalAmount * 100;
 
     // if (
     //   order.orderStatus !== "Cancelled" &&
@@ -293,10 +293,9 @@ class OrderService {
       });
 
       const options = {
-        amount: amount,
         speed: "normal",
         notes: {
-          notes_key_1: `Refund of Rs.${amount} for payment ID ${paymentId}`,
+          notes_key_1: `Refund for payment ID ${paymentId} is successful`,
         },
         receipt: crypto.randomBytes(10).toString("hex"),
       };
