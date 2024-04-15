@@ -3,6 +3,7 @@ const User = require("../models/user.model");
 const Order = require("../models/order.model");
 const apiResponse = require("../interfaces/apiResponse");
 const Product = require("../models/product.model");
+const Razorpay = require("razorpay");
 const crypto = require("crypto");
 
 class OrderService {
@@ -210,30 +211,28 @@ class OrderService {
     }
   };
 
-  cancelOrder = async (req, res) => {
-    // console.log(req.body);
-    const paymentMethod = req.body.paymentMethod;
-    const orderId = req.body.orderId;
+  razorpayRefund = async (req, res) => {
+    const paymentId = req.params.paymentId;
 
-    if (!paymentMethod || !orderId) {
-      throw new apiError(400, "Payment method and order id are required");
+    if (!paymentId) {
+      throw new apiError(400, "TransactionId is required.");
     }
 
-    const orderToCancel = await Order.findById(orderId);
+    const orderToCancel = await Order.findOne({ transaction_id: paymentId });
 
     if (!orderToCancel) {
-      throw new apiError(404, "Orders for this orderId not found");
-    }
-
-    if (Date.now() - orderToCancel.createdAt > 24 * 60 * 60 * 1000) {
-      throw new apiError(
-        400,
-        "Cannot cancel the order after 24hrs of placing order"
-      );
+      throw new apiError(404, "Orders for this transaction id not found");
     }
 
     if (orderToCancel.orderStatus === "Cancelled") {
       throw new apiError(400, "Order is already cancelled");
+    }
+
+    if (orderToCancel.orderStatus === "Delivered") {
+      throw new apiError(
+        400,
+        "Order is alredy delivered, cannot cancel order once delivered"
+      );
     }
 
     if (orderToCancel.paymentStatus === "Refunded") {
@@ -244,83 +243,86 @@ class OrderService {
       throw new apiError(400, "Payment status is failed");
     }
 
-    const productsPurchased = orderToCancel.products;
+    const amount = orderToCancel.totalAmount;
 
-    for (const item of productsPurchased) {
-      var product = await Product.findById(item.product_id);
+    // if (
+    //   order.orderStatus !== "Cancelled" &&
+    //   order.orderStatus !== "Delivered"
+    // ) {
+    //   throw new apiError(400, "Order is not cancelled");
+    // }
 
-      if (!product) {
-        throw new apiError(404, "Product Not Found");
-      }
+    // if (order.paymentStatus === "Refunded") {
+    //   throw new apiError(400, "Amount is already refunded");
+    // }
 
-      const indexOfVariant = product.variants.findIndex(
-        (variant) => variant.color === item.color
+    // if (order.paymentStatus === "Failed") {
+    //   throw new apiError(400, "Payment failed");
+    // }
+
+    for (let product of orderToCancel.products) {
+      const productToUpdate = await Product.findByIdAndUpdate(
+        product.product_id,
+        {
+          $inc: { "variants.$[v].sizes.$[s].stock": product.quantity },
+        },
+        {
+          arrayFilters: [
+            { "v.color": product.color },
+            { "s.size": Number(product.size) },
+          ],
+          new: true,
+        }
       );
 
-      if (indexOfVariant === -1) {
-        throw new apiError(404, "Variant Not Found");
+      if (!productToUpdate) {
+        throw new apiError(404, "Product not found");
       }
-
-      const indexOfSize = product.variants[indexOfVariant].sizes.findIndex(
-        (size) => size.size == item.size
-      );
-
-      if (indexOfSize === -1) {
-        throw new apiError(404, "Size not Found");
-      }
-
-      product.variants[indexOfVariant].sizes[indexOfSize].stock +=
-        item.quantity;
-
-      await product.save();
     }
 
-    if (paymentMethod == 0) {
-      const updatedOrder = await Order.findByIdAndUpdate(
-        orderId,
-        {
-          $set: {
-            orderStatus: "Cancelled",
-            paymentStatus: "Refunded",
-          },
-        },
-        { new: true }
-      );
+    orderToCancel.orderStatus = "Cancelled";
+    await orderToCancel.save();
 
-      return res.status(201).json(
-        new apiResponse(
-          {
-            orderId,
-            transaction_id: orderToCancel.transaction_id,
-            totalAmount: orderToCancel.totalAmount,
-            signature: orderToCancel.signature,
-          },
-          "Order Cancelled Successfully"
-        )
-      );
-    } else if (paymentMethod == 1) {
-      const updatedOrder = await Order.findByIdAndUpdate(
-        orderId,
-        {
-          $set: {
-            orderStatus: "Cancelled",
-          },
-        },
-        { new: true }
-      );
+    if (orderToCancel.paymentStatus === "Captured") {
+      orderToCancel.paymentStatus = "Refunded";
+      await orderToCancel.save();
 
-      return res.status(201).json(
-        new apiResponse(
-          {
-            orderId,
-            transaction_id: orderToCancel.transaction_id,
-            totalAmount: orderToCancel.totalAmount,
-          },
-          "Order cancelled Successfully"
-        )
-      );
+      var instance = new Razorpay({
+        key_id: process.env.RAZORPAY_ID_KEY,
+        key_secret: process.env.RAZORPAY_SECRET_KEY,
+      });
+
+      const options = {
+        amount: amount,
+        speed: "normal",
+        notes: {
+          notes_key_1: `Refund of Rs.${amount} for payment ID ${paymentId}`,
+        },
+        receipt: crypto.randomBytes(10).toString("hex"),
+      };
+
+      instance.payments.refund(paymentId, options, async (error, refund) => {
+        console.log(error);
+        if (error) {
+          throw new apiError(500, error.error.description);
+        }
+
+        orderToCancel.refund_id = refund.id;
+        await orderToCancel.save();
+
+        return res
+          .status(200)
+          .json(
+            new apiResponse(
+              { refund, orderToCancel },
+              "Amount refunded successfully"
+            )
+          );
+      });
     } else {
-      throw new apiError(400, "Invalid Payment Method");
+      return res
+        .status(200)
+        .json(new apiResponse(orderToCancel, "Order Cancelled successfully"));
     }
   };
 }

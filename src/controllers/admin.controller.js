@@ -13,7 +13,6 @@ const editProduct = asyncHandler(adminService.editProduct);
 const getAllOrders = asyncHandler(adminService.getAllOrders);
 const orderDetails = asyncHandler(adminService.orderDetails);
 const getDashboard = asyncHandler(adminService.getDashboard);
-const razorpayRefund = asyncHandler(adminService.razorpayRefund);
 
 module.exports = {
   getAllUsers,
@@ -27,5 +26,4 @@ module.exports = {
   getAllOrders,
   orderDetails,
   getDashboard,
-  razorpayRefund,
 };

@@ -4,11 +4,11 @@ const router = Router();
 const {
   purchase,
   getUserOrders,
-  cancelOrder,
+  razorpayRefund,
 } = require("../controllers/order.controller");
 
 router.get("/", verifyToken, getUserOrders);
 router.post("/", verifyToken, purchase);
-router.post("/cancel-order", verifyToken, cancelOrder);
+router.post("/refund/:paymentId", verifyToken, razorpayRefund);
 
 module.exports = router;
