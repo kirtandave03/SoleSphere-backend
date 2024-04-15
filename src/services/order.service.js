@@ -66,7 +66,7 @@ class OrderService {
         }
 
         const indexOfVariant = product.variants.findIndex(
-          (varinat) => varinat.color === item.color
+          (variant) => variant.color === item.color
         );
 
         if (indexOfVariant === -1) {
