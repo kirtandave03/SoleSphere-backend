@@ -53,7 +53,6 @@ const orderSchema = new mongoose.Schema(
 
     signature: {
       type: String,
-      required: true,
     },
 
     refund_id: {
