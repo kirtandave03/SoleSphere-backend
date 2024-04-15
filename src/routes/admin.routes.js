@@ -1,5 +1,6 @@
 const Router = require("express").Router;
 const router = Router();
+const { verify } = require("jsonwebtoken");
 const {
   getAllUsers,
   deleteUser,
@@ -12,6 +13,7 @@ const {
   getAllOrders,
   orderDetails,
   getDashboard,
+  razorpayRefund,
 } = require("../controllers/admin.controller");
 
 const verifyJWT = require("../middlewares/auth.middleware");
@@ -34,5 +36,6 @@ router.put("/products/:_id", verifyJWT, restoreProduct);
 // Orders
 router.get("/orders", verifyJWT, getAllOrders);
 router.get("/orders/:orderId", verifyJWT, orderDetails);
+router.post("/refund/:paymentId", verifyJWT, razorpayRefund);
 
 module.exports = router;

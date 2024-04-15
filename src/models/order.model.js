@@ -55,6 +55,11 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    refund_id: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
