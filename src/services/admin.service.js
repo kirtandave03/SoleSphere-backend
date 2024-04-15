@@ -5,8 +5,7 @@ const Product = require("../models/product.model");
 const Category = require("../models/category.model");
 const Brand = require("../models/brand.model");
 const Order = require("../models/order.model");
-const Razorpay = require("razorpay");
-const crypto = require("crypto");
+
 class AdminService {
   constructor() {}
 
@@ -385,10 +384,16 @@ class AdminService {
       throw new apiError(400, "orderId in params is required");
     }
 
-    const order = await Order.findById(orderId).populate({
-      path: "user",
-      select: "email",
-    });
+    const order = await Order.findById(orderId)
+      .populate({
+        path: "products.product_id",
+        select: "sizeType",
+        model: "Product",
+      })
+      .populate({
+        path: "user",
+        select: "email",
+      });
 
     if (!order) {
       throw new apiError(404, "Order not found");
@@ -545,121 +550,6 @@ class AdminService {
       })
     );
     // return res.send("hello");
-  };
-
-  razorpayRefund = async (req, res) => {
-    const paymentId = req.params.paymentId;
-
-    if (!paymentId) {
-      throw new apiError(400, "TransactionId is required.");
-    }
-
-    const orderToCancel = await Order.findOne({ transaction_id: paymentId });
-
-    if (!orderToCancel) {
-      throw new apiError(404, "Orders for this transaction id not found");
-    }
-
-    if (orderToCancel.orderStatus === "Cancelled") {
-      throw new apiError(400, "Order is already cancelled");
-    }
-
-    if (orderToCancel.orderStatus === "Delivered") {
-      throw new apiError(
-        400,
-        "Order is alredy delivered, cannot cancel order once delivered"
-      );
-    }
-
-    if (orderToCancel.paymentStatus === "Refunded") {
-      throw new apiError(400, "Already payment is refunded");
-    }
-
-    if (orderToCancel.paymentStatus === "Failed") {
-      throw new apiError(400, "Payment status is failed");
-    }
-
-    const amount = orderToCancel.totalAmount;
-
-    // if (
-    //   order.orderStatus !== "Cancelled" &&
-    //   order.orderStatus !== "Delivered"
-    // ) {
-    //   throw new apiError(400, "Order is not cancelled");
-    // }
-
-    // if (order.paymentStatus === "Refunded") {
-    //   throw new apiError(400, "Amount is already refunded");
-    // }
-
-    // if (order.paymentStatus === "Failed") {
-    //   throw new apiError(400, "Payment failed");
-    // }
-
-    for (let product of orderToCancel.products) {
-      const productToUpdate = await Product.findByIdAndUpdate(
-        product.product_id,
-        {
-          $inc: { "variants.$[v].sizes.$[s].stock": product.quantity },
-        },
-        {
-          arrayFilters: [
-            { "v.color": product.color },
-            { "s.size": Number(product.size) },
-          ],
-          new: true,
-        }
-      );
-
-      if (!productToUpdate) {
-        throw new apiError(404, "Product not found");
-      }
-    }
-
-    orderToCancel.orderStatus = "Cancelled";
-    await orderToCancel.save();
-
-    if (orderToCancel.paymentStatus === "Captured") {
-      orderToCancel.paymentStatus = "Refunded";
-      await orderToCancel.save();
-
-      var instance = new Razorpay({
-        key_id: process.env.RAZORPAY_ID_KEY,
-        key_secret: process.env.RAZORPAY_SECRET_KEY,
-      });
-
-      const options = {
-        amount: amount,
-        speed: "normal",
-        notes: {
-          notes_key_1: `Refund of Rs.${amount} for payment ID ${paymentId}`,
-        },
-        receipt: crypto.randomBytes(10).toString("hex"),
-      };
-
-      instance.payments.refund(paymentId, options, async (error, refund) => {
-        console.log(error);
-        if (error) {
-          throw new apiError(500, "Something went wrong");
-        }
-
-        orderToCancel.refund_id = refund.id;
-        await orderToCancel.save();
-
-        return res
-          .status(200)
-          .json(
-            new apiResponse(
-              { refund, orderToCancel },
-              "Amount refunded successfully"
-            )
-          );
-      });
-    } else {
-      return res
-        .status(200)
-        .json(new apiResponse(orderToCancel, "Order Cancelled successfully"));
-    }
   };
 }
 module.exports = AdminService;
